@@ -14,3 +14,27 @@ body {
      padding: 25px !important;
      position: relative;
 }
+
+.swiper-wrapper {
+     width: 100%;
+     height: max-content !important;
+     padding-bottom: 64px !important;
+     -webkit-transition-timing-function: linear !important;
+     transition-timing-function: linear !important;
+     position: relative;
+}
+
+.swiper-pagination-bullet {
+     background: #4f46e5;
+}
+
+.centered-slide-carousel .swiper-slide {
+     opacity: 0.7;
+     transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.centered-slide-carousel .swiper-slide-active {
+     opacity: 1;
+     transform: scale(1.05);
+     z-index: 1;
+}
