@@ -65,9 +65,9 @@ function Banner() {
   }, []);
 
   return (
-    <div className="w-full max-w-[1270px] max-h-auto px-4 lg:py-4 mx-auto relative overflow-hidden rounded-xl">
-      <Swiper {...swiperParams} className="my-auto centered-slide-carousel">
-        {[1, 2, 3, 4].map((num) => (
+    <div className="w-full max-w-[1270px] lg:max-h-[350px] md:max-h-[330px] sm:max-h-[250px] xs:max-h-[150px] max-h-auto px-4 lg:py-4 mx-auto relative overflow-hidden rounded-xl">
+      <Swiper {...swiperParams} className="my-auto centered-slide-carousel ">
+        {[1, 2, 3, 4, 10].map((num) => (
           <SwiperSlide key={num}>
             <div className="relative rounded-2xl h-full sm:h-72 md:h-80 lg:h-95 flex justify-center items-center overflow-hidden">
               <img
