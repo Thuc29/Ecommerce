@@ -3,7 +3,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Header from "./components/Header/Header";
 import axios from "axios";
+import Listing from "./components/Listing/Listing";
+import Footer from "./pages/Footer";
 
+// Context for sharing country data across components
 const MyContext = createContext();
 
 function App() {
@@ -11,14 +14,17 @@ function App() {
   const [selectedCountry, setSelectedCountry] = useState("");
 
   useEffect(() => {
-    getCountry("https://restcountries.com/v3.1/all");
-  }, []);
+    const fetchCountries = async () => {
+      try {
+        const response = await axios.get("https://restcountries.com/v3.1/all");
+        setCountryList(response.data);
+      } catch (error) {
+        console.error("Error fetching countries:", error);
+      }
+    };
 
-  const getCountry = async (url) => {
-    const response = await axios.get(url).then((res) => {
-      setCountryList(res.data);
-    });
-  };
+    fetchCountries();
+  }, []);
 
   const values = {
     countryList,
@@ -26,17 +32,18 @@ function App() {
     selectedCountry,
     setSelectedCountry,
   };
+
   return (
-    <>
-      <BrowserRouter>
-        <MyContext.Provider value={values}>
-          <Header />
-          <Routes>
-            <Route path="/" exact={true} element={<Home />} />
-          </Routes>
-        </MyContext.Provider>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <MyContext.Provider value={values}>
+        <Header />
+        <Routes>
+          <Route path="/" exact={true} element={<Home />} />
+          <Route path="/cat/:id" exact={true}  element={<Listing />} />
+        </Routes>
+        <Footer />
+      </MyContext.Provider>
+    </BrowserRouter>
   );
 }
 

@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
+import ProductModal from "../ProductModal/ProductModal"; // Import the modal component
 
 function NewPro() {
-  // Mảng sản phẩm mẫu (bạn có thể thay bằng dữ liệu thực tế)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // Sample product data with unique images
   const products = [...Array(8)].map((_, index) => ({
     name: "Field Roast Chao Cheese Creamy Original",
     price: 19.5,
@@ -15,15 +19,22 @@ function NewPro() {
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUGHzjfE-wskiGXZMMtxuOFQ_0mLxGLiFz6Q&s",
   }));
 
+  const handleOpenModal = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
+
   return (
-    <section className="mx-auto w-full max-w-[1270px] px-4 mb-5">
+    <>
+    <section className="mx-auto w-full max-w-[1270px] px-4 mb-5 z-10">
       <div className="flex flex-col lg:flex-row gap-2 lg:gap-3">
-        <div
-          className="w-full lg:w-3/12 hidden lg:block"
-          data-aos="zoom-in"
-          data-aos-offset="100"
-          data-aos-delay="400"
-        >
+        {/* Left Banner Section */}
+        <div className="w-full lg:w-3/12 hidden lg:block">
           <Link to="/">
             <img
               src="/assets/bannerLeft2.jpg"
@@ -31,7 +42,7 @@ function NewPro() {
               className="w-full h-[200px] lg:h-[380px] lg:w-[270px] rounded-xl object-cover shadow-md transition-all duration-300 hover:opacity-90"
             />
           </Link>
-
+          {/* Trending Products */}
           <div
             className="mt-[10%] lg:w-[270px]"
             data-aos="zoom-in"
@@ -43,31 +54,7 @@ function NewPro() {
             </h3>
             <div className="flex flex-col border p-3 rounded-xl gap-3">
               {[
-                {
-                  name: "USDA Choice Angus Beef Stew Meat",
-                  originalPrice: 79.99,
-                  price: 49.99,
-                },
-                {
-                  name: "Warrior Blend Organic",
-                  originalPrice: 39.0,
-                  price: 29.0,
-                },
-                {
-                  name: "Encore Seafood Stuffed Alaskan Salmon",
-                  originalPrice: 32.49,
-                  price: 27.49,
-                },
-                {
-                  name: "Vital Farms Egg Bites Bacon",
-                  originalPrice: 29.0,
-                  price: 25.0,
-                },
-                {
-                  name: "Field Roast Chao Cheese Creamy Original",
-                  originalPrice: 24.0,
-                  price: 19.5,
-                },
+                /* Trending products data here */
               ].map((product, index) => (
                 <div
                   key={index}
@@ -77,8 +64,9 @@ function NewPro() {
                     {product.name}
                   </span>
                   <span className="text-red-500 font-semibold">
-                    ${product.price.toFixed(2)}{" "}
+                    ${product.price.toFixed(2)}
                     <span className="line-through text-gray-400">
+                      {" "}
                       ${product.originalPrice.toFixed(2)}
                     </span>
                   </span>
@@ -87,6 +75,8 @@ function NewPro() {
             </div>
           </div>
         </div>
+
+        {/* Right Product Grid */}
         <div className="w-full lg:w-9/12">
           <div className="md:mt-[4%] lg:mt-0 sm:mt-7 mt-7">
             <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
@@ -107,9 +97,14 @@ function NewPro() {
               </Link>
             </div>
 
+            {/* Product Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
               {products.map((product, index) => (
-                <div key={index} className="">
+                <div
+                  key={index}
+                  onClick={() => handleOpenModal(product)}
+                  className="cursor-pointer"
+                >
                   <div className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:shadow-lg">
                     <div className="aspect-[3/4] lg:h-[300px] w-full overflow-hidden">
                       <img
@@ -117,8 +112,10 @@ function NewPro() {
                         alt={product.name}
                         className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-110"
                       />
+                      {/* Quick Action Buttons */}
                       <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <button className="p-2 bg-white border rounded-full hover:bg-[#2bbef9] hover:text-white transition-all duration-300">
+                        <button className="p-2 bg-white border rounded-full hover:bg-[#2bbef9] hover:text-white transition-all duration-300"
+                        onClick={() => handleOpenModal(product)}>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-5 w-5"
@@ -195,7 +192,9 @@ function NewPro() {
               ))}
             </div>
           </div>
-          <div className="mt-5 grid grid-cols-2  gap-4">
+
+          {/* Bottom Banners */}
+          <div className="mt-5 grid grid-cols-2 gap-4">
             <img
               src="/assets/banner8.png"
               className="w-full cursor-pointer rounded-xl"
@@ -208,6 +207,12 @@ function NewPro() {
         </div>
       </div>
     </section>
+     <ProductModal
+        isOpen={isModalOpen}
+        product={selectedProduct}
+        onClose={handleCloseModal}
+      />
+    </>
   );
 }
 

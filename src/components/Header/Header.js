@@ -14,7 +14,7 @@ function Header() {
   const context = useContext(MyContext);
   return (
     <div className="headerWrapper w-full h-auto border-b border-gray-200 pb-2">
-      <div className="topHeader bg-[#0d52c0]">
+      <div className="topHeader bg-[#2bbef9]">
         <p className="mb-0 py-2 text-center text-white text-sm font-medium">
           Due to the <strong>COVID-19</strong> pandemic, orders may be processed
           with a slight delay

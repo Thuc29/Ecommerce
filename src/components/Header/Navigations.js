@@ -245,7 +245,11 @@ function Navigations() {
             </div>
           )}
 
-          <div className="w-full overflow-x-auto scrollbar-hide lg:pl-[15%]">
+          <div
+            className="w-full overflow-x-auto scrollbar-hide lg:pl-[15%] [&::-webkit-scrollbar]:h-1
+  [&::-webkit-scrollbar-thumb]:rounded-xl
+  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-300"
+          >
             <ul className="flex items-center justify-center md:justify-start gap-6 md:gap-8 py-2 min-w-max">
               <li className="whitespace-nowrap relative after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-[#2bbef9] after:left-0 after:bottom-[-4px] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left">
                 <Link

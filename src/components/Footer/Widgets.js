@@ -7,69 +7,29 @@ const Widgets = () => {
       <div className="container mx-auto px-4 lg:max-w-[1270px]">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 md:grid-cols-3 gap-6">
           <Widget
-            title="FRUIT & VEGETABLES"
-            menuItems={[
-              "Fresh Vegetables",
-              "Herbs & Seasonings",
-              "Fresh Fruits",
-              "Cuts & Sprouts",
-              "Exotic Fruits & Veggies",
-              "Packaged Produce",
-              "Party Trays",
-            ]}
+            title="MEN'S CLOTHING"
+            menuItems={["Shirts", "Pants", "Jackets", "Shoes", "Accessories"]}
           />
           <Widget
-            title="Breakfast & Dairy"
-            menuItems={[
-              "Milk & Flavoured Milk",
-              "Butter and Margarine",
-              "Cheese",
-              "Eggs Substitutes",
-              "Honey",
-              "Marmalades",
-              "Sour Cream and Dips",
-              "Yogurt",
-            ]}
+            title="WOMEN'S CLOTHING"
+            menuItems={["Dresses", "Tops", "Skirts", "Shoes", "Handbags"]}
           />
           <Widget
-            title="Meat & Seafood"
-            menuItems={[
-              "Breakfast Sausage",
-              "Dinner Sausage",
-              "Beef",
-              "Chicken",
-              "Sliced Deli Meat",
-              "Shrimp",
-              "Wild Caught Fillets",
-              "Crab and Shellfish",
-              "Farm Raised Fillets",
-            ]}
+            title="KIDS' CLOTHING"
+            menuItems={["T-Shirts", "Shorts", "Dresses", "Shoes", "Outerwear"]}
           />
           <Widget
-            title="Beverages"
-            menuItems={[
-              "Water",
-              "Sparkling Water",
-              "Soda & Pop",
-              "Coffee",
-              "Milk & Plant-Based Milk",
-              "Tea & Kombucha",
-              "Drink Boxes & Pouches",
-              "Craft Beer",
-              "Wine",
-            ]}
+            title="ACCESSORIES"
+            menuItems={["Hats", "Belts", "Scarves", "Jewelry", "Sunglasses"]}
           />
           <Widget
-            title="Breads & Bakery"
+            title="FOOTWEAR"
             menuItems={[
-              " Milk & Flavoured Milk",
-              "Butter and Margarine",
-              "Cheese",
-              "Eggs Substitutes",
-              "Honey",
-              "Marmalades",
-              "Sour Cream and Dips",
-              "Yogurt",
+              "Sneakers",
+              "Boots",
+              "Sandals",
+              "Formal Shoes",
+              "Slippers",
             ]}
           />
         </div>

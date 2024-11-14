@@ -37,7 +37,7 @@ const Contacts = () => {
                       <FontAwesomeIcon
                         icon={faFacebook}
                         size="xl"
-                        className="text-[#2d5bff]"
+                        className="hover:text-[#2d5bff]"
                       />
                     </a>
                   </li>
@@ -50,7 +50,7 @@ const Contacts = () => {
                       <FontAwesomeIcon
                         icon={faTwitter}
                         size="xl"
-                        className="text-[#14e0fb]"
+                        className="hover:text-[#14e0fb]"
                       />
                     </a>
                   </li>
@@ -63,7 +63,7 @@ const Contacts = () => {
                       <FontAwesomeIcon
                         icon={faInstagram}
                         size="xl"
-                        className="text-red-500"
+                        className="hover:text-red-500"
                       />
                     </a>
                   </li>

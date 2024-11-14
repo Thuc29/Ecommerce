@@ -1,9 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import Slider from "react-slick";
+import ProductModal from "../ProductModal/ProductModal";
 
 function Seller() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const handleOpenModal = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
+
   var productSlider = {
     dots: true,
     infinite: true,
@@ -56,6 +70,7 @@ function Seller() {
       </div>
     ),
   };
+
   return (
     <>
       <section className="mx-auto w-full max-w-[1270px] px-4 lg:pb-0">
@@ -118,7 +133,10 @@ function Seller() {
                             </span>
                           </div>
                           <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                            <button className="p-2 bg-white border rounded-full hover:bg-[#2bbef9] hover:text-white transition-all duration-300">
+                            <button
+                              className="p-2 bg-white border rounded-full hover:bg-[#2bbef9] hover:text-white transition-all duration-300"
+                              onClick={() => handleOpenModal(product)}
+                            >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="h-5 w-5"
@@ -198,6 +216,12 @@ function Seller() {
           </div>
         </div>
       </section>
+
+      <ProductModal
+        isOpen={isModalOpen}
+        product={selectedProduct}
+        onClose={handleCloseModal}
+      />
     </>
   );
 }
