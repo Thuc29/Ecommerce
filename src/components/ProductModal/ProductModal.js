@@ -118,31 +118,26 @@ const ProductModal = ({ isOpen, product, onClose }) => {
                   />
                 </div>
               </Slider>
-              <Slider {...settings} className="zoomSlider pt-5" ref={zoomslider}>
-                <div
-                  className={`item`}
-                  onClick={() => goto(0)}
-                >
+              <Slider
+                {...settings}
+                className="zoomSlider pt-5"
+                ref={zoomslider}
+              >
+                <div className={`item`} onClick={() => goto(0)}>
                   <img
                     src="https://klbtheme.com/bacola/wp-content/uploads/2021/04/product-image-62.jpg"
                     alt="Product image"
                     className="w-[110px] sm:pl-4 h-[85px] sm:h-[70px] object-cover rounded-md"
                   />
                 </div>
-                <div
-                  className={`item `}
-                  onClick={() => goto(1)}
-                >
+                <div className={`item `} onClick={() => goto(1)}>
                   <img
                     src="https://klbtheme.com/bacola/wp-content/uploads/2021/04/product-image2-47.jpg"
                     alt="Product image"
                     className="w-[110px] sm:pl-4 h-[85px] sm:h-[70px] object-cover rounded-md"
                   />
                 </div>
-                <div
-                  className={`item `}
-                  onClick={() => goto(2)}
-                >
+                <div className={`item `} onClick={() => goto(2)}>
                   <img
                     src="https://klbtheme.com/bacola/wp-content/uploads/2021/04/product-image3-35.jpg"
                     alt="Product image"
