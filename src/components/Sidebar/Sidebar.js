@@ -9,7 +9,8 @@ function Sidebar() {
   const [value2, setValue2] = useState(0);
   return (
     <>
-      <div className="sidebar w-[20%] flex-[0_0_20%] hidden md:block">
+      <div className="sidebar w
+      -[20%] flex-[0_0_20%] hidden md:block">
         <div className="filterBox ">
           <h6 className="font-bold text-[15px] mb-4"> PRODUCT CATEGORIES </h6>
           <div

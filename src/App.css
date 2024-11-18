@@ -118,5 +118,63 @@ body {
 
 .range-slider .range-slider__range {
   background: #2bbef9 !important;
+}
 
+.product-grid.one {
+  grid-template-columns: 1fr;
+}
+/* CSS cho product-grid khi layout là "one" */
+.product-grid.one {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* CSS cho mỗi sản phẩm */
+.product-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background-color: #fff;
+}
+
+.product-item img {
+  width: 120px; /* điều chỉnh theo ý muốn */
+  height: auto;
+  margin-right: 20px;
+}
+
+.product-item .product-info {
+  flex: 1;
+}
+
+.product-item .product-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.product-item .product-price {
+  font-size: 16px;
+  color: red;
+  margin-bottom: 10px;
+}
+
+.product-item .product-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.product-grid.two {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.product-grid.three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.product-grid.four {
+  grid-template-columns: repeat(4, 1fr);
 }

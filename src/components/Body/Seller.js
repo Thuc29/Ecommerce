@@ -96,7 +96,7 @@ function Seller() {
                 </p>
               </div>
               <Link
-                to="/products"
+                to="/cat/1"
                 className="w-full sm:w-auto flex justify-center text-[#2bbef9] font-semibold items-center gap-2 rounded-3xl border border-gray-400 bg-white px-4 py-2 transition-all duration-300 hover:bg-[#2bbef9] hover:text-white"
               >
                 View All
