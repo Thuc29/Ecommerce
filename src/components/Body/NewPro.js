@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
-import ProductModal from "../ProductModal/ProductModal"; // Import the modal component
+import ProductModal from "../Product/ProductModal"; // Import the modal component
 
 function NewPro() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -151,7 +151,7 @@ function NewPro() {
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                       <Link
-                        to={`/products/${product.name}`}
+                        to={`/product/${product.name}`}
                         className="hover:bg-teal-300 transition-all duration-300 hover:text-white"
                       >
                         <h4 className="text-base font-semibold text-white truncate">

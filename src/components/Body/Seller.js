@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import Slider from "react-slick";
-import ProductModal from "../ProductModal/ProductModal";
+import ProductModal from "../Product/ProductModal";
 
 function Seller() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -96,7 +96,7 @@ function Seller() {
                 </p>
               </div>
               <Link
-                to="/cat/1"
+                to="/cat/:id"
                 className="w-full sm:w-auto flex justify-center text-[#2bbef9] font-semibold items-center gap-2 rounded-3xl border border-gray-400 bg-white px-4 py-2 transition-all duration-300 hover:bg-[#2bbef9] hover:text-white"
               >
                 View All
@@ -172,7 +172,7 @@ function Seller() {
                         </div>
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4">
                           <Link
-                            to={`/products/${product.name}`}
+                            to={`/product/${product.name}`}
                             className="hover:bg-teal-300 transition-all duration-300 hover:text-white"
                           >
                             <h4 className="text-base font-semibold text-white truncate">

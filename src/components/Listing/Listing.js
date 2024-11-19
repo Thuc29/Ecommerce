@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../Sidebar/Sidebar";
-import ProductItem from "../ProductModal/ProductItem";
+import ProductItem from "../Product/ProductItem";
 import { Button } from "@mui/material";
 import { LuMenu } from "react-icons/lu";
 import { HiViewGrid } from "react-icons/hi";
@@ -53,7 +53,7 @@ function Listing() {
               className="w-full h-auto rounded-xl"
               alt="Listing Banner"
             />
-            <div className="w-full bg-gray-100 py-4 px-6 rounded-lg my-6 flex items-center">
+            <div className="w-full bg-gray-100 py-2 px-6 rounded-lg my-6 flex items-center">
               <div className="flex items-center">
                 {[
                   ["one", LuMenu],
@@ -70,7 +70,7 @@ function Listing() {
                       className={`text-gray-500 hover:text-black ${
                         productView === view ? "text-blue-400" : ""
                       }`}
-                      size={20}
+                      size={15}
                     />
                   </Button>
                 ))}
@@ -101,7 +101,7 @@ function Listing() {
               </div>
             </div>
             <div
-              className={`product-grid grid gap-6 ${
+              className={`product-grid grid gap-2 ${
                 productView === "four"
                   ? "grid-cols-4"
                   : productView === "three"
