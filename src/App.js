@@ -5,8 +5,7 @@ import Header from "./components/Header/Header";
 import axios from "axios";
 import Listing from "./components/Listing/Listing";
 import Footer from "./pages/Footer";
-import ProductDetails from "./pages/ProductDetails";
-
+import Product from "./pages/Product";
 
 // Context for sharing country data across components
 const MyContext = createContext();
@@ -42,7 +41,7 @@ function App() {
         <Routes>
           <Route path="/" exact={true} element={<Home />} />
           <Route path="/cat/:id" exact={true} element={<Listing />} />
-          <Route path="/product/:id" exact={true} element={<ProductDetails />} />
+          <Route path="/product/:id" exact={true} element={<Product />} />
         </Routes>
         <Footer />
       </MyContext.Provider>

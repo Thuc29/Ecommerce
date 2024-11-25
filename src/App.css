@@ -73,6 +73,7 @@ body {
 
 .zoomSlider .slick-current .item {
   border: 2px solid #3bb77e !important;
+  width: 144px !important;
 }
 
 .zoomSlider .slick-arrow {
@@ -104,6 +105,14 @@ body {
 .css-imrjgg-MuiButtonBase-root-MuiCheckbox-root.Mui-checked,
 .css-imrjgg-MuiButtonBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate {
   color: #2bbef9 !important;
+}
+.scrollbar-hidden {
+  scrollbar-width: none; /* Ẩn thanh cuộn trên Firefox */
+  -ms-overflow-style: none; /* Ẩn thanh cuộn trên Internet Explorer */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* Ẩn thanh cuộn trên Chrome, Safari */
 }
 
 .range-slider {
