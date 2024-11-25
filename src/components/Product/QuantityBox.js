@@ -9,7 +9,7 @@ function QuantityBox() {
     <>
       <button
         onClick={() => handleQuantityChange(-1)}
-        className="text-lg font-semibold px-[11px] border rounded-full bg-gray-200 hover:bg-[#2bbef9] hover:text-white"
+        className="text-lg font-semibold px-[11px] py-[1px] items-center border rounded-full bg-gray-200 hover:bg-[#2bbef9] hover:text-white"
       >
         -
       </button>
@@ -21,12 +21,9 @@ function QuantityBox() {
       />
       <button
         onClick={() => handleQuantityChange(1)}
-        className="text-lg font-semibold px-[11px] border rounded-full bg-gray-200 hover:bg-[#2bbef9] hover:text-white"
+        className="text-lg font-semibold px-[10px] py-[1px] border rounded-full bg-gray-200 hover:bg-[#2bbef9] hover:text-white"
       >
         +
-      </button>
-      <button className="ml-4 hover:bg-[#2bbef9] hover:text-white border border-[#2bbef9] text-[#2bbef9] font-semibold px-10 py-3 rounded-full">
-        Add to cart
       </button>
     </>
   );

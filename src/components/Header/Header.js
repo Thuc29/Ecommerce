@@ -96,23 +96,25 @@ function Header() {
                 </Button>
                 <span className="text-[15px] font-medium">$4.00</span>
                 <div className="relative">
-                  <Button
-                    className=" h-[44px]"
-                    style={{
-                      borderRadius: "50%",
-                      border: "1px solid #e0e0e0",
-                      backgroundColor: "#fff1ee",
-                      minWidth: "45px",
-                    }}
-                  >
-                    <IoBagOutline color="#ea2b0f" size={20} />
-                    <span
-                      className="absolute -top-1 -right-1 flex items-center justify-center bg-[#ea2b0f] text-white w-[18px] h-[18px] text-[11px]"
-                      style={{ borderRadius: "50%" }}
+                  <Link to={`/cart`}>
+                    <Button
+                      className=" h-[44px]"
+                      style={{
+                        borderRadius: "50%",
+                        border: "1px solid #e0e0e0",
+                        backgroundColor: "#fff1ee",
+                        minWidth: "45px",
+                      }}
                     >
-                      1
-                    </span>
-                  </Button>
+                      <IoBagOutline color="#ea2b0f" size={20} />
+                      <span
+                        className="absolute -top-1 -right-1 flex items-center justify-center bg-[#ea2b0f] text-white w-[18px] h-[18px] text-[11px]"
+                        style={{ borderRadius: "50%" }}
+                      >
+                        1
+                      </span>
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>

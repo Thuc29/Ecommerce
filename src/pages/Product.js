@@ -10,13 +10,13 @@ function Product() {
       <ProductDetails />
       <Tabs />
       <div
-        className={`cursor-pointer lg:ml-[118px] text-lg uppercase font-bold text-gray-700`}
+        className={`cursor-pointer lg:ml-[118px] md:ml-0 sm:ml-[70px] text-lg uppercase font-bold text-gray-700`}
       >
         Related Product{" "}
       </div>
       <RelatedProduct />
       <div
-        className={`cursor-pointer md:ml-[120px]  text-lg uppercase font-bold text-gray-700`}
+        className={`cursor-pointer lg:ml-[120px] md:ml-0 sm:ml-[70px] text-lg uppercase font-bold text-gray-700`}
       >
         Related Product{" "}
       </div>

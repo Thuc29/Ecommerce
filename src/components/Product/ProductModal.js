@@ -72,6 +72,9 @@ const ProductModal = ({ isOpen, product, onClose }) => {
 
             <div className="flex items-center mb-4">
               <QuantityBox />
+              <button className="ml-4 hover:bg-[#2bbef9] hover:text-white border border-[#2bbef9] text-[#2bbef9] font-semibold px-10 py-3 rounded-full">
+                Add to cart
+              </button>
             </div>
 
             <div className="flex space-x-4 mb-4">

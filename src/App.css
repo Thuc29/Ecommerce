@@ -73,7 +73,7 @@ body {
 
 .zoomSlider .slick-current .item {
   border: 2px solid #3bb77e !important;
-  width: 144px !important;
+  width: 100px !important;
 }
 
 .zoomSlider .slick-arrow {
@@ -106,13 +106,17 @@ body {
 .css-imrjgg-MuiButtonBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate {
   color: #2bbef9 !important;
 }
+
 .scrollbar-hidden {
-  scrollbar-width: none; /* Ẩn thanh cuộn trên Firefox */
-  -ms-overflow-style: none; /* Ẩn thanh cuộn trên Internet Explorer */
+  scrollbar-width: none;
+  /* Ẩn thanh cuộn trên Firefox */
+  -ms-overflow-style: none;
+  /* Ẩn thanh cuộn trên Internet Explorer */
 }
 
 .scrollbar-hidden::-webkit-scrollbar {
-  display: none; /* Ẩn thanh cuộn trên Chrome, Safari */
+  display: none;
+  /* Ẩn thanh cuộn trên Chrome, Safari */
 }
 
 .range-slider {
@@ -132,6 +136,7 @@ body {
 .product-grid.one {
   grid-template-columns: 1fr;
 }
+
 /* CSS cho product-grid khi layout là "one" */
 .product-grid.one {
   display: flex;
@@ -150,7 +155,8 @@ body {
 }
 
 .product-item img {
-  width: 120px; /* điều chỉnh theo ý muốn */
+  width: 120px;
+  /* điều chỉnh theo ý muốn */
   height: auto;
   margin-right: 20px;
 }

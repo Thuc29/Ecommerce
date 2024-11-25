@@ -112,7 +112,7 @@ function ProductDetails() {
             </div>
 
             {/* Cột 3: Additional Information */}
-            <div className="w-full lg:w-3/12 mt-4 md:mt-0 flex flex-col px-4 pt-4">
+            <div className="w-full lg:w-3/12 md:w-1/2 mt-4 md:mt-0 flex flex-col px-4 pt-4">
               <p className="text-sm text-center rounded-md py-2 text-red-600 bg-red-50">
                 Covid-19 Info: We keep delivering
               </p>
