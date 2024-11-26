@@ -20,7 +20,7 @@ const ProductModal = ({ isOpen, product, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex pt-3 items-center justify-center bg-black bg-opacity-50 z-50 ">
-      <div className="bg-white text-start sm:w-3/4 h-[95%] lg:pt-[50px] md:p-16 rounded-lg relative overflow-y-auto scrollbar-hidden">
+      <div className="bg-white text-start sm:w-3/4 sm:p-5 h-[95%] lg:pt-[50px] md:p-16 rounded-lg relative overflow-y-auto scrollbar-hidden">
         {" "}
         <button
           onClick={onClose}

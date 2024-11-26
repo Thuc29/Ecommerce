@@ -12,6 +12,10 @@ import { IoIosMenu } from "react-icons/io";
 
 function Header() {
   const context = useContext(MyContext);
+
+  // Check if the user is logged in (assuming context contains user data)
+  const isLoggedIn = context.user !== null;
+
   return (
     <div className="headerWrapper w-full h-auto border-b border-gray-200 pb-2">
       <div className="topHeader bg-[#2bbef9]">
@@ -20,11 +24,11 @@ function Header() {
           with a slight delay
         </p>
       </div>
-      <header className="mainHeader w-full h-auto py-2 md:py-4">
-        <Container className="px-4 md:px-6 lg:px-[140px]">
+      <header className="mainHeader w-full h-auto md:py-4 bg-white rounded-md mx-auto max-w-screen-xl">
+        <div className="px-4 md:px-6">
           <div className="max-w-[1440px] mx-auto">
             {/* Mobile Layout (<748px) */}
-            <div className="flex md:hidden items-center justify-between mb-3">
+            <div className="flex lg:hidden items-center justify-between mb-3">
               <Button className="menu-btn">
                 <IoIosMenu size={24} />
               </Button>
@@ -35,36 +39,58 @@ function Header() {
                   className="w-full"
                 />
               </Link>
-              <div className="flex items-center gap-2">
-                <Button
-                  className="h-[40px]"
-                  style={{
-                    borderRadius: "50%",
-                    minWidth: "40px",
-                  }}
-                >
-                  <FiUser color="#000" size={20} />
-                </Button>
-                <div className="relative">
+              <div className="flex items-center gap-2 md:gap-4 relative z-10">
+                {/* User Icon */}
+                {isLoggedIn ? (
+                  <Link to="/signin">
+                    <button
+                      className="p-2 border rounded-lg text-[#2bbef9] font-medium hover:shadow-lg hover:bg-[#2bbef9] hover:text-white"
+                      style={{ zIndex: 10 }} // Ensures button is above other elements
+                    >
+                      Sign In
+                    </button>
+                  </Link>
+                ) : (
                   <Button
-                    className="h-[40px]"
+                    className="h-[44px] relative"
                     style={{
                       borderRadius: "50%",
-                      backgroundColor: "#fff1ee",
-                      minWidth: "40px",
+                      border: "1px solid #e0e0e0",
+                      minWidth: "45px",
+                      zIndex: 10, // Ensures button is above other elements
                     }}
                   >
-                    <IoBagOutline color="#ea2b0f" size={20} />
-                    <span className="absolute -top-1 -right-1 flex items-center justify-center bg-[#ea2b0f] text-white w-[18px] h-[18px] text-[11px] rounded-full">
-                      1
-                    </span>
+                    <FiUser color="#000" size={22} />
                   </Button>
+                )}
+                {/* Cart Icon */}
+                <div className="relative">
+                  <Link to={`/cart`}>
+                    <Button
+                      className="h-[44px] relative"
+                      style={{
+                        borderRadius: "50%",
+                        border: "1px solid #e0e0e0",
+                        backgroundColor: "#fff1ee",
+                        minWidth: "45px",
+                        zIndex: 10, // Ensures button is above other elements
+                      }}
+                    >
+                      <IoBagOutline color="#ea2b0f" size={20} />
+                      <span
+                        className="absolute -top-1 -right-1 flex items-center justify-center bg-[#ea2b0f] text-white w-[18px] h-[18px] text-[11px]"
+                        style={{ borderRadius: "50%" }}
+                      >
+                        1
+                      </span>
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
 
             {/* Desktop Layout (≥748px) */}
-            <div className="hidden md:flex flex-col md:flex-row items-center gap-4">
+            <div className="hidden lg:flex flex-col md:flex-row items-center justify-between gap-4">
               {/* Logo */}
               <div className="w-[120px] md:w-[140px] mb-3 md:mb-0">
                 <Link to="/">
@@ -80,30 +106,48 @@ function Header() {
               <div className="hidden md:block">
                 {context.countryList.length !== 0 && <CountryDropDown />}
               </div>
+
               {/* Search Bar */}
               <SearchBox />
+
               {/* User and Cart */}
-              <div className="flex items-center gap-2 md:gap-4">
-                <Button
-                  className=" h-[44px]"
-                  style={{
-                    borderRadius: "50%",
-                    border: "1px solid #e0e0e0",
-                    minWidth: "45px",
-                  }}
-                >
-                  <FiUser color="#000" size={22} />
-                </Button>
+              <div className="flex items-center gap-2 md:gap-4 relative z-10">
+                {/* User Icon */}
+                {isLoggedIn ? (
+                  <Link to="/signin">
+                    <button
+                      className="p-2 border rounded-lg text-[#2bbef9] font-medium hover:shadow-lg hover:bg-[#2bbef9] hover:text-white"
+                      style={{ zIndex: 10 }} // Ensures button is above other elements
+                    >
+                      Sign In
+                    </button>
+                  </Link>
+                ) : (
+                  <Button
+                    className="h-[44px] relative"
+                    style={{
+                      borderRadius: "50%",
+                      border: "1px solid #e0e0e0",
+                      minWidth: "45px",
+                      zIndex: 10, // Ensures button is above other elements
+                    }}
+                  >
+                    <FiUser color="#000" size={22} />
+                  </Button>
+                )}
                 <span className="text-[15px] font-medium">$4.00</span>
+
+                {/* Cart Icon */}
                 <div className="relative">
                   <Link to={`/cart`}>
                     <Button
-                      className=" h-[44px]"
+                      className="h-[44px] relative"
                       style={{
                         borderRadius: "50%",
                         border: "1px solid #e0e0e0",
                         backgroundColor: "#fff1ee",
                         minWidth: "45px",
+                        zIndex: 10, // Ensures button is above other elements
                       }}
                     >
                       <IoBagOutline color="#ea2b0f" size={20} />
@@ -119,7 +163,7 @@ function Header() {
               </div>
             </div>
           </div>
-        </Container>
+        </div>
       </header>
 
       {/* Search Box for Mobile */}

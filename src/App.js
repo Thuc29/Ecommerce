@@ -3,10 +3,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Header from "./components/Header/Header";
 import axios from "axios";
-import Listing from "./components/Listing/Listing";
 import Footer from "./pages/Footer";
 import Product from "./pages/Product";
-import Cart from "./components/Cart/Cart";
+import Cart from "./pages/Cart/Cart";
+import SignIn from "./pages/Login/Login";
+import Listing from "./pages/Listing/Listing";
 
 // Context for sharing country data across components
 const MyContext = createContext();
@@ -41,6 +42,7 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" exact={true} element={<Home />} />
+          <Route path="/signIn" exact={true} element={<SignIn />} />
           <Route path="/cat/:id" exact={true} element={<Listing />} />
           <Route path="/product/:id" exact={true} element={<Product />} />
           <Route path="/cart" exact={true} element={<Cart />} />

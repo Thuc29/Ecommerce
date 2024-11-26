@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Radio } from "@mui/material";
+import { Button, Radio } from "@mui/material";
+import { IoCartSharp } from "react-icons/io5";
 
 function CartTotal() {
   return (
@@ -61,8 +62,9 @@ function CartTotal() {
       {/* Proceed to Checkout */}
       <div className="p-4 lg:pb-[30%]">
         <Link to="/checkout">
-          <button className="bg-red-600 text-white font-semibold py-2 px-4 rounded w-full hover:bg-red-700">
-            Proceed to checkout
+          <button className="w-full bg-red-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 hover:bg-red-700 flex items-center justify-center">
+            <IoCartSharp className="mr-2" />
+            Proceed to Checkout
           </button>
         </Link>
       </div>

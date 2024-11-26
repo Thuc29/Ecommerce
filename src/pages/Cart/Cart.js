@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Rating } from "@mui/material";
-import QuantityBox from "../Product/QuantityBox";
+import QuantityBox from "../../components/Product/QuantityBox";
 import { IoMdClose } from "react-icons/io";
 import CouponCode from "./CouponCode";
 import CartTotal from "./CartTotal";

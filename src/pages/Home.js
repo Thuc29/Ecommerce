@@ -12,7 +12,6 @@ const Home = () => {
       <HomeCat />
       <Seller />
       <NewPro />
-      <Footer />
     </>
   );
 };
