@@ -3,11 +3,18 @@ const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config(); // Sử dụng dotenv đúng cách
+const dotenv = require("dotenv");
+
+// Load Environment Variables
+dotenv.config();
+
+if (!process.env.CONNECTION || !process.env.PORT) {
+  console.error("Missing required environment variables in .env file");
+  process.exit(1); // Exit the application if essential variables are missing
+}
 
 // Middleware
-app.use(cors());
-app.options("*", cors());
+app.use(cors()); // Enable CORS for all origins
 app.use(bodyParser.json());
 
 // Routes
@@ -21,13 +28,20 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log("Connected to database");
+    console.log("✅ Connected to the database successfully!");
+
     // Start Server
     const PORT = process.env.PORT || 9000;
     app.listen(PORT, () => {
-      console.log(`Server is running at http://localhost:${PORT}`);
+      console.log(`🚀 Server is running at http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("Database connection error:", err.message);
+    console.error("❌ Database connection error:", err.message);
+    process.exit(1); // Exit the app if the database connection fails
   });
+
+// Catch-all route for undefined routes
+app.use((req, res) => {
+  res.status(404).json({ message: "Endpoint not found" });
+});

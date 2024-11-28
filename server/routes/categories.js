@@ -3,73 +3,65 @@ const router = express.Router();
 const cloudinary = require("cloudinary").v2;
 const pLimit = require("p-limit");
 const Category = require("../models/category");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
 // Cloudinary Configuration
 cloudinary.config({
-  cloud_name: process.env.cloudinary_Config_Cloud_Name,
-  api_key: process.env.cloudinary_Config_api_key,
-  api_secret: process.env.cloudinary_Config_api_secret,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Fetch All Categories
-router.get(`/`, async (req, res) => {
-  try {
-    const categoryList = await Category.find();
-    if (!categoryList.length) {
-      return res
-        .status(404)
-        .json({ success: false, message: "No categories found" });
-    }
-    res.status(200).json({ success: true, data: categoryList });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
+// Helper function to validate ObjectId
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
-// Create Category with Cloudinary Image Upload
+// --- CRUD Endpoints ---
+
+// **1. Create Category**
 router.post("/create", async (req, res) => {
-  const limit = pLimit(2); // Limit concurrent uploads to 2
+  const limit = pLimit(2); // Limit concurrent uploads
   try {
-    // Validate request body
-    const { images, name, color } = req.body;
+    const { name, images, color } = req.body;
+
+    // Validate Input
     if (!images || !Array.isArray(images) || !images.length) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Invalid images array. Provide a non-empty array of image URLs.",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid images array" });
     }
     if (!name || !color) {
-      return res.status(400).json({
-        success: false,
-        message: "Name and color are required fields.",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Name and color are required" });
     }
 
     // Upload images to Cloudinary
     const uploadPromises = images.map((image) =>
-      limit(() => cloudinary.uploader.upload(image))
+      limit(() =>
+        cloudinary.uploader.upload(image).catch((err) => {
+          console.error("Cloudinary upload error:", err);
+          throw new Error(`Image upload failed for ${image}`);
+        })
+      )
     );
     const uploadResults = await Promise.all(uploadPromises);
 
-    // Extract secure URLs
+    // Extract Cloudinary URLs
     const imgUrls = uploadResults.map((result) => result.secure_url);
 
-    // Create new category
-    const category = new Category({
-      name,
-      images: imgUrls,
-      color,
-    });
-
+    // Create Category
+    const category = new Category({ name, images: imgUrls, color });
     const savedCategory = await category.save();
-    res.status(201).json({
+
+    return res.status(201).json({
       success: true,
       message: "Category created successfully",
       data: savedCategory,
     });
   } catch (err) {
-    res.status(500).json({
+    console.error("Error creating category:", err.message);
+    return res.status(500).json({
       success: false,
       message: "Failed to create category",
       error: err.message,
@@ -77,21 +69,48 @@ router.post("/create", async (req, res) => {
   }
 });
 
-// Fetch Single Category by ID
-router.get("/:id", async (req, res) => {
+// **2. Get All Categories**
+router.get("/", async (req, res) => {
   try {
-    const categoryId = req.params.id.trim(); // Trim the ID to remove any unwanted whitespace/newlines
-    const category = await Category.findById(categoryId);
-    if (!category) {
-      return res.status(404).json({
-        success: false,
-        message: "The category with the given ID was not found.",
-      });
+    const categories = await Category.find();
+
+    if (!categories.length) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No categories found" });
     }
-    res.status(200).json({ success: true, data: category });
+
+    return res.status(200).json({ success: true, data: categories });
   } catch (err) {
-    console.error("Error fetching category:", err);
-    res.status(500).json({
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch categories",
+      error: err.message,
+    });
+  }
+});
+
+// **3. Get Category by ID**
+router.get("/:id", async (req, res) => {
+  const categoryId = req.params.id.trim();
+  if (!isValidObjectId(categoryId)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid category ID" });
+  }
+
+  try {
+    const category = await Category.findById(categoryId);
+
+    if (!category) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Category not found" });
+    }
+
+    return res.status(200).json({ success: true, data: category });
+  } catch (err) {
+    return res.status(500).json({
       success: false,
       message: "Error fetching category",
       error: err.message,
@@ -99,24 +118,77 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Delete Category by ID
-router.delete("/:id", async (req, res) => {
+// **4. Update Category by ID**
+router.put("/:id", async (req, res) => {
+  const categoryId = req.params.id.trim();
+  if (!isValidObjectId(categoryId)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid category ID" });
+  }
+
   try {
-    const categoryId = req.params.id.trim(); // Trim the ID to remove any unwanted whitespace/newlines
-    const deletedCategory = await Category.findByIdAndDelete(categoryId);
-    if (!deletedCategory) {
-      return res.status(404).json({
-        success: false,
-        message: "Category not found!",
-      });
+    const { name, color, images } = req.body;
+
+    // Validate Input
+    if (!name || !color || !images || !Array.isArray(images)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid input data" });
     }
-    res.status(200).json({
+
+    // Update Category
+    const updatedCategory = await Category.findByIdAndUpdate(
+      categoryId,
+      { name, color, images },
+      { new: true }
+    );
+
+    if (!updatedCategory) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Category not found" });
+    }
+
+    return res.status(200).json({
       success: true,
-      message: "Category deleted successfully!",
+      message: "Category updated successfully",
+      data: updatedCategory,
     });
   } catch (err) {
-    console.error("Error deleting category:", err);
-    res.status(500).json({
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update category",
+      error: err.message,
+    });
+  }
+});
+
+// **5. Delete Category by ID**
+router.delete("/:id", async (req, res) => {
+  const categoryId = req.params.id.trim();
+  if (!isValidObjectId(categoryId)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid category ID" });
+  }
+
+  try {
+    const deletedCategory = await Category.findByIdAndDelete(categoryId);
+
+    if (!deletedCategory) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Category not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Category deleted successfully",
+      data: deletedCategory,
+    });
+  } catch (err) {
+    return res.status(500).json({
       success: false,
       message: "Failed to delete category",
       error: err.message,
