@@ -23,21 +23,19 @@ const categorySchema = mongoose.Schema(
   }
 );
 
-// Define Virtual ID to allow use of _id as "id" for JSON responses
+// Virtual ID field for JSON responses
 categorySchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
-// Set toJSON method to include virtuals and remove _id and __v
+// Set JSON serialization
 categorySchema.set("toJSON", {
   virtuals: true,
-  versionKey: false, // Removes __v
+  versionKey: false,
   transform: (doc, ret) => {
-    delete ret._id; // Removes _id
+    delete ret._id; // Remove _id field from the response
   },
 });
 
-// Create Category Model based on the schema
-const Category = mongoose.model("Category", categorySchema);
-
-module.exports = Category;
+// Export Category model
+module.exports = mongoose.model("Category", categorySchema);
