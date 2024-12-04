@@ -1,6 +1,4 @@
 const mongoose = require("mongoose");
-
-// Define Category Schema
 const categorySchema = mongoose.Schema(
   {
     name: {
@@ -19,23 +17,20 @@ const categorySchema = mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Adds createdAt and updatedAt fields
+    timestamps: true,
   }
 );
 
-// Virtual ID field for JSON responses
 categorySchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
-// Set JSON serialization
 categorySchema.set("toJSON", {
   virtuals: true,
   versionKey: false,
   transform: (doc, ret) => {
-    delete ret._id; // Remove _id field from the response
+    delete ret._id;
   },
 });
 
-// Export Category model
 module.exports = mongoose.model("Category", categorySchema);

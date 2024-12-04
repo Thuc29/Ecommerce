@@ -6,25 +6,19 @@ const Category = require("../models/category");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-// Cloudinary Configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Helper function to validate ObjectId
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
-
-// --- CRUD Endpoints ---
-
+const limit = pLimit(2);
 // **1. Create Category**
 router.post("/create", async (req, res) => {
-  const limit = pLimit(2); // Limit concurrent uploads
   try {
     const { name, images, color } = req.body;
 
-    // Validate Input
     if (!images || !Array.isArray(images) || !images.length) {
       return res
         .status(400)
@@ -35,8 +29,6 @@ router.post("/create", async (req, res) => {
         .status(400)
         .json({ success: false, message: "Name and color are required" });
     }
-
-    // Upload images to Cloudinary
     const uploadPromises = images.map((image) =>
       limit(() =>
         cloudinary.uploader.upload(image).catch((err) => {
@@ -73,13 +65,11 @@ router.post("/create", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const categories = await Category.find();
-
     if (!categories.length) {
       return res
         .status(404)
         .json({ success: false, message: "No categories found" });
     }
-
     return res.status(200).json({ success: true, data: categories });
   } catch (err) {
     return res.status(500).json({
@@ -98,7 +88,6 @@ router.get("/:id", async (req, res) => {
       .status(400)
       .json({ success: false, message: "Invalid category ID" });
   }
-
   try {
     const category = await Category.findById(categoryId);
 
@@ -107,7 +96,6 @@ router.get("/:id", async (req, res) => {
         .status(404)
         .json({ success: false, message: "Category not found" });
     }
-
     return res.status(200).json({ success: true, data: category });
   } catch (err) {
     return res.status(500).json({
@@ -129,15 +117,11 @@ router.put("/:id", async (req, res) => {
 
   try {
     const { name, color, images } = req.body;
-
-    // Validate Input
     if (!name || !color || !images || !Array.isArray(images)) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid input data" });
     }
-
-    // Update Category
     const updatedCategory = await Category.findByIdAndUpdate(
       categoryId,
       { name, color, images },

@@ -4,17 +4,15 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
-
-// Load Environment Variables
 dotenv.config();
 
 if (!process.env.CONNECTION || !process.env.PORT) {
   console.error("Missing required environment variables in .env file");
-  process.exit(1); // Exit the application if essential variables are missing
+  process.exit(1);
 }
 
 // Middleware
-app.use(cors()); // Enable CORS for all origins
+app.use(cors());
 app.use(bodyParser.json());
 
 // Routes
@@ -40,10 +38,9 @@ mongoose
   })
   .catch((err) => {
     console.error("❌ Database connection error:", err.message);
-    process.exit(1); // Exit the app if the database connection fails
+    process.exit(1);
   });
 
-// Catch-all route for undefined routes
 app.use((req, res) => {
   res.status(404).json({ message: "Endpoint not found" });
 });
