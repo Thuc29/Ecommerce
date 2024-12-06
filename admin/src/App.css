@@ -23,3 +23,59 @@ header {
   min-height: auto;
   border-radius: 10px;
 }
+
+/* styles.css */
+.line-clamp-1 {
+  max-height: 50px;
+}
+
+
+::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc !important;
+}
+
+/* Định nghĩa màu sắc cho dark mode */
+body {
+  background-color: #f9fafb;
+  /* Default light background */
+  color: #1f2937;
+  /* Default text color */
+}
+
+.dark body {
+  background-color: #1f2937;
+  /* Dark background */
+  color: #f9fafb;
+  /* Light text for dark mode */
+}
+
+.dark .text-gray-800 {
+  color: #f9fafb;
+}
+
+.dark .bg-white {
+  background-color: #1f2937;
+}
+
+.dark .border-gray-200 {
+  border-color: #4b5563;
+}
+
+.dark .text-black {
+  color: #f9fafb;
+}
+
+.css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root {
+  font-size: 0.875rem !important;
+  font-family: 'Space Grotesk' !important;
+
+}
+
+.css-qxc2i0-MuiButtonBase-root-MuiButton-root {
+  font-family: 'Space Grotesk' !important;
+}

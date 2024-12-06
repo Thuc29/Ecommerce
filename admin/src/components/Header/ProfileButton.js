@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  IconButton,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  Divider,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Menu, MenuItem, ListItemIcon, Button } from "@mui/material";
 import { MdPerson } from "react-icons/md";
 import Logout from "@mui/icons-material/Logout";
 import Settings from "@mui/icons-material/Settings";
@@ -36,8 +28,12 @@ const ProfileButton = () => {
           />
         </div>
         <div className="md:flex flex-col items-start space-y-[0.5px] pl-2 hidden">
-          <h3 className="text-sm font-semibold text-gray-800">Rinku Verma</h3>
-          <p className="text-[10px] text-gray-500">@Rinkuv37</p>
+          <h3 className="text-sm !font-['Space_Grotesk'] font-semibold text-gray-800">
+            Rinku Verma
+          </h3>
+          <p className="text-[10px] !font-['Space_Grotesk'] text-gray-500">
+            @Rinkuv37
+          </p>
         </div>
       </Button>
       <Menu
@@ -47,15 +43,13 @@ const ProfileButton = () => {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
       >
-        <Typography className="px-4 py-2 font-bold text-lg">Profile</Typography>
-        <Divider />
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <PersonAdd fontSize="small" />
           </ListItemIcon>
-          Add another account
+          My account
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleClose} className="!my-1">
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
@@ -63,9 +57,9 @@ const ProfileButton = () => {
         </MenuItem>
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
-            <Logout fontSize="small" />
+            <Logout fontSize="small" className="text-red-600" />
           </ListItemIcon>
-          Logout
+          <p className="text-red-600">Logout</p>
         </MenuItem>
       </Menu>
     </>

@@ -6,10 +6,19 @@ import NotificationsButton from "./NotificationButton";
 import ProfileButton from "./ProfileButton";
 import SearchBox from "./SearchBox";
 import LightMode from "./LightMode";
+import { useTheme } from "./ThemeContext";
 
 const Header = () => {
+  const { theme } = useTheme();
+
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white shadow-md flex items-center justify-between px-6 py-3 border-b border-gray-200">
+    <header
+      className={`fixed top-0 left-0 right-0 shadow-md flex items-center justify-between px-6 py-3 border-b ${
+        theme === "light"
+          ? "bg-white border-gray-200"
+          : "bg-gray-900 border-gray-700"
+      }`}
+    >
       {/* Logo Section */}
       <div className="space-x-3 md:w-2/12">
         <Link to={"/"} className="flex items-center">
@@ -18,7 +27,11 @@ const Header = () => {
             alt="HOTASH logo"
             className="h-10 w-10 rounded-full"
           />
-          <h1 className="text-xl font-bold text-gray-800 tracking-wide">
+          <h1
+            className={`text-xl font-bold tracking-wide !font-['Space_Grotesk']${
+              theme === "light" ? "text-gray-800" : "text-gray-100"
+            }`}
+          >
             T-Admin
           </h1>
         </Link>
