@@ -33,6 +33,7 @@ header {
 ::-webkit-scrollbar {
   width: 5px !important;
   height: 5px !important;
+  border-radius: 5% !important;
 }
 
 ::-webkit-scrollbar-thumb {

@@ -205,20 +205,14 @@ const NotificationsButton = () => {
         <Divider />
 
         {/* Notification List */}
-        <Box
-          className={`overflow-y-auto max-h-60 scroll ${
-            theme === "light"
-              ? "!bg-white !text-black  hover:!bg-gray-100"
-              : "!bg-gray-800 !text-white hover:!bg-gray-700"
-          }`}
-        >
+        <Box className={`overflow-y-auto max-h-60 scroll `}>
           {notifications.map(({ id, imgSrc, name, action, item, time }) => (
             <React.Fragment key={id}>
               <MenuItem
-                className={`!flex !items-start hover:!rounded-xl !justify-between !bg-gray-100  !py-1 ${
+                className={`!flex !items-start hover:!rounded-xl !justify-between !py-1 ${
                   theme === "light"
-                    ? "hover:!bg-slate-200 !text-black"
-                    : "hover:!bg-gray-600 !text-white"
+                    ? "!bg-gray-100 hover:!bg-slate-200 !text-black"
+                    : "!bg-gray-800 hover:!bg-gray-600 !text-white"
                 }`}
               >
                 <div className="flex flex-grow space-x-4">

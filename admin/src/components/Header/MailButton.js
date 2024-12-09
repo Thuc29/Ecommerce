@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Button, Divider, IconButton, Menu, MenuItem } from "@mui/material";
+import {
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import {
   MdDelete,
   MdDrafts,
@@ -144,7 +151,7 @@ const MailButton = () => {
           </div>
           {isSettingsOpen && (
             <div
-              className={`absolute right-0 mt-2 w-48 z-10 rounded-lg shadow-lg ${
+              className={`absolute right-0 mt-2 w-48 z-10  !shadow-lg ${
                 theme === "light"
                   ? "bg-white text-black"
                   : "bg-gray-800 text-white"
@@ -152,7 +159,7 @@ const MailButton = () => {
             >
               <button
                 type="button"
-                className={`flex items-center space-x-2 w-full px-4 py-2 transition ${
+                className={`flex items-center space-x-2 w-full px-4 py-1 hover:!rounded-xl transition ${
                   theme === "light" ? "hover:bg-slate-200" : "hover:bg-gray-500"
                 }`}
               >
@@ -161,7 +168,7 @@ const MailButton = () => {
               </button>
               <button
                 type="button"
-                className={`flex items-center space-x-2 w-full px-4 py-2 transition ${
+                className={`flex items-center space-x-2 w-full px-4 py-1 hover:!rounded-xl transition ${
                   theme === "light" ? "hover:bg-slate-200" : "hover:bg-gray-500"
                 }`}
               >
@@ -170,7 +177,7 @@ const MailButton = () => {
               </button>
               <button
                 type="button"
-                className={`flex items-center space-x-2 w-full px-4 py-2 transition ${
+                className={`flex items-center space-x-2 w-full px-4 py-1 hover:!rounded-xl transition ${
                   theme === "light" ? "hover:bg-slate-200" : "hover:bg-gray-500"
                 }`}
               >
@@ -180,107 +187,114 @@ const MailButton = () => {
             </div>
           )}
           <Divider />
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`flex items-center hover:rounded-xl px-2 py-1 border-b transition duration-200 ${
-                theme === "light"
-                  ? "bg-white text-black  hover:bg-gray-100"
-                  : "bg-gray-800 text-white hover:bg-gray-700"
-              }`}
-            >
-              <div className="relative ">
-                <img
-                  className="w-10 h-10 rounded-full"
-                  src={message.img}
-                  alt={`Profile picture of ${message.name}`}
-                />
-                {message.online && (
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-                )}
-              </div>
-              <div className="ml-3 flex-1">
-                <div className="flex justify-between">
-                  <h3 className="text-sm font-semibold">{message.name}</h3>
-                  <span className="text-xs text-gray-500">{message.time}</span>
-                </div>
-                <p className="text-sm text-gray-500 line-clamp-1">
-                  {message.text}
-                </p>
-              </div>
-              {message.count > 0 && (
-                <div className="ml-3 mb-5">
-                  <span className="flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-blue-500 rounded-full">
-                    {message.count}
-                  </span>
-                </div>
-              )}
-              <button
-                className={`btn btn-primary hover:bg-gray-200 rounded-lg ${
-                  theme === "light" ? "text-black" : "text-white"
+          <Box className={`overflow-y-auto max-h-60 scroll `}>
+            {" "}
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`flex items-center hover:rounded-xl px-2 py-1 transition duration-200 ${
+                  theme === "light"
+                    ? "bg-white text-black  hover:bg-gray-100"
+                    : "bg-gray-800 text-white hover:bg-gray-700"
                 }`}
-                onClick={handleMoreOptionsClick}
-                aria-expanded={openMoreOptions}
               >
-                <MdMoreVert
-                  className={theme === "light" ? "text-black" : "text-white"}
-                />
-              </button>
-              <Menu
-                id={`menu-${message.id}`}
-                anchorEl={moreOptionsAnchorEl}
-                open={openMoreOptions && openMoreOptionsId === message.id}
-                onClose={handleMoreOptionsClose}
-                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                transformOrigin={{ horizontal: "right", vertical: "top" }}
-                PaperProps={{
-                  style: {
-                    backgroundColor: theme === "light" ? "#fff" : "#333", // Light mode background
-                    color: theme === "light" ? "#000" : "#fff", // Dark mode text color
-                  },
-                }}
-              >
-                <MenuItem
-                  onClick={handleMoreOptionsClose}
-                  className={`flex items-center space-x-2 px-4 py-2 transition-all ${
-                    theme === "light"
-                      ? "hover:!bg-slate-200 text-black"
-                      : "hover:!bg-gray-500 text-white"
+                <div className="relative ">
+                  <img
+                    className="w-10 h-10 rounded-full"
+                    src={message.img}
+                    alt={`Profile picture of ${message.name}`}
+                  />
+                  {message.online && (
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                  )}
+                </div>
+                <div className="ml-3 flex-1">
+                  <div className="flex justify-between">
+                    <h3 className="text-sm font-semibold">{message.name}</h3>
+                    <span className="text-xs text-gray-500">
+                      {message.time}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-500 line-clamp-1">
+                    {message.text}
+                  </p>
+                </div>
+                {message.count > 0 && (
+                  <div className="ml-3 mb-5">
+                    <span className="flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-blue-500 rounded-full">
+                      {message.count}
+                    </span>
+                  </div>
+                )}
+
+                <button
+                  className={`btn btn-primary hover:bg-gray-200 rounded-lg ${
+                    theme === "light" ? "text-black" : "text-white"
                   }`}
+                  onClick={handleMoreOptionsClick}
+                  aria-expanded={openMoreOptions}
                 >
-                  <MdDrafts />
-                  <span>Mark as read</span>
-                </MenuItem>
-                <MenuItem
-                  onClick={handleMoreOptionsClose}
-                  className={`flex items-center space-x-2 px-4 py-2 transition-all ${
-                    theme === "light"
-                      ? "hover:!bg-slate-200 text-black"
-                      : "hover:!bg-gray-500 text-white"
-                  }`}
+                  <MdMoreVert
+                    className={theme === "light" ? "text-black" : "text-white"}
+                  />
+                </button>
+                <Menu
+                  id={`menu-${message.id}`}
+                  anchorEl={moreOptionsAnchorEl}
+                  open={openMoreOptions && openMoreOptionsId === message.id}
+                  onClose={handleMoreOptionsClose}
+                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  transformOrigin={{ horizontal: "right", vertical: "top" }}
+                  PaperProps={{
+                    style: {
+                      backgroundColor: theme === "light" ? "#fff" : "#333", // Light mode background
+                      color: theme === "light" ? "#000" : "#fff", // Dark mode text color
+                    },
+                  }}
                 >
-                  <MdMarkunread />
-                  <span>Mark as unread</span>
-                </MenuItem>
-                <MenuItem
-                  onClick={handleMoreOptionsClose}
-                  className={`flex items-center space-x-2 px-4 py-2 transition-all ${
-                    theme === "light"
-                      ? "hover:!bg-slate-200 text-black"
-                      : "hover:!bg-gray-500 text-white"
-                  }`}
-                >
-                  <MdDelete />
-                  <span>Delete</span>
-                </MenuItem>
-              </Menu>
-            </div>
-          ))}
+                  <MenuItem
+                    onClick={handleMoreOptionsClose}
+                    className={`flex items-center space-x-2 hover:!rounded-xl px-4 py-2 transition-all ${
+                      theme === "light"
+                        ? "hover:!bg-slate-200 text-black"
+                        : "hover:!bg-gray-500 text-white"
+                    }`}
+                  >
+                    <MdDrafts />
+                    <span>Mark as read</span>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={handleMoreOptionsClose}
+                    className={`flex items-center space-x-2 hover:!rounded-xl px-4 py-2 transition-all ${
+                      theme === "light"
+                        ? "hover:!bg-slate-200 text-black"
+                        : "hover:!bg-gray-500 text-white"
+                    }`}
+                  >
+                    <MdMarkunread />
+                    <span>Mark as unread</span>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={handleMoreOptionsClose}
+                    className={`flex items-center space-x-2 hover:!rounded-xl px-4 py-2 transition-all ${
+                      theme === "light"
+                        ? "hover:!bg-slate-200 text-black"
+                        : "hover:!bg-gray-500 text-white"
+                    }`}
+                  >
+                    <MdDelete />
+                    <span>Delete</span>
+                  </MenuItem>
+                </Menu>
+              </div>
+            ))}
+          </Box>
+
           <div className="px-4 py-1">
             <Button
               variant="contained"
               color="inherit"
-              className={`w-full !rounded-xl ${
+              className={`w-full !rounded-xl !font-['Space_${
                 theme === "light"
                   ? "!bg-[#2bbef9] !text-white hover:!bg-slate-200 hover:!text-gray-800"
                   : "hover:!bg-[#2bbef9] hover:!text-white !bg-slate-200 !text-gray-800"
