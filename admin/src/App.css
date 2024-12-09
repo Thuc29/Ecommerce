@@ -29,7 +29,6 @@ header {
   max-height: 50px;
 }
 
-
 ::-webkit-scrollbar {
   width: 5px !important;
   height: 5px !important;
@@ -73,10 +72,58 @@ body {
 
 .css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root {
   font-size: 0.875rem !important;
-  font-family: 'Space Grotesk' !important;
-
+  font-family: "Space Grotesk" !important;
 }
 
 .css-qxc2i0-MuiButtonBase-root-MuiButton-root {
-  font-family: 'Space Grotesk' !important;
+  font-family: "Space Grotesk" !important;
+}
+
+.button.act {
+  background: #f1f1f1 !important;
+}
+.submenu::before {
+  content: "";
+  width: 1px;
+  height: 95%;
+  position: absolute;
+  top: 0px;
+  left: 25px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.submenuWrapper.close {
+  height: 0px;
+}
+.submenuWrapper.close .submenu {
+  opacity: 0;
+}
+.submenuWrapper.open {
+  height: auto;
+}
+.submenuWrapper.open .submenu {
+  opacity: 1;
+}
+
+.box::before {
+  content: "";
+  width: 80px;
+  height: 80px;
+  background: #0858f7;
+  border-radius: 100%;
+  position: absolute;
+  top: -30px;
+  right: 0px;
+  opacity: 0.5;
+}
+.box::after {
+  content: "";
+  width: 40px;
+  height: 40px;
+  background: #0858f7;
+  border-radius: 100%;
+  position: absolute;
+  top: 70px;
+  left: 10px;
+  opacity: 0.5;
 }
