@@ -13,7 +13,7 @@ function App() {
           <Sidebar />
         </div>
 
-        <div>
+        <div className="w-[80%] flex-[0_0_80%]">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />

@@ -16,7 +16,7 @@ const Header = () => {
       className={`fixed top-0 z-[1000] left-0 right-0 flex items-center justify-between px-6 py-3 border-b ${
         theme === "light"
           ? "bg-white border-gray-200"
-          : "bg-gray-900 border-gray-700"
+          : "bg-gray-800 border-gray-700"
       }`}
     >
       {/* Logo Section */}
