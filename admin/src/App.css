@@ -82,6 +82,7 @@ body {
 .button.act {
   background: #f1f1f1 !important;
 }
+
 .submenu::before {
   content: "";
   width: 1px;
@@ -91,12 +92,14 @@ body {
   left: 25px;
   background: rgba(131, 121, 121, 0.2);
 }
+
 .submenuWrapper {
   transform: translateY(-20px);
   transition: max-height 0.1s ease-in, transform 0.1s ease-in 0.1s,
     opacity 0.2s ease-in 0.1s;
   overflow: hidden;
 }
+
 .submenu li {
   opacity: 0;
   transform: translateX(-20px);
@@ -114,14 +117,17 @@ body {
   opacity: 0;
   transform: translateY(-10px);
 }
+
 .submenuWrapper.close .submenu {
   opacity: 0;
 }
+
 .submenuWrapper.open {
   height: auto;
   opacity: 1;
   transform: translateY(0);
 }
+
 .submenuWrapper.open .submenu {
   opacity: 1;
 }
@@ -137,6 +143,7 @@ body {
   right: 0px;
   opacity: 0.5;
 }
+
 .box::after {
   content: "";
   width: 40px;
@@ -147,4 +154,9 @@ body {
   top: 70px;
   left: 10px;
   opacity: 0.5;
+}
+
+.chart svg {
+  font-size: 130px !important;
+  color: #000;
 }
