@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
@@ -37,6 +37,9 @@ function Dashboard() {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -44,7 +47,7 @@ function Dashboard() {
 
   return (
     <div className=" px-7 w-full">
-      <div className="shadow rounded-lg border  p-3 my-4 mx-0">
+      <div className="shadow rounded-lg border   p-3 my-4 mx-0">
         <p className="font-extrabold text-2xl "> Ecommerce</p>
       </div>
 

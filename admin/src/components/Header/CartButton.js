@@ -12,7 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 import { IconButton } from "@mui/material";
-import { useTheme } from "./ThemeContext";
+import { useTheme } from "../Theme/ThemeContext";
 
 const CartButton = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);

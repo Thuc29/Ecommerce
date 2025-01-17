@@ -1,10 +1,14 @@
-import { Button, IconButton } from "@mui/material";
-import React, { useState } from "react";
-import { MdClose, MdMenuOpen, MdSearch } from "react-icons/md";
-import { useTheme } from "./ThemeContext";
+import { IconButton } from "@mui/material";
+import React, { useContext, useState } from "react";
+import { MdClose, MdMenuOpen, MdOutlineMenu, MdSearch } from "react-icons/md";
+import { useTheme } from "../Theme/ThemeContext";
+import { MyContext } from "../../App";
+
 function SearchBox() {
   const [searchTerm, setSearchTerm] = useState("");
   const { theme } = useTheme();
+  const { isToggleSidebar, setIsToggleSidebar } = useContext(MyContext);
+
   const handleInputChange = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -15,27 +19,39 @@ function SearchBox() {
       // Add your search functionality here
     }
   };
+
   const handleClear = () => {
     setSearchTerm("");
   };
 
   return (
-    <div className={`md:flex items-center space-x-3 hidden`}>
+    <div className={`md:flex pl-8 items-center space-x-3 hidden`}>
       {/* Menu Button */}
       <IconButton
         className={`!rounded-full items-center p-2 shadow-lg transition-all ${
           theme === "light" ? "!bg-slate-200" : "!bg-gray-700"
         }`}
-        onClick={() => console.log("Menu opened")}
+        onClick={() => setIsToggleSidebar(!isToggleSidebar)}
       >
-        <MdMenuOpen
-          className={`mx-auto ${
-            theme === "light"
-              ? "text-black hover:text-blue-500"
-              : "text-white hover:text-blue-500"
-          }`}
-          size={20}
-        />
+        {isToggleSidebar === false ? (
+          <MdMenuOpen
+            className={`mx-auto ${
+              theme === "light"
+                ? "text-black hover:text-blue-500"
+                : "text-white hover:text-blue-500"
+            }`}
+            size={20}
+          />
+        ) : (
+          <MdOutlineMenu
+            className={`mx-auto ${
+              theme === "light"
+                ? "text-black hover:text-blue-500"
+                : "text-white hover:text-blue-500"
+            }`}
+            size={20}
+          />
+        )}
       </IconButton>
 
       <div

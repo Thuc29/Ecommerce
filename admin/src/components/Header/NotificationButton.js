@@ -16,7 +16,7 @@ import {
   MdSettings,
   MdNotifications,
 } from "react-icons/md";
-import { useTheme } from "./ThemeContext";
+import { useTheme } from "../Theme/ThemeContext";
 
 const NotificationsButton = () => {
   const [anchorEl, setAnchorEl] = useState(null);

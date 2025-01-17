@@ -1,7 +1,7 @@
 import { IconButton } from "@mui/material";
 import React from "react";
 import { MdOutlineLightMode, MdOutlineDarkMode } from "react-icons/md";
-import { useTheme } from "./ThemeContext";
+import { useTheme } from "../Theme/ThemeContext";
 
 function LightMode() {
   const { theme, toggleTheme } = useTheme();

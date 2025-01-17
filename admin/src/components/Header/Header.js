@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import CartButton from "./CartButton";
 import MailButton from "./MailButton";
@@ -6,7 +6,7 @@ import NotificationsButton from "./NotificationButton";
 import ProfileButton from "./ProfileButton";
 import SearchBox from "./SearchBox";
 import LightMode from "./LightMode";
-import { useTheme } from "./ThemeContext";
+import { useTheme } from "../Theme/ThemeContext";
 
 const Header = () => {
   const { theme } = useTheme();

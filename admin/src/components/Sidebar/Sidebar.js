@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button } from "@mui/material";
 import {
   MdAddShoppingCart,
@@ -16,11 +16,14 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useTheme } from "../Header/ThemeContext";
+import { useTheme } from "../Theme/ThemeContext";
+import { MyContext } from "../../App";
 function Sidebar() {
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState(0);
   const [isToggleSubmenu, setIsToggleSubmenu] = useState(false);
+  const { isToggleSidebar } = useContext(MyContext);
+
   const isOpenSubmenu = (index) => {
     setActiveTab(index);
     setIsToggleSubmenu(!isToggleSubmenu);
@@ -34,7 +37,18 @@ function Sidebar() {
   return (
     <>
       <div
-        className={`w-[20%] h-[100vh] fixed top-[70px] left-0 bg-white hover:border-r-2 hover:border-blue-500`}
+        className={`fixed top-[70px] bg-white transition-transform duration-300 ease-in-out ${
+          isToggleSidebar ? "-translate-x-full" : "translate-x-0"
+        }`}
+        style={{
+          height: "calc(100vh - 70px)",
+          width: "20%",
+          zIndex: 1000,
+          boxShadow:
+            theme === "light"
+              ? "2px 0px 8px rgba(0, 0, 0, 0.1)"
+              : "2px 0px 8px rgba(0, 0, 0, 0.3)",
+        }}
       >
         <ul className="mb-0 ">
           <li className="list-none">
@@ -62,7 +76,7 @@ function Sidebar() {
             <Button
               onClick={() => isOpenSubmenu(1)}
               className={`button !w-full hover:!rounded-2xl  !font-['Space_Grotesk'] !text-[16px] !text-black !justify-start !py-3 !px-4 !items-center !capitalize !font-medium
-              ${activeTab === 1 ? "active" : ""} ${textColor}`}
+    ${activeTab === 1 ? "active" : ""} ${textColor}`}
             >
               <span className="flex items-center justify-center w-[25px] h-[25px] mr-[10px]">
                 <FaProductHunt
@@ -78,9 +92,12 @@ function Sidebar() {
               </span>
             </Button>
             <div
-              className={`submenuWrapper ${
+              className={`submenuWrapper transition-[max-height] duration-300 ease-in-out overflow-hidden ${
                 activeTab === 1 && isToggleSubmenu ? "open" : "close"
               } ${theme === "light" ? "!text-gray-700" : "!text-gray-200"}`}
+              style={{
+                maxHeight: activeTab === 1 && isToggleSubmenu ? "300px" : "0", // Adjust maxHeight based on content size
+              }}
             >
               <ul className="submenu px-[45px] py-0 relative">
                 {["Product List", "Product View", "Product Upload"].map(
@@ -93,8 +110,8 @@ function Sidebar() {
                       }}
                     >
                       <Link
-                        to="#"
-                        className={` block py-1 px-0 rounded-xl !text-sm !font-medium !transition-all !duration-300 hover:!text-blue-600 ${
+                        to={`/${item.replace(/\s/g, "-").toLowerCase()}`}
+                        className={`block py-1 px-0 rounded-xl !text-sm !font-medium !transition-all !duration-300 hover:!text-blue-600 ${
                           theme === "light"
                             ? "!text-gray-500"
                             : "!text-gray-400"
@@ -108,6 +125,7 @@ function Sidebar() {
               </ul>
             </div>
           </li>
+
           <li className="list-none">
             <Link to={"/"}>
               <Button
@@ -280,7 +298,7 @@ function Sidebar() {
             </Link>
           </li>
           <li className="list-none">
-            <Link to={"/"}>
+            <Link to={"/login"}>
               <Button
                 className={`button !w-full hover:!rounded-2xl  !font-['Space_Grotesk'] !text-[16px] !text-black !justify-start !py-3 !px-4 !items-center !capitalize !font-medium
               ${activeTab === 8 ? "active" : ""} ${textColor}`}

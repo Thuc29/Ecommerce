@@ -15,7 +15,7 @@ import {
   MdMoreVert,
   MdSettings,
 } from "react-icons/md";
-import { useTheme } from "./ThemeContext";
+import { useTheme } from "../Theme/ThemeContext";
 
 const MailButton = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);

@@ -8,10 +8,8 @@ import {
   MdDelete,
   MdDownload,
   MdEdit,
-  MdRemove,
   MdRemoveRedEye,
   MdStar,
-  MdViewArray,
 } from "react-icons/md";
 function Selling() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -23,6 +21,262 @@ function Selling() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const products = [
+    {
+      uid: "#1",
+      product: "Tops and skirt set for Fem...",
+      description: "Women's exclusive summer ...",
+      category: "womans",
+      brand: "richman",
+      price: "$19.00",
+      oldPrice: "$21.00",
+      stock: 30,
+      rating: 4.9,
+      ratingCount: 16,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Skirt",
+    },
+    {
+      uid: "#2",
+      product: "Leather belt steve madde...",
+      description: "Steve madden men's dress ...",
+      category: "mans",
+      brand: "lubana",
+      price: "$14.00",
+      oldPrice: "",
+      stock: 23,
+      rating: 4.5,
+      ratingCount: 38,
+      order: 189,
+      sales: "$9k",
+      image: "https://placehold.co/50x50?text=Belt",
+    },
+    {
+      uid: "#3",
+      product: "Existing product name",
+      description: "Nemo enim ipsam voluptate...",
+      category: "womans",
+      brand: "ecstasy",
+      price: "$33.00",
+      oldPrice: "44.00",
+      stock: 30,
+      rating: 4.1,
+      ratingCount: 69,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Product",
+    },
+    {
+      uid: "#4",
+      product: "Existing product name",
+      description: "Nemo enim ipsam voluptate...",
+      category: "kidz",
+      brand: "ecstasy",
+      price: "$33.00",
+      oldPrice: "",
+      stock: 30,
+      rating: 4.4,
+      ratingCount: 47,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Product",
+    },
+    {
+      uid: "#5",
+      product: "Existing product name",
+      description: "Nemo enim ipsam voluptate...",
+      category: "accessory",
+      brand: "ecstasy",
+      price: "$33.00",
+      oldPrice: "",
+      stock: 30,
+      rating: 5,
+      ratingCount: 47,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Product",
+    },
+    {
+      uid: "#6",
+      product: "Tops and skirt set for Fem...",
+      description: "Women's exclusive summer ...",
+      category: "womans",
+      brand: "richman",
+      price: "$19.00",
+      oldPrice: "$21.00",
+      stock: 30,
+      rating: 4.9,
+      ratingCount: 16,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Skirt",
+    },
+    {
+      uid: "#7",
+      product: "Tops and skirt set for Fem...",
+      description: "Women's exclusive summer ...",
+      category: "womans",
+      brand: "richman",
+      price: "$19.00",
+      oldPrice: "$21.00",
+      stock: 30,
+      rating: 4.9,
+      ratingCount: 16,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Skirt",
+    },
+    {
+      uid: "#8",
+      product: "Tops and skirt set for Fem...",
+      description: "Women's exclusive summer ...",
+      category: "womans",
+      brand: "richman",
+      price: "$19.00",
+      oldPrice: "$21.00",
+      stock: 30,
+      rating: 4.9,
+      ratingCount: 16,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Skirt",
+    },
+    {
+      uid: "#9",
+      product: "Tops and skirt set for Fem...",
+      description: "Women's exclusive summer ...",
+      category: "womans",
+      brand: "richman",
+      price: "$19.00",
+      oldPrice: "$21.00",
+      stock: 30,
+      rating: 4.9,
+      ratingCount: 16,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Skirt",
+    },
+    {
+      uid: "#10",
+      product: "Tops and skirt set for Fem...",
+      description: "Women's exclusive summer ...",
+      category: "womans",
+      brand: "richman",
+      price: "$19.00",
+      oldPrice: "$21.00",
+      stock: 30,
+      rating: 4.9,
+      ratingCount: 16,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Skirt",
+    },
+    {
+      uid: "#11",
+      product: "Tops and skirt set for Fem...",
+      description: "Women's exclusive summer ...",
+      category: "womans",
+      brand: "richman",
+      price: "$19.00",
+      oldPrice: "$21.00",
+      stock: 30,
+      rating: 4.9,
+      ratingCount: 16,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Skirt",
+    },
+    {
+      uid: "#12",
+      product: "Tops and skirt set for Fem...",
+      description: "Women's exclusive summer ...",
+      category: "womans",
+      brand: "richman",
+      price: "$19.00",
+      oldPrice: "$21.00",
+      stock: 30,
+      rating: 4.9,
+      ratingCount: 16,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Skirt",
+    },
+    {
+      uid: "#13",
+      product: "Tops and skirt set for Fem...",
+      description: "Women's exclusive summer ...",
+      category: "womans",
+      brand: "richman",
+      price: "$19.00",
+      oldPrice: "$21.00",
+      stock: 30,
+      rating: 4.9,
+      ratingCount: 16,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Skirt",
+    },
+    {
+      uid: "#14",
+      product: "Tops and skirt set for Fem...",
+      description: "Women's exclusive summer ...",
+      category: "womans",
+      brand: "richman",
+      price: "$19.00",
+      oldPrice: "$21.00",
+      stock: 30,
+      rating: 4.9,
+      ratingCount: 16,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Skirt",
+    },
+    {
+      uid: "#15",
+      product: "Tops and skirt set for Fem...",
+      description: "Women's exclusive summer ...",
+      category: "womans",
+      brand: "richman",
+      price: "$19.00",
+      oldPrice: "$21.00",
+      stock: 30,
+      rating: 4.9,
+      ratingCount: 16,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Skirt",
+    },
+    {
+      uid: "#16",
+      product: "Tops and skirt set for Fem...",
+      description: "Women's exclusive summer ...",
+      category: "womans",
+      brand: "richman",
+      price: "$19.00",
+      oldPrice: "$21.00",
+      stock: 30,
+      rating: 4.9,
+      ratingCount: 16,
+      order: 380,
+      sales: "$38k",
+      image: "https://placehold.co/50x50?text=Skirt",
+    },
+  ];
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentProducts = products.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <>
       <div className="!flex py-4 px-2 flex-col !justify-around !w-full !capitalize !relative">
@@ -151,83 +405,7 @@ function Selling() {
                 </tr>
               </thead>
               <tbody>
-                {[
-                  {
-                    uid: "#1",
-                    product: "Tops and skirt set for Fem...",
-                    description: "Women's exclusive summer ...",
-                    category: "womans",
-                    brand: "richman",
-                    price: "$19.00",
-                    oldPrice: "$21.00",
-                    stock: 30,
-                    rating: 4.9,
-                    ratingCount: 16,
-                    order: 380,
-                    sales: "$38k",
-                    image: "https://placehold.co/50x50?text=Skirt",
-                  },
-                  {
-                    uid: "#2",
-                    product: "Leather belt steve madde...",
-                    description: "Steve madden men's dress ...",
-                    category: "mans",
-                    brand: "lubana",
-                    price: "$14.00",
-                    oldPrice: "",
-                    stock: 23,
-                    rating: 4.5,
-                    ratingCount: 38,
-                    order: 189,
-                    sales: "$9k",
-                    image: "https://placehold.co/50x50?text=Belt",
-                  },
-                  {
-                    uid: "#3",
-                    product: "Existing product name",
-                    description: "Nemo enim ipsam voluptate...",
-                    category: "womans",
-                    brand: "ecstasy",
-                    price: "$33.00",
-                    oldPrice: "44.00",
-                    stock: 30,
-                    rating: 4.1,
-                    ratingCount: 69,
-                    order: 380,
-                    sales: "$38k",
-                    image: "https://placehold.co/50x50?text=Product",
-                  },
-                  {
-                    uid: "#4",
-                    product: "Existing product name",
-                    description: "Nemo enim ipsam voluptate...",
-                    category: "kidz",
-                    brand: "ecstasy",
-                    price: "$33.00",
-                    oldPrice: "",
-                    stock: 30,
-                    rating: 4.4,
-                    ratingCount: 47,
-                    order: 380,
-                    sales: "$38k",
-                    image: "https://placehold.co/50x50?text=Product",
-                  },
-                  {
-                    uid: "#5",
-                    product: "Existing product name",
-                    description: "Nemo enim ipsam voluptate...",
-                    category: "accessory",
-                    brand: "ecstasy",
-                    price: "$33.00",
-                    oldPrice: "",
-                    stock: 30,
-                    rating: 5,
-                    ratingCount: 47,
-                    order: 380,
-                    sales: "$38k",
-                    image: "https://placehold.co/50x50?text=Product",
-                  },
-                ].map((item, index) => (
+                {currentProducts.map((item, index) => (
                   <tr
                     key={index}
                     className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
@@ -256,26 +434,30 @@ function Selling() {
                         </div>
                       </div>
                     </td>
-                    <td className="p-2">{item.category}</td>
-                    <td className="p-2">{item.brand}</td>
-                    <td className="p-2">
-                      {item.oldPrice && (
-                        <span className="line-through text-gray-400 mr-1">
-                          {item.oldPrice}
-                        </span>
-                      )}
-                      <span className="text-red-500">{item.price}</span>
+                    <td className="p-2 text-center">{item.category}</td>
+                    <td className="p-2 text-center">{item.brand}</td>
+                    <td className="p-2 text-center">
+                      <div>
+                        {item.oldPrice && (
+                          <div className="line-through text-gray-400 mr-1">
+                            {item.oldPrice}
+                          </div>
+                        )}
+                        <div className="text-red-500">{item.price}</div>
+                      </div>
                     </td>
-                    <td className="p-2">{item.stock}</td>
-                    <td className="p-2 flex items-center">
-                      <MdStar size={18} color="#FFC107" />
-                      <span className="font-bold">{item.rating}</span>
-                      <span className="text-gray-400 ml-1">
-                        ({item.ratingCount})
-                      </span>
+                    <td className="p-2 text-center">{item.stock}</td>
+                    <td className="p-2 items-center">
+                      <div className="flex">
+                        <MdStar size={18} color="#FFC107" />
+                        <div className="font-bold">{item.rating}</div>
+                        <div className="text-gray-400 ml-1">
+                          ({item.ratingCount})
+                        </div>{" "}
+                      </div>
                     </td>
-                    <td className="p-2">{item.order}</td>
-                    <td className="p-2">{item.sales}</td>
+                    <td className="p-2 text-center">{item.order}</td>
+                    <td className="p-2 text-center">{item.sales}</td>
                     <td className="p-2 flex space-x-2">
                       <button className="bg-[#fbe5ff] p-2 rounded">
                         <MdRemoveRedEye color="#be0ee1" />
@@ -291,6 +473,54 @@ function Selling() {
                 ))}
               </tbody>
             </table>
+            <div className="pt-4 flex justify-between">
+              <div className="">
+                Showing {""}
+                <span className="font-semibold">
+                  {" "}
+                  {Math.min(startIndex + itemsPerPage, products.length)}
+                </span>{" "}
+                of <span className="font-semibold">{products.length}</span>{" "}
+                results
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                    currentPage === 1
+                      ? "bg-gray-200 text-gray-400"
+                      : "bg-gray-300 text-gray-700"
+                  }`}
+                  disabled={currentPage === 1}
+                >
+                  &lt;
+                </button>
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handlePageChange(i + 1)}
+                    className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                      currentPage === i + 1
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                    currentPage === totalPages
+                      ? "bg-gray-200 text-gray-400"
+                      : "bg-gray-300 text-gray-700"
+                  }`}
+                  disabled={currentPage === totalPages}
+                >
+                  &gt;
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

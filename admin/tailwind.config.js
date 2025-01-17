@@ -3,6 +3,11 @@ module.exports = {
   darkMode: "class", // Kích hoạt dark mode bằng class
   theme: {
     extend: {},
+    variants: {
+      extend: {
+        after: ["hover"], // Enable `after` for hover states
+      },
+    },
   },
   plugins: [],
 };
