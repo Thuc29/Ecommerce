@@ -5,11 +5,13 @@ function ProductDescription() {
     <>
       <div>
         <div className="flex items-center mb-4">
-          <h1 className="text-[16px] font-semibold">Product Description</h1>
+          <h1 className="text-[16px] font-semibold opacity-80">
+            Product Description
+          </h1>
           <hr className="flex-grow border-gray-700 ml-4" />
         </div>
         <div className="p-[0_10px_10px]">
-          <p className="leading-[30px] text-[15px] opacity-50">
+          <p className="leading-[30px] text-[15px] opacity-70">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae
             reprehenderit repellendus expedita esse cupiditate quos doloremque
             rerum, corrupti ab illum est nihil, voluptate ex dignissimos! Sit

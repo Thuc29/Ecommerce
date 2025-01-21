@@ -8,8 +8,9 @@ import {
   MdReport,
 } from "react-icons/md";
 import { Button, IconButton, Menu, MenuItem } from "@mui/material";
-
+import { useTheme } from "../../Theme/ThemeContext";
 function CustomerReviews() {
+  const { theme } = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -65,7 +66,11 @@ function CustomerReviews() {
             </div>
             <div className="relative inline-block">
               <IconButton
-                className="!bg-slate-700 !text-white !rounded-full !w-10 !h-10 !shadow-lg !transition !duration-300"
+                className={` !rounded-full !w-10 !h-10 !transition !duration-300 ${
+                  theme === "dark"
+                    ? "!bg-slate-700 !text-white"
+                    : "!bg-gray-300"
+                }`}
                 onClick={handleClick}
               >
                 <MdMoreVert size={20} />
@@ -79,6 +84,15 @@ function CustomerReviews() {
                 transformOrigin={{
                   vertical: "top",
                   horizontal: "right",
+                }}
+                PaperProps={{
+                  style: {
+                    marginTop: "20px",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    backgroundColor: theme === "light" ? "#fff" : "#333", // Light mode background
+                    color: theme === "light" ? "#000" : "#fff", // Dark mode text color
+                  },
                 }}
               >
                 <MenuItem

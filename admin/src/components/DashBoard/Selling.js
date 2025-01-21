@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import HistoryIcon from "@mui/icons-material/History";
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -11,6 +11,7 @@ import {
   MdRemoveRedEye,
   MdStar,
 } from "react-icons/md";
+import { Link } from "react-router-dom";
 function Selling() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -428,7 +429,7 @@ function Selling() {
                         className="w-10 h-10 rounded-full mr-2"
                       />
                       <div>
-                        <div className="font-bold">{item.product}</div>
+                        <div className="font-bold mt-2">{item.product}</div>
                         <div className="text-sm text-gray-400">
                           {item.description}
                         </div>
@@ -459,15 +460,19 @@ function Selling() {
                     <td className="p-2 text-center">{item.order}</td>
                     <td className="p-2 text-center">{item.sales}</td>
                     <td className="p-2 flex space-x-2">
-                      <button className="bg-[#fbe5ff] p-2 rounded">
-                        <MdRemoveRedEye color="#be0ee1" />
-                      </button>
-                      <button className="bg-[#ddfbe9] p-2 rounded">
-                        <MdEdit color="#1a9f53" />
-                      </button>
-                      <button className="bg-[#ffdfe4] p-2 rounded">
-                        <MdDelete color="#f11133" />
-                      </button>
+                      <Link to={"/product-view"}>
+                        <IconButton className="!bg-[#e559fd] !p-2 !mb-2 !rounded-lg">
+                          <MdRemoveRedEye size={17} color="white" />
+                        </IconButton>
+                      </Link>
+                      <Link to={"/product-upload"}>
+                        <IconButton className="!bg-[#1dff37] !p-2 !mb-2 !rounded-lg">
+                          <MdEdit size={17} color="white" />
+                        </IconButton>
+                      </Link>
+                      <IconButton className="!bg-[#ff042a] !p-2 !mb-2 !rounded-lg">
+                        <MdDelete size={17} color="white" />
+                      </IconButton>
                     </td>
                   </tr>
                 ))}

@@ -4,7 +4,9 @@ function RatingAnalytics() {
   return (
     <>
       <div className="flex items-center py-3">
-        <h1 className="text-[16px] font-semibold">Rating Analytics</h1>
+        <h1 className="text-[16px] font-semibold opacity-80">
+          Rating Analytics
+        </h1>
         <hr className="flex-grow border-gray-700 ml-4" />
       </div>
       <div className="lg:flex justify-center items-center mb-6 gap-[100px]">
@@ -75,7 +77,7 @@ function RatingAnalytics() {
             {" "}
             Total review (38)
           </div>
-          <div className="text-[80px] font-extrabold tracking-[-1px] leading-[60px] mb-5">
+          <div className="text-[80px] font-extrabold tracking-[-1px] leading-[60px] mb-5 opacity-80">
             4.9
           </div>
           <div className="flex justify-center items-center mt-2 gap-1">
