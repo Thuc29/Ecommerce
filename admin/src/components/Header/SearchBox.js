@@ -25,10 +25,10 @@ function SearchBox() {
   };
 
   return (
-    <div className={`md:flex pl-8 items-center space-x-3 hidden`}>
+    <div className={`md:flex pl-8 items-center space-x-3 `}>
       {/* Menu Button */}
       <IconButton
-        className={`!rounded-full items-center p-2 shadow-lg transition-all ${
+        className={`!rounded-full !items-center !p-2 !mr-4  !shadow-lg  !transition-all ${
           theme === "light" ? "!bg-slate-200" : "!bg-gray-700"
         }`}
         onClick={() => setIsToggleSidebar(!isToggleSidebar)}
@@ -55,7 +55,7 @@ function SearchBox() {
       </IconButton>
 
       <div
-        className={`flex items-center bg-blue-50 rounded-xl px-4 py-[5px] shadow-sm ${
+        className={`md:flex items-center bg-blue-50 rounded-xl px-4 py-[5px] shadow-sm hidden ${
           theme === "light" ? "!bg-slate-200" : "!bg-gray-700"
         }`}
       >

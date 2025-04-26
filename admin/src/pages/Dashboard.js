@@ -51,7 +51,7 @@ function Dashboard() {
         <p className="font-extrabold text-2xl "> Ecommerce</p>
       </div>
 
-      <div className="row-auto flex gap-5">
+      <div className="row-auto mb-4 flex gap-5">
         {/* Left Section */}
         <div className="md:w-8/12">
           <div className="flex flex-wrap gap-[20px]">
@@ -167,7 +167,7 @@ function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="shadow rounded-lg border p-3 my-4 mx-0">
+      <div className="shadow rounded-lg border p-3 my-4 mx-0 flex-shrink-0 mt-[var(--bs-gutter-y)] max-w-full pl-[calc(var(--bs-gutter-x)*.5)] pr-[calc(var(--bs-gutter-x)*.5)] w-full">
         <Selling />
       </div>
     </div>

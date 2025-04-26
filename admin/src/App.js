@@ -8,6 +8,12 @@ import Register from "./pages/SignUp/Register";
 import ForgotPassword from "./pages/Login/ForgotPassword";
 import ProductView from "./components/Product/ProductView/ProductView";
 import ProductUpload from "./components/Product/ProductUpload/ProductUpload";
+import ProductList from "./components/Product/ProductList/ProductList";
+import CategoryAdd from "./components/Category/CategoryAdd";
+import CategoryList from "./components/Category/CategoryList";
+import ProductEdit from "./components/Product/ProductEdit/ProductEdit";
+import SubCatList from "./components/SubCategory/SubCatList";
+import SubCategoryAdd from "./components/SubCategory/AddSubCat";
 
 const MyContext = createContext();
 
@@ -38,7 +44,7 @@ function App() {
         {!hideHeaderAndSidebar && (
           <div
             className={`transition-all duration-300 ease-in-out ${
-              isToggleSidebar ? "w-0 overflow-hidden" : "w-[20%] flex-shrink-0"
+              isToggleSidebar ? "w-0 overflow-hidden" : "w-[15%] flex-shrink-0"
             }`}
           >
             <Sidebar />
@@ -56,9 +62,14 @@ function App() {
             <Route path="/signup" element={<Register />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/" element={<Dashboard />} />
-            <Route path="/product-view" element={<ProductView />} />
+            <Route path="/product-view/:productId" element={<ProductView />} />
             <Route path="/product-upload" element={<ProductUpload />} />
-            {/* <Route path="/product-view" element={<ProductView />} /> */}
+            <Route path="/product-list" element={<ProductList />} />
+            <Route path="/product-edit/:productId" element={<ProductEdit />} />
+            <Route path="/add-a-category" element={<CategoryAdd />} />
+            <Route path="/category-list" element={<CategoryList />} />
+            <Route path="/sub-category-list" element={<SubCatList />} />
+            <Route path="/add-sub-category" element={<SubCategoryAdd />} />
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </div>

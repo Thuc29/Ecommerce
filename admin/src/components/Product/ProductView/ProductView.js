@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   MdHotelClass,
   MdPalette,
@@ -10,15 +10,50 @@ import {
   MdSummarize,
   MdVerified,
 } from "react-icons/md";
+import { format } from "date-fns";
 import ProductDescription from "./ProductDescription";
 import RatingAnalytics from "./RatingAnalytics";
 import CustomerReviews from "./CustomerReviews";
 import ReviewReply from "./ReviewReply";
 import { useTheme } from "../../Theme/ThemeContext";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { Button } from "react-bootstrap";
+import { FaHome, FaPlus } from "react-icons/fa";
 
 function ProductView() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const { productId } = useParams();
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    // Lấy dữ liệu sản phẩm từ backend
+    axios
+      .get(`http://localhost:8888/api/products/${productId}`)
+      .then((response) => {
+        setProduct(response.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("Failed to load product");
+        setLoading(false);
+        console.error("Error fetching product:", err);
+      });
+  }, [productId]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>{error}</div>;
+  }
+  // Render product details
+  if (!product) {
+    return <div>No product found.</div>;
+  }
   return (
     <>
       <div
@@ -28,12 +63,32 @@ function ProductView() {
             : "bg-gray-800 text-gray-200 border-gray-700"
         }`}
       >
+        <div className="shadow rounded-lg flex justify-between border p-3 my-4 mx-0">
+          <p className="font-extrabold text-2xl "> Product View</p>
+          <div className="flex gap-2">
+            <Button className="!shadow-sm bg-gray-300 dark:bg-gray-400 dark:!text-white !rounded-lg !flex px-2 !items-center !gap-2">
+              <FaHome /> Dashboard
+            </Button>
+            <p className="items-center justify-center py-2">/ </p>
+            <Button className="!shadow-sm items-center bg-gray-300 dark:bg-gray-400 dark:!text-white !px-2 flex !rounded-lg">
+              Category
+            </Button>
+            <p className="items-center justify-center py-2">/ </p>
+            <Link to={"/product-upload"}>
+              <Button
+                variant="primary"
+                className="flex bg-blue-500 dark:bg-blue-600 dark:!text-white p-2 rounded-lg items-center gap-2"
+              >
+                <FaPlus /> Add Product
+              </Button>
+            </Link>
+          </div>
+        </div>
         <div
           className={`${
             theme === "light" ? "bg-gray-100" : "bg-[#1d2f4d]"
           } rounded-2xl py-8 px-3`}
         >
-          {/* The rest of your component remains unchanged */}
           <div className="flex flex-col lg:flex-row">
             <div className="lg:w-5/12">
               <div className="flex items-center mb-4">
@@ -47,22 +102,21 @@ function ProductView() {
                 />
               </div>
               <img
-                src="https://placehold.co/450x450"
-                alt="Red suit jacket with patterned inner lining"
+                src={product.images[0]?.url || "https://placehold.co/450x450"}
+                alt={product.name}
                 className="w-full mb-4"
               />
               <div className="flex justify-between">
-                {[...Array(4)].map((_, index) => (
+                {product.images.slice(0, 4).map((image, index) => (
                   <img
                     key={index}
-                    src="https://placehold.co/450x450"
+                    src={image.url || "https://placehold.co/450x450"}
                     alt={`Thumbnail ${index + 1}`}
                     className="w-[23%] h-auto rounded-md"
                   />
                 ))}
               </div>
             </div>
-
             <div className="lg:w-7/12 lg:pl-8">
               <div className="flex items-center mb-4">
                 <h1 className="text-[16px] font-semibold opacity-80">
@@ -75,11 +129,9 @@ function ProductView() {
                 />
               </div>
               <div className="flex flex-col lg:flex-row">
-                {" "}
                 <div className="space-y-2">
                   <h2 className="text-[22px] font-medium leading-[30px] mb-4 opacity-80">
-                    Formal suits for men wedding slim fit 3 piece dress business
-                    party jacket
+                    {product.name}
                   </h2>
                   <div className="flex items-center">
                     <MdStore className="mr-3 opacity-80" size={20} />
@@ -88,7 +140,7 @@ function ProductView() {
                     </p>
                     <span className="mr-2 leading-4 opacity-70">:</span>
                     <p className="text-[15px] leading-[18px] capitalize opacity-70">
-                      ecstasy
+                      {product.brand}
                     </p>
                   </div>
                   <div className="flex items-center">
@@ -98,180 +150,10 @@ function ProductView() {
                     </p>
                     <span className="mr-2 leading-4 opacity-70">:</span>
                     <p className="text-[15px] leading-[18px] capitalize opacity-70">
-                      man's
+                      {product.category?.name}
                     </p>
                   </div>
-                  <div className="flex items-center">
-                    <MdSettings className="mr-3 opacity-80" size={20} />
-                    <span className="font-medium text-[15px] w-[90px] opacity-80">
-                      Tags
-                    </span>
-                    <span className="mr-2 leading-4 opacity-70">
-                      :
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        SUITE
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        PARTY
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        DRESS
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        SMART
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        MAN
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        STYLES
-                      </span>
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <MdPalette className="mr-3 opacity-80" size={20} />
-                    <span className="font-medium text-[15px] w-[90px] opacity-80">
-                      Color
-                    </span>
-                    <span className="mr-2 leading-4 opacity-70">
-                      :
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        RED
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        BLUE
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        GREEN
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        YELLOW
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        PURPLE
-                      </span>
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <MdSummarize className="mr-3 opacity-80" size={20} />
-                    <span className="font-medium text-[15px] w-[90px] opacity-80">
-                      Size
-                    </span>
-                    <span className="mr-2 leading-4 opacity-70">
-                      :
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        SM
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        MD
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        LG
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        XL
-                      </span>
-                      <span
-                        className={`${
-                          theme === "light"
-                            ? "bg-gray-300 text-gray-800 font-medium px-1 text-xs py-1 rounded ml-2"
-                            : "bg-gray-700 px-1 text-xs font-medium py-1 rounded ml-2"
-                        }`}
-                      >
-                        XXL
-                      </span>
-                    </span>
-                  </div>
+
                   <div className="flex items-center">
                     <MdSell className="mr-3 opacity-80" size={20} />
                     <span className="font-medium text-[15px] w-[90px] opacity-80">
@@ -279,11 +161,13 @@ function ProductView() {
                     </span>
                     <span className="mr-2 leading-4 opacity-70">:</span>
                     <p className="text-[15px] leading-[18px] capitalize opacity-70">
-                      $37.00
-                      <span className="line-through text-red-500 ml-1">
-                        $42.00
-                      </span>
-                    </p>{" "}
+                      ${product.price}
+                      {product.oldPrice && (
+                        <span className="line-through text-red-500 ml-1">
+                          ${product.oldPrice}
+                        </span>
+                      )}
+                    </p>
                   </div>
                   <div className="flex items-center">
                     <MdShoppingCart className="mr-3 opacity-80" size={20} />
@@ -292,7 +176,7 @@ function ProductView() {
                     </span>
                     <span className="mr-2 leading-4 opacity-70">:</span>
                     <span className="text-[15px] leading-[18px] capitalize opacity-70">
-                      (68) Piece
+                      ({product.countInStock}) Piece
                     </span>
                   </div>
                   <div className="flex items-center">
@@ -302,7 +186,7 @@ function ProductView() {
                     </span>
                     <span className="mr-2 leading-4 opacity-70">:</span>
                     <span className="text-[15px] leading-[18px] capitalize opacity-70">
-                      (03) Review
+                      ({product.numReviews || 0}) Review
                     </span>
                   </div>
                   <div className="flex items-center">
@@ -312,7 +196,17 @@ function ProductView() {
                     </span>
                     <span className="mr-2 leading-4 opacity-70">: </span>
                     <span className="text-[15px] leading-[18px] capitalize opacity-70">
-                      02 Feb 2020
+                      {product.createdAt &&
+                      !isNaN(new Date(product.createdAt).getTime())
+                        ? new Date(product.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            }
+                          )
+                        : "N/A"}
                     </span>
                   </div>
                 </div>
@@ -321,10 +215,13 @@ function ProductView() {
           </div>
 
           <div className="mt-10 rounded-lg">
-            <ProductDescription />
-            <RatingAnalytics />
-            <CustomerReviews />
-            <ReviewReply />
+            <ProductDescription description={product.description} />
+            <RatingAnalytics
+              reviews={product.reviews}
+              rating={product.rating}
+            />
+            <CustomerReviews reviews={product.reviews} />
+            <ReviewReply productId={productId} />
           </div>
         </div>
       </div>

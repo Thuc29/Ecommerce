@@ -4,33 +4,32 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
+
 dotenv.config();
 
 if (!process.env.CONNECTION || !process.env.PORT) {
-  console.error("Missing required environment variables in .env file");
+  console.error(
+    "Missing required environment variables in .env file (CONNECTION or PORT)"
+  );
   process.exit(1);
 }
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Routes
 const categoryRoutes = require("./routes/categories");
 const productRoutes = require("./routes/products");
 
-app.use(`/api/category`, categoryRoutes);
-app.use(`/api/products`, productRoutes);
-// Database Connection
+app.use("/api/category", categoryRoutes);
+app.use("/api/products", productRoutes);
+
+// Log connection string for debugging
+console.log("Connecting to:", process.env.CONNECTION);
+
 mongoose
-  .connect(process.env.CONNECTION, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.CONNECTION) // Removed useNewUrlParser and useUnifiedTopology
   .then(() => {
     console.log("✅ Connected to the database successfully!");
-
-    // Start Server
     const PORT = process.env.PORT || 9000;
     app.listen(PORT, () => {
       console.log(`🚀 Server is running at http://localhost:${PORT}`);

@@ -13,36 +13,52 @@ cloudinary.config({
 });
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
-const limit = pLimit(2);
+const limit = pLimit(4);
+
 // **1. Create Category**
 router.post("/create", async (req, res) => {
   try {
     const { name, images, color } = req.body;
 
-    if (!images || !Array.isArray(images) || !images.length) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid images array" });
-    }
     if (!name || !color) {
       return res
         .status(400)
         .json({ success: false, message: "Name and color are required" });
     }
-    const uploadPromises = images.map((image) =>
-      limit(() =>
-        cloudinary.uploader.upload(image).catch((err) => {
-          console.error("Cloudinary upload error:", err);
-          throw new Error(`Image upload failed for ${image}`);
+
+    let imgUrls = [];
+    if (images && Array.isArray(images) && images.length > 0) {
+      const uploadPromises = images.map((image) =>
+        limit(() => {
+          if (image.startsWith("data:image")) {
+            // Base64 image: upload directly
+            return cloudinary.uploader
+              .upload(image, {
+                folder: "categories",
+              })
+              .catch((err) => {
+                console.error("Cloudinary upload error (base64):", err);
+                throw new Error(`Image upload failed: ${err.message}`);
+              });
+          }
+          if (image.startsWith("http")) {
+            // URL: upload to Cloudinary
+            return cloudinary.uploader
+              .upload(image, {
+                folder: "categories",
+              })
+              .catch((err) => {
+                console.error("Cloudinary upload error (URL):", err);
+                throw new Error(`Image upload failed: ${err.message}`);
+              });
+          }
+          throw new Error(`Invalid image data: ${image.substring(0, 20)}...`);
         })
-      )
-    );
-    const uploadResults = await Promise.all(uploadPromises);
+      );
+      const uploadResults = await Promise.all(uploadPromises);
+      imgUrls = uploadResults.map((result) => result.secure_url);
+    }
 
-    // Extract Cloudinary URLs
-    const imgUrls = uploadResults.map((result) => result.secure_url);
-
-    // Create Category
     const category = new Category({ name, images: imgUrls, color });
     const savedCategory = await category.save();
 
@@ -55,7 +71,10 @@ router.post("/create", async (req, res) => {
     console.error("Error creating category:", err.message);
     return res.status(500).json({
       success: false,
-      message: "Failed to create category",
+      message:
+        err.name === "MongoServerError" && err.code === 11000
+          ? "Category name already exists"
+          : `Failed to create category: ${err.message}`,
       error: err.message,
     });
   }
@@ -72,6 +91,7 @@ router.get("/", async (req, res) => {
     }
     return res.status(200).json({ success: true, data: categories });
   } catch (err) {
+    console.error("Error fetching categories:", err.message);
     return res.status(500).json({
       success: false,
       message: "Failed to fetch categories",
@@ -90,7 +110,6 @@ router.get("/:id", async (req, res) => {
   }
   try {
     const category = await Category.findById(categoryId);
-
     if (!category) {
       return res
         .status(404)
@@ -98,6 +117,7 @@ router.get("/:id", async (req, res) => {
     }
     return res.status(200).json({ success: true, data: category });
   } catch (err) {
+    console.error("Error fetching category:", err.message);
     return res.status(500).json({
       success: false,
       message: "Error fetching category",
@@ -117,14 +137,48 @@ router.put("/:id", async (req, res) => {
 
   try {
     const { name, color, images } = req.body;
-    if (!name || !color || !images || !Array.isArray(images)) {
+    if (!name || !color) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid input data" });
+        .json({ success: false, message: "Name and color are required" });
     }
+
+    let imgUrls = [];
+    if (images && Array.isArray(images) && images.length > 0) {
+      const uploadPromises = images.map((image) =>
+        limit(() => {
+          if (image.startsWith("data:image")) {
+            // Base64 image: upload directly
+            return cloudinary.uploader
+              .upload(image, {
+                folder: "categories",
+              })
+              .catch((err) => {
+                console.error("Cloudinary upload error (base64):", err);
+                throw new Error(`Image upload failed: ${err.message}`);
+              });
+          }
+          if (image.startsWith("http")) {
+            // URL: upload to Cloudinary
+            return cloudinary.uploader
+              .upload(image, {
+                folder: "categories",
+              })
+              .catch((err) => {
+                console.error("Cloudinary upload error (URL):", err);
+                throw new Error(`Image upload failed: ${err.message}`);
+              });
+          }
+          throw new Error(`Invalid image data: ${image.substring(0, 20)}...`);
+        })
+      );
+      const uploadResults = await Promise.all(uploadPromises);
+      imgUrls = uploadResults.map((result) => result.secure_url);
+    }
+
     const updatedCategory = await Category.findByIdAndUpdate(
       categoryId,
-      { name, color, images },
+      { name, color, images: imgUrls },
       { new: true }
     );
 
@@ -140,9 +194,13 @@ router.put("/:id", async (req, res) => {
       data: updatedCategory,
     });
   } catch (err) {
+    console.error("Error updating category:", err.message);
     return res.status(500).json({
       success: false,
-      message: "Failed to update category",
+      message:
+        err.name === "MongoServerError" && err.code === 11000
+          ? "Category name already exists"
+          : `Failed to update category: ${err.message}`,
       error: err.message,
     });
   }
@@ -159,7 +217,6 @@ router.delete("/:id", async (req, res) => {
 
   try {
     const deletedCategory = await Category.findByIdAndDelete(categoryId);
-
     if (!deletedCategory) {
       return res
         .status(404)
@@ -172,9 +229,174 @@ router.delete("/:id", async (req, res) => {
       data: deletedCategory,
     });
   } catch (err) {
+    console.error("Error deleting category:", err.message);
     return res.status(500).json({
       success: false,
       message: "Failed to delete category",
+      error: err.message,
+    });
+  }
+});
+
+// **6. Create Subcategory within a Category**
+router.post("/:id/subcategories", async (req, res) => {
+  const categoryId = req.params.id.trim();
+  if (!isValidObjectId(categoryId)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid category ID" });
+  }
+
+  try {
+    const { name } = req.body;
+    if (!name) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Subcategory name is required" });
+    }
+
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Category not found" });
+    }
+
+    // Check for duplicate subcategory name within the category
+    if (category.subcategories.some((sub) => sub.name === name)) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Subcategory name already exists in this category",
+        });
+    }
+
+    const newSubcategory = { name };
+    category.subcategories.push(newSubcategory);
+    const updatedCategory = await category.save();
+
+    const addedSubcategory =
+      updatedCategory.subcategories[updatedCategory.subcategories.length - 1];
+
+    return res.status(201).json({
+      success: true,
+      message: "Subcategory created successfully",
+      data: addedSubcategory,
+    });
+  } catch (err) {
+    console.error("Error creating subcategory:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: `Failed to create subcategory: ${err.message}`,
+      error: err.message,
+    });
+  }
+});
+
+// **7. Update Subcategory within a Category**
+router.put("/:id/subcategories/:subId", async (req, res) => {
+  const categoryId = req.params.id.trim();
+  const subId = req.params.subId.trim();
+  if (!isValidObjectId(categoryId) || !isValidObjectId(subId)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid category or subcategory ID" });
+  }
+
+  try {
+    const { name } = req.body;
+    if (!name) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Subcategory name is required" });
+    }
+
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Category not found" });
+    }
+
+    const subcategory = category.subcategories.id(subId);
+    if (!subcategory) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Subcategory not found" });
+    }
+
+    // Check for duplicate subcategory name (excluding the current subcategory)
+    if (
+      category.subcategories.some(
+        (sub) => sub.name === name && sub._id.toString() !== subId
+      )
+    ) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Subcategory name already exists in this category",
+        });
+    }
+
+    subcategory.name = name;
+
+    const updatedCategory = await category.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Subcategory updated successfully",
+      data: subcategory,
+    });
+  } catch (err) {
+    console.error("Error updating subcategory:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: `Failed to update subcategory: ${err.message}`,
+      error: err.message,
+    });
+  }
+});
+
+// **8. Delete Subcategory within a Category**
+router.delete("/:id/subcategories/:subId", async (req, res) => {
+  const categoryId = req.params.id.trim();
+  const subId = req.params.subId.trim();
+  if (!isValidObjectId(categoryId) || !isValidObjectId(subId)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid category or subcategory ID" });
+  }
+
+  try {
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Category not found" });
+    }
+
+    const subcategory = category.subcategories.id(subId);
+    if (!subcategory) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Subcategory not found" });
+    }
+
+    category.subcategories.pull(subId);
+    await category.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Subcategory deleted successfully",
+      data: subcategory,
+    });
+  } catch (err) {
+    console.error("Error deleting subcategory:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete subcategory",
       error: err.message,
     });
   }

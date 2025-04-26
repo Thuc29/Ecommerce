@@ -35,7 +35,7 @@ function DashboardBox({ color, icon, grow }) {
           <TrendingDownIcon />
         </span>
       )}
-      <div className="!flex !w-full">
+      <div className="!flex !w-full  !lg:w-4/12 !sm:w-6/12">
         <div>
           <p className="!text-lg !text-white !font-medium !capitalize">
             Total Users

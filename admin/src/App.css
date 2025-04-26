@@ -160,3 +160,100 @@ body {
   font-size: 130px !important;
   color: #000;
 }
+
+/* Sidebar Styling */
+.sidebar {
+  background-color: #f7f7f7;
+  width: 240px;
+  /* Fixed width for the sidebar */
+  height: 100vh;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Button Styling */
+.button {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  max-width: 100%;
+  /* Prevent text overflow */
+  white-space: nowrap;
+  /* Prevent text wrapping */
+  overflow: hidden;
+  /* Hide overflowing text */
+  text-overflow: ellipsis;
+  /* Add ellipsis for overflowing text */
+  border: none;
+  background: none;
+  padding: 10px 20px;
+  margin: 5px 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-radius 0.3s ease;
+}
+
+.button:hover {
+  background-color: #e0e0e0;
+  border-radius: 12px;
+}
+
+.button .icon {
+  flex-shrink: 0;
+}
+
+.button .text {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .button {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 100%;
+  }
+
+  .button {
+    font-size: 12px;
+  }
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+  background-color: #2b77e5;
+  color: white;
+  font-weight: bold;
+  border: 1px solid #e5e7eb;
+}
+
+.table td {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+}
+
+.table tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
