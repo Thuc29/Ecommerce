@@ -18,7 +18,10 @@ const productSchema = new mongoose.Schema(
       ref: "Category",
       required: true,
     },
-
+    subcategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category.subcategories",
+    },
     countInStock: { type: Number, required: true },
     rating: { type: Number, default: 0 },
     isFeatured: { type: Boolean, default: false },

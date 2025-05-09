@@ -1,5 +1,5 @@
 import { IconButton, Menu, MenuItem, CircularProgress } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   MdClose,
   MdCollections,
@@ -10,14 +10,58 @@ import {
 } from "react-icons/md";
 import { useTheme } from "../../Theme/ThemeContext";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 function MediaAndPublished({ onImagesChange }) {
   const { theme } = useTheme();
+  const { productId } = useParams();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [images, setImages] = useState(Array(4).fill(null));
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(Array(4).fill(false));
+  const [hasFetched, setHasFetched] = useState(false);
+
+  const fetchProductImages = useCallback(async () => {
+    if (!productId) {
+      setError("No product ID provided in the URL");
+      return;
+    }
+
+    try {
+      console.log(`Fetching product data for ID: ${productId}`);
+      const response = await axios.get(
+        `http://localhost:8888/api/products/${productId}`
+      );
+      if (response.data?.success && response.data?.data?.images) {
+        const fetchedImages = response.data.data.images
+          .slice(0, 4)
+          .map((img) => ({ url: img.url }));
+        const updatedImages = [
+          ...fetchedImages,
+          ...Array(4 - fetchedImages.length).fill(null),
+        ];
+        setImages(updatedImages);
+        onImagesChange(updatedImages);
+      } else {
+        setError("No images found for this product");
+      }
+    } catch (err) {
+      setError(
+        `Failed to fetch product images: ${
+          err.response?.status === 404 ? "Product not found (404)" : err.message
+        }`
+      );
+    } finally {
+      setHasFetched(true);
+    }
+  }, [productId]);
+
+  useEffect(() => {
+    if (!hasFetched) {
+      fetchProductImages();
+    }
+  }, [productId, hasFetched, fetchProductImages]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -53,7 +97,6 @@ function MediaAndPublished({ onImagesChange }) {
           throw new Error(response.data.message || "Failed to upload image");
         }
       } catch (err) {
-        console.error("Image upload error:", err.response?.data || err.message);
         setError(
           "Failed to upload image: " +
             (err.response?.data?.message || err.message)
@@ -159,6 +202,7 @@ function MediaAndPublished({ onImagesChange }) {
                     const updatedImages = [...images];
                     updatedImages[index] = null;
                     setImages(updatedImages);
+                    console.log("Calling onImagesChange with:", updatedImages);
                     onImagesChange(updatedImages);
                   }}
                   className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition duration-300"

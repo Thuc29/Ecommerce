@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import Slider from "react-slick";
 import ProductModal from "../Product/ProductModal";
+import axios from "axios";
 
 function Seller() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
@@ -19,7 +23,7 @@ function Seller() {
   };
 
   var productSlider = {
-    dots: true,
+    dots: false,
     infinite: true,
     slidesToShow: 4,
     slidesToScroll: 1,
@@ -71,6 +75,25 @@ function Seller() {
     ),
   };
 
+  // Fetch featured products
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8888/api/products?featured=true"
+        );
+        setProducts(response.data.data); // Assuming the API returns { data: [...] }
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching featured products:", err.message);
+        setError("Failed to load products");
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedProducts();
+  }, []);
+
   return (
     <>
       <section className="mx-auto w-full max-w-[1270px] px-4 lg:pb-0">
@@ -105,28 +128,32 @@ function Seller() {
             </div>
             <div className="w-full pt-5">
               <Slider {...productSlider}>
-                {[...Array(5)]
-                  .map((_, index) => ({
-                    name: "Field Roast Chao Cheese Creamy Original",
-                    price: 19.5,
-                    originalPrice: 24.0,
-                    rating: 5,
-                    reviews: 1,
-                    status: "IN STOCK",
-                    image: "/assets/banner5.jpg",
-                  }))
-                  .map((product, index) => (
+                {loading && (
+                  <div className="text-center text-gray-600">Loading...</div>
+                )}
+                {error && (
+                  <div className="text-center text-red-500">{error}</div>
+                )}
+                {!loading &&
+                  !error &&
+                  products.map((product, index) => (
                     <div key={index} className="px-2">
                       <div className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:shadow-lg">
                         <div className="aspect-[3/4] lg:h-[300px] w-full overflow-hidden">
                           <img
-                            src={product.image}
+                            src={product.images[0].url}
                             alt={product.name}
                             className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-110"
                           />
                           <div className="absolute top-2 left-2 flex flex-col gap-1">
                             <span className="bg-[#2bbff9c4] max-w-[50%] text-white text-center text-xs font-bold py-1 px-0 rounded">
-                              19%
+                              {product.oldPrice && product.price
+                                ? `${Math.round(
+                                    ((product.oldPrice - product.price) /
+                                      product.oldPrice) *
+                                      100
+                                  )}%`
+                                : "19%"}
                             </span>
                             <span className="bg-[#15a138cb] text-white text-xs font-bold px-2 py-1 rounded">
                               ORGANIC
@@ -172,31 +199,33 @@ function Seller() {
                         </div>
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4">
                           <Link
-                            to={`/product/${product.name}`}
+                            to={`/product/${product._id}`}
                             className="hover:bg-teal-300 transition-all duration-300 hover:text-white"
                           >
                             <h4 className="text-base font-semibold text-white truncate">
                               {product.name}
                             </h4>
                           </Link>
-                          {product.status && (
+                          {product.countInStock > 0 && (
                             <span className="text-[10px] font-bold text-[#00ff40d2] mt-1 block">
-                              {product.status}
+                              IN STOCK
                             </span>
                           )}
                           <div className="flex items-center gap-1 mb-1">
-                            {[...Array(product.rating)].map((_, i) => (
-                              <span key={i} className="text-yellow-400">
-                                ★
-                              </span>
-                            ))}
-                            <span className="text-gray-200 text-sm ml-1">
-                              {product.reviews}
+                            {[...Array(Math.round(product.rating))].map(
+                              (_, i) => (
+                                <span key={i} className="text-yellow-400">
+                                  ★
+                                </span>
+                              )
+                            )}
+                            <span className="text-gray-100 text-sm ml-1">
+                              {product.rating || 0}
                             </span>
                           </div>
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-gray-400 line-through text-sm">
-                              ${product.originalPrice.toFixed(2)}
+                            <span className="text-gray-300 line-through text-sm">
+                              ${product.oldPrice.toFixed(2)}
                             </span>
                             <p className="text-sm text-red-400 font-semibold">
                               ${product.price.toFixed(2)}

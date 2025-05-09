@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { useTheme } from "../Theme/ThemeContext";
 import { postDataToApi, fetchDataFromApi } from "../../utils/api";
-import { FaCloudUploadAlt, FaHome } from "react-icons/fa";
+import { FaCloudUploadAlt, FaHome, FaIcons, FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 function SubCategoryAdd() {
@@ -85,16 +85,19 @@ function SubCategoryAdd() {
       <div className="shadow flex flex-row justify-between items-center rounded-lg border p-4 my-4">
         <p className="font-extrabold text-2xl">Add Subcategory</p>
         <div className="flex gap-2">
-          <Button className="!shadow-sm bg-gray-300 !rounded-lg !flex px-2 !items-center !gap-2">
+          <Button className="!shadow-sm bg-gray-300 dark:bg-gray-400 !rounded-lg !flex px-2 !items-center !gap-2">
             <FaHome /> Home
           </Button>
           /
-          <Button className="!shadow-sm bg-gray-300 !px-2 flex !rounded-lg">
-            Category
+          <Button className="!shadow-sm bg-gray-300 dark:bg-gray-400 !rounded-lg !flex px-2 !items-center !gap-2">
+            <FaIcons /> Category
           </Button>
           /
-          <Button className="shadow-sm bg-gray-100 px-2 rounded-lg" disabled>
-            Add Subcategory
+          <Button
+            className="shadow-sm flex items-center gap-2 bg-gray-100 dark:bg-gray-400 px-2 rounded-lg"
+            disabled
+          >
+            <FaPlus /> Subcategory
           </Button>
         </div>
       </div>

@@ -9,11 +9,15 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ProductItem from "../../components/Product/ProductItem";
 import Sidebar from "../../components/Sidebar/Sidebar";
+import axios from "axios";
 
 function Listing() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [productView, setProductView] = useState("four");
   const [productsPerPage, setProductsPerPage] = useState(9);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const openDropDown = Boolean(anchorEl);
 
   useEffect(() => {
@@ -31,6 +35,23 @@ function Listing() {
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Fetch all products
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8888/api/products");
+        setProducts(response.data.data); // Assuming the API returns { data: [...] }
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching products:", err.message);
+        setError("Failed to load products");
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   const handleDropdownClick = (event) => {
@@ -111,9 +132,27 @@ function Listing() {
                   : "grid-cols-1"
               }`}
             >
-              {[...Array(productsPerPage)].map((_, i) => (
-                <ProductItem key={i} layout={productView} />
-              ))}
+              {loading && (
+                <div className="col-span-full text-center text-gray-600">
+                  Loading...
+                </div>
+              )}
+              {error && (
+                <div className="col-span-full text-center text-red-500">
+                  {error}
+                </div>
+              )}
+              {!loading &&
+                !error &&
+                products
+                  .slice(0, productsPerPage)
+                  .map((product, index) => (
+                    <ProductItem
+                      key={index}
+                      layout={productView}
+                      product={product}
+                    />
+                  ))}
             </div>
           </div>
         </div>

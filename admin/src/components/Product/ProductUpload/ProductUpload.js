@@ -5,7 +5,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { MdCloudUpload } from "react-icons/md";
 import { Button } from "react-bootstrap";
-import { FaHome, FaPlus } from "react-icons/fa";
+import { FaHome, FaIcons, FaPlus } from "react-icons/fa";
 
 function ProductUpload() {
   const [formData, setFormData] = useState({});
@@ -77,14 +77,14 @@ function ProductUpload() {
               <FaHome /> Dashboard
             </Button>
             <p className="items-center justify-center py-2">/ </p>
-            <Button className="!shadow-sm items-center bg-gray-300 dark:bg-gray-400 dark:!text-white !px-2 flex !rounded-lg">
-              Category
+            <Button className="!shadow-sm gap-2 items-center bg-gray-300 dark:bg-gray-400 dark:!text-white !px-2 flex !rounded-lg">
+              <FaIcons /> Category
             </Button>
             <p className="items-center justify-center py-2">/ </p>
             {/* <Link to={"/product-upload"}> */}
             <Button
               variant="primary"
-              className="flex bg-gray-500 dark:bg-gray-600 dark:!text-white p-2 rounded-lg items-center gap-2"
+              className="flex bg-gray-200 dark:bg-gray-500 dark:!text-white p-2 rounded-lg items-center gap-2"
             >
               <FaPlus /> Add Product
             </Button>

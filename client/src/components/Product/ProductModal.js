@@ -18,10 +18,17 @@ const ProductModal = ({ isOpen, product, onClose }) => {
 
   if (!isOpen || !product) return null;
 
+  // Calculate discount safely
+  const discount =
+    product?.price && product?.oldPrice
+      ? (((product.oldPrice - product.price) / product.oldPrice) * 100).toFixed(
+          0
+        )
+      : 0;
+
   return (
-    <div className="fixed inset-0 flex pt-3 items-center justify-center bg-black bg-opacity-50 z-50 ">
+    <div className="fixed inset-0 flex pt-3 items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white text-start sm:w-3/4 sm:p-5 h-[95%] lg:pt-[50px] md:p-16 rounded-lg relative overflow-y-auto scrollbar-hidden">
-        {" "}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-500 bg-gray-100 rounded-full px-2 py-1 mx-auto hover:text-black"
@@ -33,13 +40,14 @@ const ProductModal = ({ isOpen, product, onClose }) => {
         </div>
         <p className="text-gray-500 mb-7 flex items-center gap-4">
           <span>
-            Brand: <span className="font-semibold">ABC</span>
+            Brand:{" "}
+            <span className="font-semibold">{product.brand || "ABC"}</span>
           </span>
           <span>|</span>
           <span className="flex items-center">
             <Rating
               readOnly
-              value={5}
+              value={product.rating || 5}
               size="small"
               precision={0.5}
               className="pr-1"
@@ -48,25 +56,28 @@ const ProductModal = ({ isOpen, product, onClose }) => {
           </span>
           <span>|</span>
           <span>
-            SKU: <span className="font-semibold">ABC</span>
+            SKU: <span className="font-semibold">{product.sku || "ABC"}</span>
           </span>
         </p>
         <hr />
         <div className="lg:flex">
-          <div className="w-full lg:w-6/12 ">
-            <ProductZoom />
+          <div className="w-full lg:w-6/12">
+            <ProductZoom
+              images={product.images || []}
+              discount={parseFloat(discount)}
+            />
           </div>
           <div className="w-full lg:w-6/12 mt-4 md:mt-0 flex flex-col px-10 md:justify-start pt-6">
             <div className="flex items-center mb-2">
               <span className="text-gray-500 text-[19px] line-through ml-2">
-                ${product.originalPrice.toFixed(2)}
+                ${product.oldPrice ? product.oldPrice.toFixed(2) : "N/A"}
               </span>
               <span className="text-red-600 text-[26px] font-bold px-3">
-                ${product.price.toFixed(2)}
+                ${product.price ? product.price.toFixed(2) : "N/A"}
               </span>
             </div>
             <p className="text-[#00b853] font-semibold mb-4 text-[12px] bg-[#e5f8ed] rounded-full max-w-[80px] px-3 py-1">
-              {product.status}
+              {product.status || "In Stock"}
             </p>
             <p className="text-gray-600 mb-4">{product.description}</p>
 
@@ -90,19 +101,20 @@ const ProductModal = ({ isOpen, product, onClose }) => {
             <div className="pt-4">
               <div className="mb-5">
                 <p>
-                  <strong>Type:</strong> {product.type}
+                  <strong>Type:</strong> {product.type || "N/A"}
                 </p>
                 <p>
-                  <strong>MFG:</strong> {product.manufactureDate}
+                  <strong>MFG:</strong> {product.manufactureDate || "N/A"}
                 </p>
                 <p>
-                  <strong>LIFE: 30days</strong> {product.shelfLife}
+                  <strong>LIFE:</strong> {product.shelfLife || "30 days"}
                 </p>
               </div>
               <hr />
               <div className="mt-5">
                 <p>
-                  <strong>Category:</strong> {product.category}
+                  <strong>Category:</strong>{" "}
+                  {product.category?.name || product.category?.["_id"] || "N/A"}
                 </p>
                 <p>
                   <strong>Tags:</strong>{" "}

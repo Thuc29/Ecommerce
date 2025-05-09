@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table } from "react-bootstrap";
-import { FaHome, FaPlus } from "react-icons/fa";
+import { FaHome, FaIcons, FaPlus } from "react-icons/fa";
 import {
   fetchDataFromApi,
   deleteDataFromApi,
@@ -8,7 +8,7 @@ import {
 } from "../../utils/api";
 import { Link } from "react-router-dom";
 import ModalEditCategory from "./ModalEditCategory";
-import { Pagination } from "@mui/material";
+import { IconButton, Pagination } from "@mui/material";
 import { MdDelete, MdEdit } from "react-icons/md";
 
 function CategoryList() {
@@ -174,8 +174,8 @@ function CategoryList() {
             <FaHome /> Home
           </Button>
           <p className="items-center justify-center py-2">/ </p>
-          <Button className="!shadow-sm items-center bg-gray-300 dark:bg-gray-400 dark:!text-white !px-2 flex !rounded-lg">
-            Category
+          <Button className="!shadow-sm gap-2 items-center bg-gray-300 dark:bg-gray-400 dark:!text-white !px-2 flex !rounded-lg">
+            <FaIcons /> Category
           </Button>
           <p className="items-center justify-center py-2">/ </p>
           <Link to={"/add-a-category"}>
@@ -199,23 +199,23 @@ function CategoryList() {
 
       {/* Display categories in a table */}
       {!loading && !error && categories.length > 0 && (
-        <div className="shadow flex flex-col justify-between items-center lg:items-center rounded-lg border p-4 my-4 dark:bg-gray-900 dark:border-gray-700">
-          <Table className="min-w-full !rounded-lg shadow-lg dark:bg-gray-800 dark:text-white">
-            <thead>
-              <tr className="bg-blue-700 text-white dark:bg-blue-900">
-                <th
-                  scope="col"
-                  className="px-6 py-3 border uppercase text-sm font-semibold tracking-wider dark:border-gray-700"
-                >
+        <div className="shadow flex flex-col justify-between items-center lg:items-center rounded-lg border p-4 my-4">
+          <Table className="min-w-full !rounded-lg shadow-lg dark:bg-gray-800 dark:text-white overflow-x-auto">
+            <thead className="text-xs text-center text-white uppercase bg-gradient-to-t from-[#0858f7] to-[#2b77e5]">
+              <tr>
+                <th scope="col" className="px-4 py-3 border min-w-[200px]">
                   Image
                 </th>
-                <th className="p-3 border uppercase text-sm font-semibold tracking-wider dark:border-gray-700">
+                <th scope="col" className="px-4 py-3 border min-w-[200px]">
+                  {" "}
                   Category
                 </th>
-                <th className="p-3 border uppercase text-sm font-semibold tracking-wider dark:border-gray-700">
+                <th scope="col" className="px-4 py-3 border min-w-[200px]">
+                  {" "}
                   Color
                 </th>
-                <th className="p-3 border uppercase text-sm font-semibold tracking-wider dark:border-gray-700">
+                <th scope="col" className="px-4 py-3 border min-w-[200px]">
+                  {" "}
                   Action
                 </th>
               </tr>
@@ -224,9 +224,9 @@ function CategoryList() {
               {currentCategories.map((category) => (
                 <tr
                   key={category._id || Math.random().toString(36).substring(2)}
-                  className="border hover:bg-gray-50 transition-colors  dark:bg-gray-200 duration-200 dark:hover:bg-gray-500 dark:border-gray-500"
+                  className="odd:bg-white items-center border border-gray-300 odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
                 >
-                  <td className="text-center">
+                  <td className="p-2 items-center">
                     <img
                       className="w-[50px] h-[50px] object-contain border rounded-lg mx-auto dark:border-gray-600"
                       src={
@@ -237,28 +237,24 @@ function CategoryList() {
                       alt={category.name}
                     />
                   </td>
-                  <td className="text-center text-[16px] font-medium dark:text-black dark:hover:text-gray-200 ">
-                    {category.name}
-                  </td>
-                  <td className="text-center text-[16px] dark:text-black dark:hover:text-gray-200">
-                    {category.color}
-                  </td>
-                  <td className="text-center">
-                    <div className="flex items-center justify-center gap-3">
-                      <Button
-                        className="hover:!bg-[#1dff37] bg-green-200 !p-2 !mb-2 !rounded-lg"
+                  <td className="p-2 items-center"> {category.name}</td>
+                  <td className="p-2 items-center"> {category.color}</td>
+                  <td className="p-2 items-center">
+                    <div className="flex justify-center items-center space-x-2 flex-wrap">
+                      <IconButton
+                        className="!bg-[#77fc86] hover:!bg-green-400 !p-2 !mb-2 !rounded-lg"
                         onClick={() => handleEditCategory(category)}
                         disabled={!category._id}
                       >
                         <MdEdit size={17} color="white" />
-                      </Button>
-                      <Button
-                        className="hover:!bg-[#ff042a] bg-red-200 !p-2 !mb-2 !rounded-lg"
+                      </IconButton>
+                      <IconButton
+                        className="hover:!bg-[#ff042a] !bg-red-400 !p-2 !mb-2 !rounded-lg"
                         onClick={() => handleDeleteCategory(category._id)}
                         disabled={!category._id}
                       >
                         <MdDelete size={17} color="white" />
-                      </Button>
+                      </IconButton>
                     </div>
                   </td>
                 </tr>

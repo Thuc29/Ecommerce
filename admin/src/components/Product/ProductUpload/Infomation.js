@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Rating } from "@mui/material";
+import { Rating } from "@mui/material";
 import { useTheme } from "../../Theme/ThemeContext";
 import axios from "axios";
 
@@ -9,6 +9,7 @@ function Infomation({ onFormChange }) {
     name: "",
     description: "",
     category: "",
+    subcategory: "",
     brand: "",
     oldPrice: "",
     price: "",
@@ -17,9 +18,10 @@ function Infomation({ onFormChange }) {
     rating: 0,
   });
   const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [error, setError] = useState("");
 
-  // Lấy danh sách danh mục từ backend
+  // Fetch categories from backend
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -35,7 +37,25 @@ function Infomation({ onFormChange }) {
     fetchCategories();
   }, []);
 
-  // Cập nhật formData và thông báo cho parent component
+  // Fetch subcategories when category changes
+  useEffect(() => {
+    if (formData.category) {
+      const selectedCategory = categories.find(
+        (cat) => cat._id === formData.category
+      );
+      setSubcategories(selectedCategory ? selectedCategory.subcategories : []);
+      // Reset subcategory if category changes
+      if (formData.subcategory) {
+        const updatedFormData = { ...formData, subcategory: "" };
+        setFormData(updatedFormData);
+        onFormChange(updatedFormData);
+      }
+    } else {
+      setSubcategories([]);
+    }
+  }, [formData.category, categories]);
+
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     const updatedFormData = { ...formData, [name]: value };
@@ -43,6 +63,7 @@ function Infomation({ onFormChange }) {
     onFormChange(updatedFormData);
   };
 
+  // Handle rating changes
   const handleRatingChange = (event, newValue) => {
     const updatedFormData = { ...formData, rating: newValue };
     setFormData(updatedFormData);
@@ -127,6 +148,33 @@ function Infomation({ onFormChange }) {
                   {categories.map((cat) => (
                     <option key={cat._id} value={cat._id}>
                       {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-4">
+                <label
+                  className={`block text-xs font-bold mb-1 uppercase ${
+                    theme === "light" ? "text-gray-900" : "text-gray-200"
+                  }`}
+                >
+                  Subcategory
+                </label>
+                <select
+                  name="subcategory"
+                  value={formData.subcategory}
+                  onChange={handleChange}
+                  className={`w-full h-[45px] mb-4 rounded-lg ${
+                    theme === "light"
+                      ? "bg-gray-100 text-gray-900"
+                      : "bg-gray-700 text-gray-200"
+                  }`}
+                  disabled={!formData.category}
+                >
+                  <option value="">Select a subcategory</option>
+                  {subcategories.map((sub) => (
+                    <option key={sub._id} value={sub._id}>
+                      {sub.name}
                     </option>
                   ))}
                 </select>

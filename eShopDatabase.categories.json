@@ -1,0 +1,219 @@
+[{
+  "_id": {
+    "$oid": "6807432f5a597c2c8dc83226"
+  },
+  "name": "Electronic",
+  "images": [
+    "https://res.cloudinary.com/da6cbnfmw/image/upload/v1745663552/categories/6a9cbad16fe0daca019b36e644d03ae6.png"
+  ],
+  "color": "#ecffec",
+  "createdAt": {
+    "$date": "2025-04-22T07:20:15.802Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-26T10:30:45.422Z"
+  },
+  "__v": 2,
+  "subcategories": [
+    {
+      "name": "Laptop",
+      "_id": {
+        "$oid": "680cb4f64f351cb4b4df5cd4"
+      }
+    },
+    {
+      "name": "Televition",
+      "_id": {
+        "$oid": "680cb5004f351cb4b4df5cd8"
+      }
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6807520b5a597c2c8dc83282"
+  },
+  "name": "Fashion",
+  "images": [
+    "https://res.cloudinary.com/da6cbnfmw/image/upload/v1745310324/categories/m5gepkymjhj1qgpqwguw.png"
+  ],
+  "color": "#ecffec",
+  "createdAt": {
+    "$date": "2025-04-22T08:23:39.531Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-26T10:20:50.419Z"
+  },
+  "__v": 2,
+  "subcategories": [
+    {
+      "name": "Men",
+      "_id": {
+        "$oid": "680cb3504f351cb4b4df5cc5"
+      }
+    },
+    {
+      "name": "Children",
+      "_id": {
+        "$oid": "680cb3824f351cb4b4df5ccb"
+      }
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "680752de5a597c2c8dc83284"
+  },
+  "name": "Bags",
+  "images": [
+    "https://res.cloudinary.com/da6cbnfmw/image/upload/v1745310534/categories/uw380p3hlxxy1rloa42a.png"
+  ],
+  "color": "#fdf0ff",
+  "createdAt": {
+    "$date": "2025-04-22T08:27:10.217Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-26T10:30:25.803Z"
+  },
+  "__v": 3,
+  "subcategories": [
+    {
+      "name": "Men Bags",
+      "_id": {
+        "$oid": "680cb5284f351cb4b4df5ce0"
+      }
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "680753195a597c2c8dc83286"
+  },
+  "name": "Footwear",
+  "images": [
+    "https://res.cloudinary.com/da6cbnfmw/image/upload/v1745660803/categories/6b46146a8a2f5d6050a23849c3d366b9.png"
+  ],
+  "color": "#def3ff",
+  "createdAt": {
+    "$date": "2025-04-22T08:28:09.321Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-26T10:34:29.385Z"
+  },
+  "__v": 3,
+  "subcategories": [
+    {
+      "name": "Adidas",
+      "_id": {
+        "$oid": "680cb6b54f351cb4b4df5d57"
+      }
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "680753325a597c2c8dc83288"
+  },
+  "name": "Groceries",
+  "images": [
+    "https://res.cloudinary.com/da6cbnfmw/image/upload/v1745310619/categories/klmw9q7ujp3arj6ne8df.png"
+  ],
+  "color": "#ffe8f8",
+  "createdAt": {
+    "$date": "2025-04-22T08:28:34.350Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-22T08:28:34.350Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6807535e5a597c2c8dc8328a"
+  },
+  "name": "Beauty",
+  "images": [
+    "https://res.cloudinary.com/da6cbnfmw/image/upload/v1745310663/categories/acqrktz2q6vszskwrfix.png"
+  ],
+  "color": "#e3fffa",
+  "createdAt": {
+    "$date": "2025-04-22T08:29:18.952Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-06T06:22:05.923Z"
+  },
+  "__v": 1,
+  "subcategories": [
+    {
+      "name": "Beauty Girls 👭",
+      "_id": {
+        "$oid": "6819aa8d7afee97329439852"
+      }
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "680753875a597c2c8dc8328c"
+  },
+  "name": "Wellness",
+  "images": [
+    "https://res.cloudinary.com/da6cbnfmw/image/upload/v1745310704/categories/nz3esydouea9yqsoe0zh.png"
+  ],
+  "color": "#fff3ff",
+  "createdAt": {
+    "$date": "2025-04-22T08:29:59.950Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-22T08:29:59.950Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "680753ad5a597c2c8dc8328e"
+  },
+  "name": "Jewellery",
+  "images": [
+    "https://res.cloudinary.com/da6cbnfmw/image/upload/v1745310742/categories/a5zwsqlkhvnl9fxtppjk.png"
+  ],
+  "color": "#def3ff",
+  "createdAt": {
+    "$date": "2025-04-22T08:30:37.773Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-22T08:30:37.773Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6819bee5a04a6ff555667eb4"
+  },
+  "name": "Coffee☕",
+  "images": [
+    "https://res.cloudinary.com/da6cbnfmw/image/upload/v1746517842/categories/337d670f89dff207f0b8e177ab4e8875.jpg"
+  ],
+  "color": "#6D2323",
+  "subcategories": [
+    {
+      "name": "G7",
+      "_id": {
+        "$oid": "6819bf47a04a6ff5556680e0"
+      }
+    },
+    {
+      "name": "Highlands",
+      "_id": {
+        "$oid": "6819bf59a04a6ff5556680f6"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-05-06T07:48:53.238Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-06T07:50:49.370Z"
+  },
+  "__v": 2
+}]

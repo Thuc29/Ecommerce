@@ -19,7 +19,7 @@ import { useTheme } from "../../Theme/ThemeContext";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Button } from "react-bootstrap";
-import { FaHome, FaPlus } from "react-icons/fa";
+import { FaHome, FaIcons, FaPlus } from "react-icons/fa";
 
 function ProductView() {
   const { theme } = useTheme();
@@ -70,8 +70,8 @@ function ProductView() {
               <FaHome /> Dashboard
             </Button>
             <p className="items-center justify-center py-2">/ </p>
-            <Button className="!shadow-sm items-center bg-gray-300 dark:bg-gray-400 dark:!text-white !px-2 flex !rounded-lg">
-              Category
+            <Button className="!shadow-sm gap-2 items-center bg-gray-300 dark:bg-gray-400 dark:!text-white !px-2 flex !rounded-lg">
+              <FaIcons /> Category
             </Button>
             <p className="items-center justify-center py-2">/ </p>
             <Link to={"/product-upload"}>

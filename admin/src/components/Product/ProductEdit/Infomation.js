@@ -10,6 +10,7 @@ function Infomation({ onFormChange, initialData }) {
       name: "",
       description: "",
       category: "",
+      subcategory: "",
       brand: "",
       oldPrice: "",
       price: "",
@@ -19,6 +20,7 @@ function Infomation({ onFormChange, initialData }) {
     }
   );
   const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [error, setError] = useState("");
 
   // Lấy danh sách danh mục từ backend
@@ -36,6 +38,23 @@ function Infomation({ onFormChange, initialData }) {
     };
     fetchCategories();
   }, []);
+
+  // Fetch subcategories when category changes
+  useEffect(() => {
+    if (formData.category) {
+      const selectedCategory = categories.find(
+        (cat) => cat._id === formData.category
+      );
+      setSubcategories(selectedCategory ? selectedCategory.subcategories : []);
+      // Reset subcategory if category changes
+      if (formData.subcategory) {
+        setFormData((prev) => ({ ...prev, subcategory: "" }));
+        onFormChange({ ...formData, subcategory: "" });
+      }
+    } else {
+      setSubcategories([]);
+    }
+  }, [formData.category, categories]);
 
   // Cập nhật formData khi initialData thay đổi
   useEffect(() => {
@@ -136,6 +155,33 @@ function Infomation({ onFormChange, initialData }) {
                   {categories.map((cat) => (
                     <option key={cat._id} value={cat._id}>
                       {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-4">
+                <label
+                  className={`block text-xs font-bold mb-1 uppercase ${
+                    theme === "light" ? "text-gray-900" : "text-gray-200"
+                  }`}
+                >
+                  Subcategory
+                </label>
+                <select
+                  name="subcategory"
+                  value={formData.subcategory}
+                  onChange={handleChange}
+                  className={`w-full h-[45px] mb-4 rounded-lg ${
+                    theme === "light"
+                      ? "bg-gray-100 text-gray-900"
+                      : "bg-gray-700 text-gray-200"
+                  }`}
+                  disabled={!formData.category}
+                >
+                  <option value="">Select a subcategory</option>
+                  {subcategories.map((sub) => (
+                    <option key={sub._id} value={sub._id}>
+                      {sub.name}
                     </option>
                   ))}
                 </select>

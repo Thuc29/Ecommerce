@@ -96,6 +96,7 @@ router.post("/create", async (req, res) => {
       price,
       oldPrice,
       category,
+      subcategory,
       countInStock,
       rating,
       isFeatured,
@@ -129,6 +130,20 @@ router.post("/create", async (req, res) => {
         .status(404)
         .json({ success: false, message: "Category not found" });
     }
+    // Validate subcategory ID if provided
+    if (subcategory) {
+      if (!mongoose.Types.ObjectId.isValid(subcategory)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid subcategory ID format" });
+      }
+      const foundSubcategory = foundCategory.subcategories.id(subcategory);
+      if (!foundSubcategory) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Subcategory not found" });
+      }
+    }
 
     // Validate and upload images to Cloudinary
     if (!images || !Array.isArray(images) || images.length === 0) {
@@ -161,6 +176,7 @@ router.post("/create", async (req, res) => {
       price,
       oldPrice: oldPrice || 0,
       category,
+      subcategory: subcategory || null,
       countInStock,
       rating: rating || 0,
       isFeatured: isFeatured || false,
@@ -216,6 +232,7 @@ router.put(
         price,
         oldPrice,
         category,
+        subcategory,
         countInStock,
         rating,
         isFeatured,
@@ -261,6 +278,24 @@ router.put(
         return res
           .status(404)
           .json({ success: false, message: "Category not found" });
+      }
+
+      // Validate subcategory if provided
+      let subcategoryId = subcategory;
+      if (subcategory) {
+        if (!mongoose.Types.ObjectId.isValid(subcategory)) {
+          return res
+            .status(400)
+            .json({ success: false, message: "Invalid subcategory ID format" });
+        }
+        const foundSubcategory = foundCategory.subcategories.id(subcategory);
+        if (!foundSubcategory) {
+          return res
+            .status(404)
+            .json({ success: false, message: "Subcategory not found" });
+        }
+      } else {
+        subcategoryId = null;
       }
 
       // Xử lý ảnh
@@ -367,6 +402,7 @@ router.put(
             ? parseFloat(oldPrice)
             : existingProduct.oldPrice,
         category: category || existingProduct.category,
+        subcategory: subcategoryId,
         countInStock: parseInt(countInStock) || existingProduct.countInStock,
         rating: parseFloat(rating) || existingProduct.rating,
         isFeatured:

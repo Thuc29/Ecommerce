@@ -68,12 +68,22 @@ body {
   border: 2px solid transparent !important;
   overflow: hidden;
   border-radius: 15px;
+  width: 100% !important;
   cursor: pointer;
+}
+
+
+.zoomSlider .slick-track {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .zoomSlider .slick-current .item {
   border: 2px solid #3bb77e !important;
-  width: 100px !important;
+  width: 100% !important;
 }
 
 .zoomSlider .slick-arrow {

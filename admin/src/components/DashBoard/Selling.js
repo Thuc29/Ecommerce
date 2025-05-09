@@ -306,7 +306,7 @@ function Selling() {
                   currentProducts.map((item, index) => (
                     <tr
                       key={item._id?.$oid || index}
-                      className="odd:bg-white items-center border border-gray-300 odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
+                      className="odd:bg-white items-center border border-gray-300 odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 "
                     >
                       <td className="p-2 items-center">
                         <div className="flex items-center md:px-4">

@@ -3,32 +3,33 @@ import { Link } from "react-router-dom";
 import ProductModal from "./ProductModal";
 import { FaRegHeart } from "react-icons/fa6";
 
-function ProductItem({ layout = "grid", itemView }) {
+function ProductItem({ layout = "grid", itemView, product }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const product = {
-    name: "Field Roast Chao Cheese Creamy Original",
-    price: 19.5,
-    originalPrice: 24.0,
-    discount: 19, // Percent discount
-    rating: 5,
-    reviews: 1,
-    status: "IN STOCK",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwBaqoICABenwNHD9G6OibIQMM9yHoXC1Now&s",
-  };
-
   const handleOpenModal = (product) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
+    if (product) {
+      setSelectedProduct(product);
+      setIsModalOpen(true);
+    }
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
   };
+  // Calculate discount percentage if oldPrice exists
+  const discount =
+    product?.oldPrice && product?.price
+      ? Math.round(
+          ((product.oldPrice - product.price) / product.oldPrice) * 100
+        )
+      : 0;
 
+  // Fallback image if product.images[0].url is missing
+  const placeholderImage =
+    "https://via.placeholder.com/300x400.png?text=No+Image+Available";
+  if (!product) return null;
   return (
     <>
       <div
@@ -43,22 +44,29 @@ function ProductItem({ layout = "grid", itemView }) {
         >
           {/* Product Image */}
           <div className="relative overflow-hidden rounded-lg group">
-            {product.discount && (
+            {discount > 0 && (
               <div
                 className={`absolute top-2 left-2 bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded transition-all duration-300`}
               >
-                {product.discount}% OFF
+                {discount}% OFF
               </div>
             )}
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-110"
-            />
+            <div className="w-40 h-40 md:w-52 md:h-52 lg:w-60 lg:h-60 overflow-hidden rounded-lg">
+              <img
+                src={
+                  product.images[0]?.url
+                    ? product.images[0].url
+                    : placeholderImage
+                }
+                alt={product.name}
+                className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+            </div>
             <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
               <button
                 className="p-2 bg-white border rounded-full hover:bg-[#2bbef9] hover:text-white transition-all duration-300"
                 onClick={() => handleOpenModal(product)}
+                disabled={!product}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -101,11 +109,11 @@ function ProductItem({ layout = "grid", itemView }) {
                 : "md:ml-[30px] sm:mt-0 flex-1"
             } ${
               layout === "one"
-                ? "md:mt-4 text-center"
+                ? "md:mt-4 pl-[10%] text-center"
                 : layout === "two" && "p-2 ml-0 text-center"
             } transition-all duration-300 ease-in-out`}
           >
-            <Link to={`/product/${product.name}`}>
+            <Link to={`/product/${product._id}`}>
               <h4
                 className={`text-lg font-semibold text-gray-800 ${
                   layout === "two" && "text-base my-2"
@@ -114,27 +122,27 @@ function ProductItem({ layout = "grid", itemView }) {
                   layout === "three" || layout === "four" ? "text-sm" : ""
                 } transition-all duration-300 ease-in-out`}
               >
-                {product.name}
+                {product?.name}
               </h4>
             </Link>
             <p
-              className={`text-green-600 font-bold text-xs mt-1 ${
+              className={`text-[#00ff40d2] font-bold text-xs mt-1 ${
                 layout === "two" && "text-sm"
               }
                ${
                  layout === "three" || layout === "four" ? "text-xs" : ""
                } transition-all duration-300 ease-in-out`}
             >
-              {product.status}
+              {product.countInStock > 0 ? "IN STOCK" : "OUT OF STOCK"}
             </p>
             <div className="flex items-start justify-start mt-2">
-              {[...Array(product.rating)].map((_, i) => (
+              {[...Array(Math.round(product.rating))].map((_, i) => (
                 <span key={i} className="text-yellow-400">
                   ★
                 </span>
               ))}
               <span className="ml-1 text-gray-500 text-sm">
-                ({product.reviews})
+                ({product.rating || 0})
               </span>
             </div>
             <div
@@ -146,7 +154,7 @@ function ProductItem({ layout = "grid", itemView }) {
                } transition-all duration-300 ease-in-out`}
             >
               <span className="text-gray-400 line-through text-sm mr-2">
-                ${product.originalPrice.toFixed(2)}
+                ${product?.oldPrice?.toFixed(2)}
               </span>
               <span
                 className={`text-red-500 font-semibold text-lg ${
@@ -155,7 +163,7 @@ function ProductItem({ layout = "grid", itemView }) {
                   layout === "three" || layout === "four" ? "text-sm" : ""
                 } transition-all duration-300 ease-in-out`}
               >
-                ${product.price.toFixed(2)}
+                ${product?.price?.toFixed(2)}
               </span>
             </div>
 

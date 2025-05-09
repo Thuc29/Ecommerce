@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 
-function Tabs() {
+function Tabs({ product }) {
   const [activeTab, setActiveTab] = useState("description");
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
+
   const renderContent = () => {
     switch (activeTab) {
       case "description":
         return (
           <div className="mx-7">
             <p className="text-gray-700">
-              Quisque varius diam vel metus mattis, id aliquam diam rhoncus.
-              Proin vitae magna in dui finibus malesuada et at nulla.
+              {product?.description || "No description available."}
             </p>
           </div>
         );
@@ -25,7 +25,7 @@ function Tabs() {
                     Brands
                   </th>
                   <td className="border text-[16px] border-gray-200 p-2">
-                    Welch's
+                    {product?.brand || "N/A"}
                   </td>
                 </tr>
               </tbody>
@@ -36,12 +36,14 @@ function Tabs() {
         return (
           <div className="mx-8">
             <h2 className="text-xl font-semibold">
-              1 review for All Natural Italian-Style Chicken Meatballs
+              {product?.reviews || 0} review{product?.reviews !== 1 ? "s" : ""}{" "}
+              for {product?.name || "Product"}
             </h2>
+            {/* Static review for demo; ideally, fetch reviews dynamically */}
             <div className="flex items-center my-7">
               <img
                 src="https://secure.gravatar.com/avatar/dd28514c9a8cfba334e05f21703be28e?s=60"
-                alt="User "
+                alt="User"
                 className="h-16 w-16 rounded-full"
               />
               <div className="ml-4">
@@ -51,7 +53,7 @@ function Tabs() {
                     {" "}
                     - May 1, 2021
                   </p>
-                </h3>{" "}
+                </h3>
                 <p className="text-gray-600">
                   Sed perspiciatis unde omnis iste natus error sit voluptatem
                   accusantium doloremque laudantium.
@@ -70,7 +72,6 @@ function Tabs() {
                   <label className="block mb-2 text-gray-700">
                     Your rating*
                   </label>
-
                   <div className="flex space-x-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
@@ -124,7 +125,7 @@ function Tabs() {
                   </label>
                 </div>
                 <button
-                  type="submit"
+                  type="button"
                   className="hover:text-white hover:bg-[#2bbef9] text-[#2bbef9] border border-[#2bbef9] rounded-lg px-4 py-2"
                 >
                   Submit
@@ -139,7 +140,7 @@ function Tabs() {
   };
 
   return (
-    <div className=" my-5 rounded-md px-0 lg:max-w-[1270px] md:max-w-[800px] sm:max-w-[500px] mx-auto w-full border bg-white">
+    <div className="my-5 rounded-md px-0 lg:max-w-[1270px] md:max-w-[800px] sm:max-w-[500px] mx-auto w-full border bg-white">
       <div className="container px-7">
         <ul className="flex justify-start space-x-8 border-b border-gray-200 my-4 py-3">
           <li

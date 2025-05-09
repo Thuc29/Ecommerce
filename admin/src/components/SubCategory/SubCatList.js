@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table } from "react-bootstrap";
-import { FaHome, FaPlus } from "react-icons/fa";
+import { FaHome, FaIcons, FaPlus } from "react-icons/fa";
 import { fetchDataFromApi, deleteDataFromApi } from "../../utils/api";
 import { Link } from "react-router-dom";
 
@@ -71,16 +71,16 @@ function SubCatList() {
             <FaHome /> Dashboard
           </Button>
           <p className="items-center justify-center py-2">/ </p>
-          <Button className="!shadow-sm items-center bg-gray-300 dark:bg-gray-400 dark:!text-white !px-2 flex !rounded-lg">
-            Category
+          <Button className="!shadow-sm items-center bg-gray-300 gap-2 dark:bg-gray-400 dark:!text-white !px-2 flex !rounded-lg">
+            <FaIcons /> Category
           </Button>
           <p className="items-center justify-center py-2">/ </p>
-          <Link to={"/add-a-subcategory"}>
+          <Link to={"/add-sub-category"}>
             <Button
               variant="primary"
               className="flex bg-blue-500 dark:bg-blue-600 dark:!text-white p-2 rounded-lg items-center gap-2"
             >
-              <FaPlus /> Add Sub Category
+              <FaPlus /> <p className=""> Add Sub</p>
             </Button>
           </Link>
         </div>
@@ -96,9 +96,9 @@ function SubCatList() {
       {/* Display categories and subcategories in a table */}
       {!loading && !error && categories.length > 0 && (
         <div className="flex flex-col justify-between items-center rounded-lg border p-4 my-4">
-          <Table className="min-w-full rounded-lg">
-            <thead>
-              <tr className="bg-blue-700 text-white">
+          <Table className="min-w-full !rounded-lg shadow-lg dark:bg-gray-800 dark:text-white overflow-x-auto">
+            <thead className="text-xs text-center text-white uppercase bg-gradient-to-t from-[#0858f7] to-[#2b77e5]">
+              <tr>
                 <th className="px-6 py-2 border uppercase text-sm font-semibold tracking-wider">
                   Category Image
                 </th>
@@ -114,9 +114,9 @@ function SubCatList() {
               {categories.map((category) => (
                 <tr
                   key={category._id || Math.random().toString(36).substring(2)}
-                  className="border hover:bg-gray-50 transition-colors duration-200"
+                  className="odd:bg-white items-center border border-gray-300 odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 "
                 >
-                  <td className="text-center">
+                  <td className="p-2 items-center">
                     <img
                       className="w-[50px] h-[50px] object-contain border rounded-lg mx-auto"
                       src={
@@ -127,10 +127,10 @@ function SubCatList() {
                       alt={category.name}
                     />
                   </td>
-                  <td className="text-center text-[16px] font-medium">
+                  <td className="p-2 text-center text-[16px] font-medium">
                     {category.name}
                   </td>
-                  <td className="text-center">
+                  <td className="p-2 items-center">
                     <div className="flex flex-wrap justify-center gap-2">
                       {category.subcategories &&
                       category.subcategories.length > 0 ? (
