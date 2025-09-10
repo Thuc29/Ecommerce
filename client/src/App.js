@@ -8,6 +8,8 @@ import Product from "./pages/Product";
 import Cart from "./pages/Cart/Cart";
 import SignIn from "./pages/Login/Login";
 import Listing from "./pages/Listing/Listing";
+import "sweetalert2/dist/sweetalert2.min.css";
+import { showError } from "./utils/sweetAlert";
 
 // Context for sharing country data across components
 const MyContext = createContext();
@@ -19,10 +21,16 @@ function App() {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await axios.get("https://restcountries.com/v3.1/all");
+        const response = await axios.get(
+          "https://restcountries.com/v3.1/all?fields=name,cca2,flags"
+        );
         setCountryList(response.data);
       } catch (error) {
         console.error("Error fetching countries:", error);
+        showError(
+          "Failed to Load Countries",
+          "Could not load country list. Some features may not work properly."
+        );
       }
     };
 

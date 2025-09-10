@@ -1,4 +1,10 @@
 import React, { useState } from "react";
+import {
+  showSuccess,
+  showError,
+  showConfirm,
+  showDeleteConfirm,
+} from "../../utils/sweetAlert";
 
 const CouponCode = () => {
   const [couponCode, setCouponCode] = useState("");
@@ -7,14 +13,50 @@ const CouponCode = () => {
     setCouponCode(e.target.value);
   };
 
-  const applyCoupon = () => {
-    // Logic to apply the coupon
-    alert(`Applying coupon: ${couponCode}`);
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      showError("Invalid Coupon", "Please enter a valid coupon code");
+      return;
+    }
+
+    try {
+      // Logic to apply the coupon
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      showSuccess(
+        "Coupon Applied!",
+        `Coupon "${couponCode}" has been applied successfully`
+      );
+      setCouponCode("");
+    } catch (error) {
+      showError("Coupon Failed", "Invalid or expired coupon code");
+    }
   };
 
-  const removeAllItems = () => {
-    // Logic to remove all items from the cart
-    alert("All items removed");
+  const removeAllItems = async () => {
+    const result = await showDeleteConfirm(
+      "Remove All Items?",
+      "Are you sure you want to remove all items from your cart? This action cannot be undone."
+    );
+
+    if (result.isConfirmed) {
+      try {
+        // Logic to remove all items from the cart
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        showSuccess(
+          "Items Removed",
+          "All items have been removed from your cart"
+        );
+      } catch (error) {
+        showError(
+          "Failed to Remove",
+          "Could not remove all items. Please try again."
+        );
+      }
+    }
   };
 
   return (

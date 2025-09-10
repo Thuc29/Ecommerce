@@ -4,6 +4,7 @@ import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import Slider from "react-slick";
 import ProductModal from "../Product/ProductModal";
 import axios from "axios";
+import { showError, showLoading, closeLoading } from "../../utils/sweetAlert";
 
 function Seller() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,23 +76,28 @@ function Seller() {
     ),
   };
 
-  // Fetch featured products
+  // Fetch best selling products
   useEffect(() => {
-    const fetchFeaturedProducts = async () => {
+    const fetchBestSellers = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
-          "http://localhost:8888/api/products?featured=true"
+          "http://localhost:8888/api/products/best-sellers?limit=10"
         );
         setProducts(response.data.data); // Assuming the API returns { data: [...] }
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching featured products:", err.message);
+        console.error("Error fetching best sellers:", err.message);
         setError("Failed to load products");
         setLoading(false);
+        showError(
+          "Failed to Load Products",
+          "Could not load best selling products. Please try again."
+        );
       }
     };
 
-    fetchFeaturedProducts();
+    fetchBestSellers();
   }, []);
 
   return (

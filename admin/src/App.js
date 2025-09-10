@@ -14,6 +14,7 @@ import CategoryList from "./components/Category/CategoryList";
 import ProductEdit from "./components/Product/ProductEdit/ProductEdit";
 import SubCatList from "./components/SubCategory/SubCatList";
 import SubCategoryAdd from "./components/SubCategory/AddSubCat";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 const MyContext = createContext();
 

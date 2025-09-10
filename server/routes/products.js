@@ -42,18 +42,56 @@ router.post("/upload-image", async (req, res) => {
         .status(400)
         .json({ success: false, message: "No image provided" });
     }
+
+    // Check if image is base64 string
+    if (typeof image === "string" && image.startsWith("data:image")) {
+      // Validate base64 image size (approximately 10MB limit)
+      const base64Size = (image.length * 3) / 4;
+      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+
+      if (base64Size > maxSize) {
+        return res.status(413).json({
+          success: false,
+          message: "Image size too large. Maximum size is 10MB.",
+        });
+      }
+    }
+
+    // Upload to Cloudinary with optimized settings
     const result = await cloudinary.uploader.upload(image, {
       folder: "e-commerce/products",
+      resource_type: "auto",
+      quality: "auto",
+      fetch_format: "auto",
+      transformation: [
+        { width: 800, height: 800, crop: "limit" },
+        { quality: "auto" },
+      ],
     });
+
     res.status(200).json({
       success: true,
       data: {
         url: result.secure_url,
         public_id: result.public_id,
+        width: result.width,
+        height: result.height,
+        format: result.format,
+        bytes: result.bytes,
       },
     });
   } catch (err) {
     console.error("Backend image upload error:", err);
+
+    // Handle specific Cloudinary errors
+    if (err.http_code === 413) {
+      return res.status(413).json({
+        success: false,
+        message: "Image file too large for upload",
+        error: err.message,
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: "Failed to upload image to Cloudinary",
@@ -157,6 +195,13 @@ router.post("/create", async (req, res) => {
       limit(() =>
         cloudinary.uploader.upload(image, {
           folder: "e-commerce/products",
+          resource_type: "auto",
+          quality: "auto",
+          fetch_format: "auto",
+          transformation: [
+            { width: 800, height: 800, crop: "limit" },
+            { quality: "auto" },
+          ],
         })
       )
     );
@@ -180,6 +225,10 @@ router.post("/create", async (req, res) => {
       countInStock,
       rating: rating || 0,
       isFeatured: isFeatured || false,
+      // Timestamps sẽ được tự động tạo bởi mongoose schema với { timestamps: true }
+      // Nhưng chúng ta có thể set thủ công nếu cần
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     const savedProduct = await product.save();
@@ -347,6 +396,13 @@ router.put(
           cloudinary.uploader
             .upload(image, {
               folder: "e-commerce/products",
+              resource_type: "auto",
+              quality: "auto",
+              fetch_format: "auto",
+              transformation: [
+                { width: 800, height: 800, crop: "limit" },
+                { quality: "auto" },
+              ],
             })
             .catch((err) => {
               console.error(`Failed to upload image:`, err.message);
@@ -482,6 +538,284 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to delete product",
+      error: error.message,
+    });
+  }
+});
+
+// Get best selling products
+router.get("/best-sellers", async (req, res) => {
+  try {
+    const { limit = 10 } = req.query;
+    const bestSellers = await Product.find({ salesCount: { $gt: 0 } })
+      .populate("category")
+      .sort({ salesCount: -1 })
+      .limit(parseInt(limit));
+
+    if (!bestSellers || bestSellers.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No best selling products found",
+        data: [],
+        count: 0,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      count: bestSellers.length,
+      data: bestSellers,
+    });
+  } catch (error) {
+    console.error("Error fetching best sellers:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching best sellers",
+      error: error.message,
+    });
+  }
+});
+
+// Get new products (created within specified days)
+router.get("/new", async (req, res) => {
+  try {
+    const { limit = 10, days = 30 } = req.query;
+    const daysAgo = new Date();
+    daysAgo.setDate(daysAgo.getDate() - parseInt(days));
+
+    const newProducts = await Product.find({
+      createdAt: { $gte: daysAgo },
+    })
+      .populate("category")
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit));
+
+    if (!newProducts || newProducts.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: `No new products found in the last ${days} days`,
+        data: [],
+        count: 0,
+        timeRange: {
+          from: daysAgo.toISOString(),
+          to: new Date().toISOString(),
+          days: parseInt(days),
+        },
+      });
+    }
+
+    // Add time information to each product
+    const productsWithTimeInfo = newProducts.map((product) => ({
+      ...product.toObject(),
+      timeInfo: {
+        createdAt: product.createdAt,
+        daysAgo: Math.floor(
+          (new Date() - product.createdAt) / (1000 * 60 * 60 * 24)
+        ),
+        hoursAgo: Math.floor(
+          (new Date() - product.createdAt) / (1000 * 60 * 60)
+        ),
+        isNew: new Date() - product.createdAt < 24 * 60 * 60 * 1000, // Less than 24 hours
+      },
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: newProducts.length,
+      data: productsWithTimeInfo,
+      timeRange: {
+        from: daysAgo.toISOString(),
+        to: new Date().toISOString(),
+        days: parseInt(days),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching new products:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching new products",
+      error: error.message,
+    });
+  }
+});
+
+// Get products by time range
+router.get("/by-time", async (req, res) => {
+  try {
+    const {
+      limit = 10,
+      startDate,
+      endDate,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = req.query;
+
+    let query = {};
+
+    // Build date range query
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) {
+        query.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        query.createdAt.$lte = new Date(endDate);
+      }
+    }
+
+    // Build sort object
+    const sort = {};
+    sort[sortBy] = sortOrder === "desc" ? -1 : 1;
+
+    const products = await Product.find(query)
+      .populate("category")
+      .sort(sort)
+      .limit(parseInt(limit));
+
+    if (!products || products.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No products found for the specified time range",
+        data: [],
+        count: 0,
+        query: {
+          startDate: startDate || null,
+          endDate: endDate || null,
+          sortBy,
+          sortOrder,
+        },
+      });
+    }
+
+    // Add time information to each product
+    const productsWithTimeInfo = products.map((product) => ({
+      ...product.toObject(),
+      timeInfo: {
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+        daysAgo: Math.floor(
+          (new Date() - product.createdAt) / (1000 * 60 * 60 * 24)
+        ),
+        hoursAgo: Math.floor(
+          (new Date() - product.createdAt) / (1000 * 60 * 60)
+        ),
+        isNew: new Date() - product.createdAt < 24 * 60 * 60 * 1000, // Less than 24 hours
+        isRecent: new Date() - product.createdAt < 7 * 24 * 60 * 60 * 1000, // Less than 7 days
+      },
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: productsWithTimeInfo,
+      query: {
+        startDate: startDate || null,
+        endDate: endDate || null,
+        sortBy,
+        sortOrder,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching products by time:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching products by time",
+      error: error.message,
+    });
+  }
+});
+
+// Get recently added products (last 24 hours)
+router.get("/recent", async (req, res) => {
+  try {
+    const { limit = 10 } = req.query;
+    const oneDayAgo = new Date();
+    oneDayAgo.setHours(oneDayAgo.getHours() - 24);
+
+    const recentProducts = await Product.find({
+      createdAt: { $gte: oneDayAgo },
+    })
+      .populate("category")
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit));
+
+    if (!recentProducts || recentProducts.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No recent products found in the last 24 hours",
+        data: [],
+        count: 0,
+      });
+    }
+
+    // Add time information to each product
+    const productsWithTimeInfo = recentProducts.map((product) => ({
+      ...product.toObject(),
+      timeInfo: {
+        createdAt: product.createdAt,
+        hoursAgo: Math.floor(
+          (new Date() - product.createdAt) / (1000 * 60 * 60)
+        ),
+        minutesAgo: Math.floor((new Date() - product.createdAt) / (1000 * 60)),
+        isVeryNew: new Date() - product.createdAt < 60 * 60 * 1000, // Less than 1 hour
+      },
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: recentProducts.length,
+      data: productsWithTimeInfo,
+      timeRange: {
+        from: oneDayAgo.toISOString(),
+        to: new Date().toISOString(),
+        hours: 24,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching recent products:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching recent products",
+      error: error.message,
+    });
+  }
+});
+
+// Update product sales count (for when orders are placed)
+router.put("/:id/update-sales", async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { quantity = 1 } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid product ID format" });
+    }
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      { $inc: { salesCount: quantity } },
+      { new: true }
+    ).populate("category");
+
+    res.status(200).json({
+      success: true,
+      message: "Sales count updated successfully",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    console.error("Error updating sales count:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating sales count",
       error: error.message,
     });
   }

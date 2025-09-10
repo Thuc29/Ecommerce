@@ -6,6 +6,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { MdCloudUpload } from "react-icons/md";
 import { Button } from "react-bootstrap";
 import { FaHome, FaIcons, FaPlus } from "react-icons/fa";
+import {
+  showSuccess,
+  showError,
+  showSuccessMessages,
+  showErrorMessages,
+} from "../../../utils/sweetAlert";
 
 function ProductUpload() {
   const [formData, setFormData] = useState({});
@@ -30,14 +36,15 @@ function ProductUpload() {
       !formData.category ||
       !formData.countInStock
     ) {
-      setError(
+      showError(
+        "Validation Error",
         "Please fill in all required fields (Name, Price, Category, Stock)"
       );
       return;
     }
     const uploadedImages = images.filter((img) => img !== null); // Lọc bỏ các ô chưa có ảnh
     if (uploadedImages.length === 0) {
-      setError("Please upload at least one image");
+      showError("Validation Error", "Please upload at least one image");
       return;
     }
 
@@ -52,16 +59,20 @@ function ProductUpload() {
         rating: formData.rating || 0,
         isFeatured:
           formData.isFeatured === "true" || formData.isFeatured === true,
+        // Timestamps sẽ được tự động tạo bởi MongoDB schema
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
       const response = await axios.post(
         "http://localhost:8888/api/products/create",
         productData
       );
       if (response.data.success) {
-        window.alert("Product created successfully!");
-        setTimeout(() => navigate("/product-list"), 1000); // Chuyển hướng sau 2 giây
+        showSuccessMessages.productCreated();
+        setTimeout(() => navigate("/product-list"), 1000); // Chuyển hướng sau 1 giây
       }
     } catch (err) {
+      showErrorMessages.productCreateFailed();
       setError(err.response?.data?.message || "Failed to create product");
       console.error(err);
     }

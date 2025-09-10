@@ -3,7 +3,12 @@ import { Button } from "react-bootstrap";
 import { useTheme } from "../Theme/ThemeContext";
 import { postDataToApi } from "../../utils/api";
 import { FaCloudUploadAlt, FaHome, FaIcons, FaPlus } from "react-icons/fa";
-
+import {
+  showSuccess,
+  showError,
+  showSuccessMessages,
+  showErrorMessages,
+} from "../../utils/sweetAlert";
 import { useNavigate } from "react-router-dom";
 function CategoryAdd() {
   const { theme } = useTheme();
@@ -22,13 +27,17 @@ function CategoryAdd() {
     setErrorMessage("");
     try {
       console.log("Sending data:", formFields);
-      const response = await postDataToApi("/api/category/create", formFields);
+      const response = await postDataToApi(
+        "/api/category/create",
+        formFields,
+        false
+      );
       console.log("Response from API:", response);
-      window.alert("✅ Thêm danh mục thành công!");
+      showSuccessMessages.categoryCreated();
       setFormFields({ name: "", images: [], color: "" });
       navigate("/category-list");
     } catch (error) {
-      window.alert("❌ Thêm danh mục thất bại. Vui lòng thử lại.");
+      showErrorMessages.categoryCreateFailed();
       console.error("Failed to add category:", error.response || error.message);
       setErrorMessage(
         error.response?.data?.message ||

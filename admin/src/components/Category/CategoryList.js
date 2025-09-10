@@ -10,6 +10,13 @@ import { Link } from "react-router-dom";
 import ModalEditCategory from "./ModalEditCategory";
 import { IconButton, Pagination } from "@mui/material";
 import { MdDelete, MdEdit } from "react-icons/md";
+import {
+  showSuccess,
+  showError,
+  showDeleteConfirm,
+  showSuccessMessages,
+  showErrorMessages,
+} from "../../utils/sweetAlert";
 
 function CategoryList() {
   const [categories, setCategories] = useState([]);
@@ -45,28 +52,39 @@ function CategoryList() {
 
   const handleDeleteCategory = async (categoryId) => {
     if (!categoryId) {
-      alert("Invalid category ID. Cannot delete.");
+      showError(
+        "Invalid Category ID",
+        "Cannot delete category with invalid ID."
+      );
       return;
     }
 
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this category?"
+    const result = await showDeleteConfirm(
+      "Delete Category?",
+      "Are you sure you want to delete this category? This action cannot be undone."
     );
-    if (!confirmDelete) return;
+
+    if (!result.isConfirmed) {
+      return;
+    }
 
     try {
-      const response = await deleteDataFromApi(`/api/category/${categoryId}`);
+      const response = await deleteDataFromApi(
+        `/api/category/${categoryId}`,
+        false
+      );
       if (response.success) {
-        alert("Category deleted successfully!");
+        showSuccessMessages.categoryDeleted();
         await getCategories();
       } else {
-        alert("Failed to delete category: " + response.message);
+        showError(
+          "Delete Failed",
+          response.message || "Failed to delete category"
+        );
       }
     } catch (error) {
       console.error("Error deleting category:", error);
-      alert(
-        "Failed to delete category: " + (error.message || "Please try again.")
-      );
+      showErrorMessages.categoryDeleteFailed();
     }
   };
 

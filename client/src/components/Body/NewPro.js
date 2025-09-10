@@ -1,23 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
 import ProductModal from "../Product/ProductModal"; // Import the modal component
+import axios from "axios";
+import { showError, showLoading, closeLoading } from "../../utils/sweetAlert";
 
 function NewPro() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sample product data with unique images
-  const products = [...Array(8)].map((_, index) => ({
-    name: "Field Roast Chao Cheese Creamy Original",
-    price: 19.5,
-    originalPrice: 24.0,
-    rating: 5,
-    reviews: 1,
-    status: "IN STOCK",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUGHzjfE-wskiGXZMMtxuOFQ_0mLxGLiFz6Q&s",
-  }));
+  // Fetch new products
+  useEffect(() => {
+    const fetchNewProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          "http://localhost:8888/api/products/by-time?limit=8&sortBy=createdAt&sortOrder=desc"
+        );
+        setProducts(response.data.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching new products:", err.message);
+        setError("Failed to load products");
+        setLoading(false);
+        showError(
+          "Failed to Load Products",
+          "Could not load new products. Please try again."
+        );
+      }
+    };
+
+    fetchNewProducts();
+  }, []);
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
@@ -99,99 +116,142 @@ function NewPro() {
 
               {/* Product Cards */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
-                {products.map((product, index) => (
-                  <div
-                    key={index}
-                    onClick={() => handleOpenModal(product)}
-                    className="cursor-pointer"
-                  >
-                    <div className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:shadow-lg">
-                      <div className="aspect-[3/4] lg:h-[300px] w-full overflow-hidden">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                        />
-                        {/* Quick Action Buttons */}
-                        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                          <button
-                            className="p-2 bg-white border rounded-full hover:bg-[#2bbef9] hover:text-white transition-all duration-300"
-                            onClick={() => handleOpenModal(product)}
+                {loading && (
+                  <div className="col-span-full text-center text-gray-600 py-8">
+                    Loading...
+                  </div>
+                )}
+                {error && (
+                  <div className="col-span-full text-center text-red-500 py-8">
+                    {error}
+                  </div>
+                )}
+                {!loading &&
+                  !error &&
+                  products.map((product, index) => (
+                    <div
+                      key={product._id || index}
+                      onClick={() => handleOpenModal(product)}
+                      className="cursor-pointer"
+                    >
+                      <div className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:shadow-lg">
+                        <div className="aspect-[3/4] lg:h-[300px] w-full overflow-hidden">
+                          <img
+                            src={
+                              product.images && product.images[0]
+                                ? product.images[0].url
+                                : "/assets/placeholder.jpg"
+                            }
+                            alt={product.name}
+                            className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          />
+                          {/* Quick Action Buttons */}
+                          <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <button
+                              className="p-2 bg-white border rounded-full hover:bg-[#2bbef9] hover:text-white transition-all duration-300"
+                              onClick={() => handleOpenModal(product)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                                />
+                              </svg>
+                            </button>
+                            <button className="p-2 bg-white border rounded-full hover:bg-[#2bbef9] hover:text-white transition-all duration-300">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5 text-red-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                          <Link
+                            to={`/product/${product._id}`}
+                            className="hover:bg-teal-300 transition-all duration-300 hover:text-white"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-5 w-5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-                              />
-                            </svg>
-                          </button>
-                          <button className="p-2 bg-white border rounded-full hover:bg-[#2bbef9] hover:text-white transition-all duration-300">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-5 w-5 text-red-500"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                        <Link
-                          to={`/product/${product.name}`}
-                          className="hover:bg-teal-300 transition-all duration-300 hover:text-white"
-                        >
-                          <h4 className="text-base font-semibold text-white truncate">
-                            {product.name}
-                          </h4>
-                        </Link>
-                        {product.status && (
-                          <span className="text-[10px] font-bold text-[#27fa5cfc] mt-1 block">
-                            {product.status}
-                          </span>
-                        )}
-                        <div className="flex items-center gap-1 mb-1">
-                          {[...Array(product.rating)].map((_, i) => (
-                            <span key={i} className="text-yellow-400">
-                              ★
+                            <h4 className="text-base font-semibold text-white truncate">
+                              {product.name}
+                            </h4>
+                          </Link>
+
+                          {/* New Product Badge */}
+                          {product.timeInfo && (
+                            <div className="flex items-center gap-2 mt-1 mb-1">
+                              {product.timeInfo.isNew && (
+                                <span className="text-[8px] font-bold text-[#00ff40] bg-green-600 px-2 py-1 rounded">
+                                  NEW
+                                </span>
+                              )}
+                              {product.timeInfo.daysAgo === 0 && (
+                                <span className="text-[8px] font-bold text-[#ff6b6b] bg-red-600 px-2 py-1 rounded">
+                                  TODAY
+                                </span>
+                              )}
+                              {product.timeInfo.daysAgo > 0 &&
+                                product.timeInfo.daysAgo <= 7 && (
+                                  <span className="text-[8px] font-bold text-[#4ecdc4] bg-teal-600 px-2 py-1 rounded">
+                                    {product.timeInfo.daysAgo}D AGO
+                                  </span>
+                                )}
+                            </div>
+                          )}
+
+                          {product.countInStock > 0 && (
+                            <span className="text-[10px] font-bold text-[#27fa5cfc] mt-1 block">
+                              IN STOCK
                             </span>
-                          ))}
-                          <span className="text-gray-200 text-sm ml-1">
-                            {product.reviews}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-gray-400 line-through text-sm">
-                            ${product.originalPrice.toFixed(2)}
-                          </span>
-                          <p className="text-sm text-red-400 font-semibold">
-                            ${product.price.toFixed(2)}
-                          </p>
-                        </div>
-                        <div className="h-0 group-hover:h-[40px] transition-all duration-300 overflow-hidden">
-                          <button className="w-full bg-white text-[#2bbef9] rounded-full py-2 font-medium hover:bg-[#2bbef9] hover:text-white transition-all duration-300">
-                            Add to cart
-                          </button>
+                          )}
+                          <div className="flex items-center gap-1 mb-1">
+                            {[...Array(Math.round(product.rating || 0))].map(
+                              (_, i) => (
+                                <span key={i} className="text-yellow-400">
+                                  ★
+                                </span>
+                              )
+                            )}
+                            <span className="text-gray-200 text-sm ml-1">
+                              {product.rating || 0}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 mb-2">
+                            {product.oldPrice > 0 && (
+                              <span className="text-gray-400 line-through text-sm">
+                                ${product.oldPrice.toFixed(2)}
+                              </span>
+                            )}
+                            <p className="text-sm text-red-400 font-semibold">
+                              ${product.price.toFixed(2)}
+                            </p>
+                          </div>
+                          <div className="h-0 group-hover:h-[40px] transition-all duration-300 overflow-hidden">
+                            <button className="w-full bg-white text-[#2bbef9] rounded-full py-2 font-medium hover:bg-[#2bbef9] hover:text-white transition-all duration-300">
+                              Add to cart
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
 

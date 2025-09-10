@@ -15,7 +15,8 @@ if (!process.env.CONNECTION || !process.env.PORT) {
 }
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 const categoryRoutes = require("./routes/categories");
 const productRoutes = require("./routes/products");
