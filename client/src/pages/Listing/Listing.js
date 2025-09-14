@@ -102,7 +102,7 @@ function Listing() {
                   onClick={handleDropdownClick}
                   className="flex items-center"
                 >
-                  <span className="text-black">{productsPerPage}</span>
+                  <span className="text-black ">{productsPerPage}</span>
                   <FaAngleDown className="text-black ml-1" />
                 </Button>
                 <Menu

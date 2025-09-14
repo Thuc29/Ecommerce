@@ -3,13 +3,17 @@ import { Link } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
 import ProductModal from "../Product/ProductModal"; // Import the modal component
 import axios from "axios";
-import { showError, showLoading, closeLoading } from "../../utils/sweetAlert";
+import { showError } from "../../utils/sweetAlert";
+import { FaStar } from "react-icons/fa6";
+import Feature from "./Feature";
 
 function NewPro() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
+  const [trendingProducts, setTrendingProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [trendingLoading, setTrendingLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Fetch new products
@@ -36,6 +40,25 @@ function NewPro() {
     fetchNewProducts();
   }, []);
 
+  // Fetch trending products
+  useEffect(() => {
+    const fetchTrendingProducts = async () => {
+      try {
+        setTrendingLoading(true);
+        const response = await axios.get(
+          "http://localhost:8888/api/products/trending?limit=6"
+        );
+        setTrendingProducts(response.data.data);
+        setTrendingLoading(false);
+      } catch (err) {
+        console.error("Error fetching trending products:", err.message);
+        setTrendingLoading(false);
+      }
+    };
+
+    fetchTrendingProducts();
+  }, []);
+
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
@@ -48,7 +71,7 @@ function NewPro() {
 
   return (
     <>
-      <section className="mx-auto w-full max-w-[1270px] px-4 mb-5 z-10">
+      <section className="mx-auto w-full max-w-[1270px] px-4 mb-3 z-10">
         <div className="flex flex-col lg:flex-row gap-2 lg:gap-3">
           {/* Left Banner Section */}
           <div className="w-full lg:w-3/12 hidden lg:block">
@@ -61,7 +84,7 @@ function NewPro() {
             </Link>
             {/* Trending Products */}
             <div
-              className="mt-[10%] lg:w-[270px]"
+              className="mt-[10%] lg:w-[270px] "
               data-aos="zoom-in"
               data-aos-offset="100"
               data-aos-delay="400"
@@ -69,26 +92,73 @@ function NewPro() {
               <h3 className="text-xl font-bold text-gray-800 mb-2">
                 Trending Products
               </h3>
-              <div className="flex flex-col border p-3 rounded-xl gap-3">
-                {[
-                  /* Trending products data here */
-                ].map((product, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center p-4 border rounded-lg shadow-md transition-transform duration-300 hover:scale-105"
-                  >
-                    <span className="text-gray-800 font-semibold">
-                      {product.name}
-                    </span>
-                    <span className="text-red-500 font-semibold">
-                      ${product.price.toFixed(2)}
-                      <span className="line-through text-gray-400">
-                        {" "}
-                        ${product.originalPrice.toFixed(2)}
-                      </span>
-                    </span>
+              <div className="flex flex-col border p-2 rounded-xl gap-3">
+                {trendingLoading && (
+                  <div className="text-center text-gray-500 py-4">
+                    Loading trending products...
                   </div>
-                ))}
+                )}
+                {!trendingLoading && trendingProducts.length === 0 && (
+                  <div className="text-center text-gray-500 py-4">
+                    No trending products available
+                  </div>
+                )}
+                {!trendingLoading &&
+                  trendingProducts.map((product, index) => (
+                    <div
+                      key={product._id || index}
+                      className="flex justify-between items-center py-1 px-2 border rounded-lg shadow-md transition-transform duration-300 hover:scale-105 cursor-pointer"
+                      onClick={() => handleOpenModal(product)}
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <img
+                          src={
+                            product.images && product.images[0]
+                              ? product.images[0].url
+                              : "/assets/placeholder.jpg"
+                          }
+                          alt={product.name}
+                          className="w-12 h-12 rounded object-cover flex-shrink-0"
+                        />
+
+                        <div className="min-w-0">
+                          <span className="text-gray-800 font-semibold text-sm truncate block">
+                            {product.name}
+                          </span>
+                          <div className="flex items-center gap-1 mt-1">
+                            {[...Array(Math.round(product.rating || 0))].map(
+                              (_, i) => (
+                                <span
+                                  key={i}
+                                  className="text-yellow-400 text-xs"
+                                >
+                                  <FaStar className="text-yellow-400 text-xs" />
+                                </span>
+                              )
+                            )}
+                            <span className="text-gray-500 text-xs">
+                              {product.rating || 0}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end ml-2">
+                        <span className="text-red-500 font-semibold text-sm">
+                          ${product.price.toFixed(0)}
+                        </span>
+                        {product.oldPrice > 0 && (
+                          <span className="line-through text-gray-400 text-xs">
+                            ${product.oldPrice.toFixed(0)}
+                          </span>
+                        )}
+                        {product.salesCount > 0 && (
+                          <span className="text-gray-300 text-xs">
+                            {product.salesCount} sold
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
@@ -121,11 +191,7 @@ function NewPro() {
                     Loading...
                   </div>
                 )}
-                {error && (
-                  <div className="col-span-full text-center text-red-500 py-8">
-                    {error}
-                  </div>
-                )}
+
                 {!loading &&
                   !error &&
                   products.map((product, index) => (
@@ -145,6 +211,20 @@ function NewPro() {
                             alt={product.name}
                             className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-110"
                           />
+                          <div className="absolute top-2 left-2 flex flex-row justify-between gap-1">
+                            <span className="bg-[#2bbff9c4] max-w-[70%]  text-white text-center text-xs font-bold p-1 rounded">
+                              {product.oldPrice && product.price
+                                ? `${Math.round(
+                                    ((product.oldPrice - product.price) /
+                                      product.oldPrice) *
+                                      100
+                                  )}%`
+                                : "19%"}
+                            </span>
+                            <span className="bg-[#27fc18] text-white text-xs font-bold px-2 py-1 rounded">
+                              New
+                            </span>
+                          </div>
                           {/* Quick Action Buttons */}
                           <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
                             <button
@@ -236,11 +316,11 @@ function NewPro() {
                           <div className="flex items-center gap-2 mb-2">
                             {product.oldPrice > 0 && (
                               <span className="text-gray-400 line-through text-sm">
-                                ${product.oldPrice.toFixed(2)}
+                                ${product.oldPrice.toFixed(0)}
                               </span>
                             )}
                             <p className="text-sm text-red-400 font-semibold">
-                              ${product.price.toFixed(2)}
+                              ${product.price.toFixed(0)}
                             </p>
                           </div>
                           <div className="h-0 group-hover:h-[40px] transition-all duration-300 overflow-hidden">
@@ -254,18 +334,7 @@ function NewPro() {
                   ))}
               </div>
             </div>
-
-            {/* Bottom Banners */}
-            <div className="mt-5 grid grid-cols-2 gap-4">
-              <img
-                src="/assets/banner8.png"
-                className="w-full cursor-pointer rounded-xl"
-              />
-              <img
-                src="/assets/banner7.png"
-                className="w-full cursor-pointer rounded-xl"
-              />
-            </div>
+            <Feature />
           </div>
         </div>
       </section>

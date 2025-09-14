@@ -62,7 +62,7 @@ function Navigations() {
   };
 
   return (
-    <Navbar className="relative w-full bg-white">
+    <Navbar className="relative w-full bg-white overflow-x-hidden overflow-y-hidden">
       <Container className="max-w-[1280px] mx-auto lg:px-7 md:px-5 px-7">
         <div className="flex flex-col md:flex-row w-full items-center gap-3 md:gap-5">
           {showCategories && (
@@ -149,72 +149,76 @@ function Navigations() {
               )}
             </div>
           )}
-
-          <div
-            className="w-full overflow-x-auto scrollbar-hide lg:pl-[10%] [&::-webkit-scrollbar]:h-1
-  [&::-webkit-scrollbar-thumb]:rounded-xl
-  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-300"
-          >
-            <ul className="flex items-center justify-center md:justify-start gap-6 md:gap-8 py-2 min-w-max">
-              <li className="whitespace-nowrap relative after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-[#2bbef9] after:left-0 after:bottom-[-4px] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left">
+          <div className="w-full lg:pl-[10%]">
+            <div className="w-full flex items-center gap-6">
+              {/* HOME cố định */}
+              <div className="shrink-0">
                 <Link
                   to="/"
-                  className="text-black font-medium text-[14px] uppercase hover:text-[#2bbef9] transition-colors relative"
+                  className="text-black font-medium text-[14px] uppercase hover:text-[#2bbef9] transition-colors relative after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-[#2bbef9] after:left-0 after:bottom-[-4px] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left flex items-center gap-1"
                 >
                   <MdHome size={16} className="inline-block mr-1" /> HOME
                 </Link>
-              </li>
+              </div>
 
-              {loading && <li className="text-gray-600">Loading...</li>}
-              {error && <li className="text-red-500">{error}</li>}
-              {!loading &&
-                !error &&
-                categories.map((category) => (
-                  <li key={category._id["$oid"]} className="w-auto group">
-                    <Link
-                      to="/"
-                      className="text-black font-medium text-[14px] uppercase hover:text-[#2bbef9] transition-colors relative after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-[#2bbef9] after:left-0 after:bottom-[-4px] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left flex items-center gap-1"
-                    >
-                      {category.images && category.images.length > 0 ? (
-                        <img
-                          src={category.images[0]}
-                          alt={category.name}
-                          className="w-4 h-4 object-contain inline-block mr-1"
-                        />
-                      ) : (
-                        <span className="text-[16px] inline-block mr-1">
-                          📦
-                        </span>
-                      )}
-                      {category.name.toUpperCase()}
-                      <MdKeyboardArrowRight
-                        size={14}
-                        className="transition-transform duration-200 group-hover:rotate-180"
-                      />
-                    </Link>
-                    <div className="absolute top-[100%] min-w-[220px] bg-white shadow-xl rounded-xl p-5 opacity-0 invisible transform translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-in-out z-50 border border-gray-100">
-                      {category.subCategories.map((subCategory) => (
+              {/* Categories cuộn ngang */}
+              <div
+                className="flex-1 overflow-x-auto max-w-[70%] scrollbar-hide [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:rounded-xl
+  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-300"
+              >
+                <ul className="flex items-center justify-start gap-6 md:gap-8 py-2 min-w-max">
+                  {loading && <li className="text-gray-600">Loading...</li>}
+                  {error && <li className="text-red-500">{error}</li>}
+                  {!loading &&
+                    !error &&
+                    categories.map((category) => (
+                      <li key={category._id["$oid"]} className="w-auto group">
                         <Link
-                          key={
-                            subCategory._id
-                              ? subCategory._id["$oid"]
-                              : subCategory.label
-                          }
                           to="/"
-                          className="block py-1 px-4 text-[14px] text-gray-800 hover:text-[#2bbef9] hover:bg-[#f0faff] rounded-lg transition-all duration-200 mb-2 last:mb-0 relative after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-[#2bbef9] after:left-0 after:bottom-[-4px] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left"
+                          className="text-black font-medium text-[14px] uppercase hover:text-[#2bbef9] transition-colors relative after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-[#2bbef9] after:left-0 after:bottom-[-4px] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left flex items-center gap-1"
                         >
-                          <Button className="w-full text-left flex items-center gap-2">
-                            <span className="text-[16px]">
-                              {subCategory.icon}
+                          {category.images && category.images.length > 0 ? (
+                            <img
+                              src={category.images[0]}
+                              alt={category.name}
+                              className="w-4 h-4 object-contain inline-block mr-1"
+                            />
+                          ) : (
+                            <span className="text-[16px] inline-block mr-1">
+                              📦
                             </span>
-                            {subCategory.label}
-                          </Button>
+                          )}
+                          {category.name.toUpperCase()}
+                          <MdKeyboardArrowRight
+                            size={14}
+                            className="transition-transform duration-200 group-hover:rotate-180"
+                          />
                         </Link>
-                      ))}
-                    </div>
-                  </li>
-                ))}
-            </ul>
+                        <div className="absolute top-[100%] min-w-[220px] bg-white shadow-xl rounded-xl p-5 opacity-0 invisible transform translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-in-out z-50 border border-gray-100">
+                          {category.subCategories.map((subCategory) => (
+                            <Link
+                              key={
+                                subCategory._id
+                                  ? subCategory._id["$oid"]
+                                  : subCategory.label
+                              }
+                              to="/"
+                              className="block py-1 px-4 text-[14px] text-gray-800 hover:text-[#2bbef9] hover:bg-[#f0faff] rounded-lg transition-all duration-200 mb-2 last:mb-0 relative after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-[#2bbef9] after:left-0 after:bottom-[-4px] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left"
+                            >
+                              <Button className="w-full text-left flex items-center gap-2">
+                                <span className="text-[16px]">
+                                  {subCategory.icon}
+                                </span>
+                                {subCategory.label}
+                              </Button>
+                            </Link>
+                          ))}
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </Container>

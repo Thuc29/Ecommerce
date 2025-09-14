@@ -821,6 +821,95 @@ router.put("/:id/update-sales", async (req, res) => {
   }
 });
 
+// Get trending products (based on sales count and rating)
+router.get("/trending", async (req, res) => {
+  try {
+    const { limit = 10 } = req.query;
+
+    // Get trending products based on sales count, rating, and recent activity
+    const trendingProducts = await Product.find({
+      $or: [
+        { salesCount: { $gt: 0 } }, // Products with sales
+        { rating: { $gte: 4 } }, // High-rated products
+        { isFeatured: true }, // Featured products
+      ],
+    })
+      .populate("category")
+      .sort({
+        salesCount: -1, // Sort by sales count first
+        rating: -1, // Then by rating
+        createdAt: -1, // Then by creation date
+      })
+      .limit(parseInt(limit));
+
+    if (!trendingProducts || trendingProducts.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No trending products found",
+        data: [],
+        count: 0,
+      });
+    }
+
+    // Add trending score calculation
+    const productsWithTrendingScore = trendingProducts.map((product) => {
+      const trendingScore =
+        product.salesCount * 0.4 +
+        product.rating * 0.3 +
+        (product.isFeatured ? 10 : 0) +
+        (new Date() - product.createdAt < 7 * 24 * 60 * 60 * 1000 ? 5 : 0); // Bonus for recent products
+
+      return {
+        ...product.toObject(),
+        trendingScore: Math.round(trendingScore * 100) / 100,
+      };
+    });
+
+    // Sort by trending score
+    productsWithTrendingScore.sort((a, b) => b.trendingScore - a.trendingScore);
+
+    res.status(200).json({
+      success: true,
+      count: productsWithTrendingScore.length,
+      data: productsWithTrendingScore,
+    });
+  } catch (error) {
+    console.error("Error fetching trending products:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching trending products",
+      error: error.message,
+    });
+  }
+});
+
+// Get featured products (isFeatured = true)
+router.get("/featured", async (req, res) => {
+  try {
+    const { limit = 10, sortBy = "createdAt", sortOrder = "desc" } = req.query;
+    const sort = {};
+    sort[sortBy] = sortOrder === "asc" ? 1 : -1;
+
+    const featured = await Product.find({ isFeatured: true })
+      .populate("category")
+      .sort(sort)
+      .limit(parseInt(limit));
+
+    return res.status(200).json({
+      success: true,
+      count: featured.length,
+      data: featured,
+    });
+  } catch (error) {
+    console.error("Error fetching featured products:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching featured products",
+      error: error.message,
+    });
+  }
+});
+
 // Get product by ID
 router.get("/:id", async (req, res) => {
   try {
@@ -849,6 +938,46 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error retrieving product",
+      error: error.message,
+    });
+  }
+});
+
+// Get price range (min and max prices)
+router.get("/price-range", async (req, res) => {
+  try {
+    const priceRange = await Product.aggregate([
+      {
+        $group: {
+          _id: null,
+          minPrice: { $min: "$price" },
+          maxPrice: { $max: "$price" },
+        },
+      },
+    ]);
+
+    if (!priceRange || priceRange.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: { minPrice: 0, maxPrice: 1000 },
+        message: "No products found, using default range",
+      });
+    }
+
+    const { minPrice, maxPrice } = priceRange[0];
+
+    res.status(200).json({
+      success: true,
+      data: {
+        minPrice: Math.floor(minPrice),
+        maxPrice: Math.ceil(maxPrice),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching price range:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching price range",
       error: error.message,
     });
   }

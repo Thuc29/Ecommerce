@@ -4,7 +4,7 @@ import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import Slider from "react-slick";
 import ProductModal from "../Product/ProductModal";
 import axios from "axios";
-import { showError, showLoading, closeLoading } from "../../utils/sweetAlert";
+import { showError } from "../../utils/sweetAlert";
 
 function Seller() {
   const [isModalOpen, setIsModalOpen] = useState(false);

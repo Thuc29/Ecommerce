@@ -5,16 +5,6 @@ import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-// // Function to generate a random hex color (fallback if no color from API)
-// const generateRandomColor = () => {
-//   const letters = "0123456789ABCDEF";
-//   let color = "#";
-//   for (let i = 0; i < 6; i++) {
-//     color += letters[Math.floor(Math.random() * 16)];
-//   }
-//   return color;
-// };
-
 function HomeCat() {
   const sliderRef = useRef(null);
   const [categories, setCategories] = useState([]); // State to store fetched categories

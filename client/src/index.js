@@ -6,6 +6,7 @@ import "./index.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "swiper/css";
+import "react-range-slider-input/dist/style.css";
 import "swiper/css/navigation";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
