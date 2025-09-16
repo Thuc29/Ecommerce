@@ -15,8 +15,10 @@ function HomeCat() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8888/api/category"); // Adjust URL as needed
-        setCategories(response.data.data); // Assuming the API returns { success: true, data: [...] }
+        const response = await axios.get(
+          "http://localhost:8888/api/category/with-count"
+        );
+        setCategories(response.data.data);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching categories:", err.message);
@@ -122,7 +124,7 @@ function HomeCat() {
                       )}
                     </h4>
                     <p className="text-center text-gray-600 text-sm mt-1">
-                      {category?.length || "N/A"} Items
+                      {category?.productCount ?? 0} Items
                     </p>
                   </div>
                 </div>

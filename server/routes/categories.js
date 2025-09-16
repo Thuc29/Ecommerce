@@ -100,6 +100,44 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Get categories with product counts
+router.get("/with-count", async (req, res) => {
+  try {
+    const Product = require("../models/product");
+    const results = await Product.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          productCount: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Fetch categories to map names/images
+    const categories = await Category.find();
+    const countMap = new Map(
+      results.map((r) => [String(r._id), r.productCount])
+    );
+
+    const data = categories.map((c) => ({
+      _id: c._id,
+      name: c.name,
+      images: c.images,
+      color: c.color,
+      productCount: countMap.get(String(c._id)) || 0,
+    }));
+
+    return res.status(200).json({ success: true, data });
+  } catch (err) {
+    console.error("Error fetching categories with counts:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch categories with counts",
+      error: err.message,
+    });
+  }
+});
+
 // **3. Get Category by ID**
 router.get("/:id", async (req, res) => {
   const categoryId = req.params.id.trim();
@@ -264,12 +302,10 @@ router.post("/:id/subcategories", async (req, res) => {
 
     // Check for duplicate subcategory name within the category
     if (category.subcategories.some((sub) => sub.name === name)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Subcategory name already exists in this category",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Subcategory name already exists in this category",
+      });
     }
 
     const newSubcategory = { name };
@@ -332,12 +368,10 @@ router.put("/:id/subcategories/:subId", async (req, res) => {
         (sub) => sub.name === name && sub._id.toString() !== subId
       )
     ) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Subcategory name already exists in this category",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Subcategory name already exists in this category",
+      });
     }
 
     subcategory.name = name;

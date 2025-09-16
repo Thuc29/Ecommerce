@@ -4,13 +4,16 @@ import React, { useEffect, useState } from "react";
 import RangeSlider from "react-range-slider-input";
 import { Link } from "react-router-dom";
 
-function Sidebar() {
+function Sidebar({ onPriceFilter, onBrandFilter }) {
   const [value, setValue] = useState([100, 60000]);
   const [categories, setCategories] = useState([]);
-  const [priceRange, setPriceRange] = useState({
-    minPrice: 100,
-    maxPrice: 60000,
-  });
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [minPrice, setMinPrice] = useState(null);
+  const [maxPrice, setMaxPrice] = useState(null);
+  const [brands, setBrands] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
+  const [error, setError] = useState(null);
   const [priceLoading, setPriceLoading] = useState(true);
   const [loading, setLoading] = useState(true);
 
@@ -29,23 +32,72 @@ function Sidebar() {
   }, []);
 
   useEffect(() => {
-    const fetchPriceRange = async () => {
+    const fetchProducts = async () => {
       try {
         setPriceLoading(true);
-        const response = await axios.get(
-          "http://localhost:8888/api/products/price-range"
-        );
-        const { minPrice, maxPrice } = response.data.data;
-        setPriceRange({ minPrice, maxPrice });
-        setValue([minPrice, maxPrice]);
+        const response = await axios.get("http://localhost:8888/api/products");
+        const list = response.data.data || [];
+        setProducts(list);
+        setFilteredProducts(list);
+
+        // Tính min/max giá từ dataset
+        if (list.length > 0) {
+          const prices = list.map((p) => p.price || 0);
+          const minP = Math.min(...prices);
+          const maxP = Math.max(...prices);
+          setMinPrice(minP);
+          setMaxPrice(maxP);
+          setValue([minP, maxP]);
+          if (onPriceFilter) onPriceFilter([minP, maxP]);
+        } else {
+          setMinPrice(0);
+          setMaxPrice(0);
+          setValue([0, 0]);
+          if (onPriceFilter) onPriceFilter([0, 0]);
+        }
+        setLoading(false);
         setPriceLoading(false);
-      } catch (error) {
-        console.error("Error fetching price range:", error);
+      } catch (err) {
+        console.error("Error fetching products:", err.message);
+        setError("Failed to load products");
+        setLoading(false);
         setPriceLoading(false);
       }
     };
-    fetchPriceRange();
+
+    fetchProducts();
   }, []);
+
+  // Fetch brands
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:8888/api/products/brands"
+        );
+        setBrands(res.data.data || []);
+      } catch (err) {
+        console.error("Error fetching brands:", err.message);
+      }
+    };
+    fetchBrands();
+  }, []);
+
+  const handleToggleBrand = (brandName) => {
+    setSelectedBrands((prev) => {
+      const exists = prev.includes(brandName);
+      const next = exists
+        ? prev.filter((b) => b !== brandName)
+        : [...prev, brandName];
+      if (onBrandFilter) onBrandFilter(next);
+      return next;
+    });
+  };
+
+  const handleSliderChange = (newValue) => {
+    setValue(newValue);
+    if (onPriceFilter) onPriceFilter(newValue);
+  };
 
   return (
     <>
@@ -81,34 +133,16 @@ function Sidebar() {
             </div>
           ) : (
             <>
-              {/* Hiển thị giá min/max thực tế từ sản phẩm */}
-              <div className="mb-3 p-2 bg-gray-50 rounded-lg">
-                <div className="text-xs text-gray-600 mb-1">
-                  Available Price Range:
-                </div>
-                <div className="flex justify-between text-sm font-semibold">
-                  <span className="text-green-600">
-                    Min: {priceRange.minPrice.toLocaleString()} VND
-                  </span>
-                  <span className="text-red-600">
-                    Max: {priceRange.maxPrice.toLocaleString()} VND
-                  </span>
-                </div>
-              </div>
-
               <RangeSlider
                 value={value}
-                onInput={setValue}
-                min={priceRange.minPrice}
-                max={priceRange.maxPrice}
-                step={Math.max(
-                  1,
-                  Math.floor((priceRange.maxPrice - priceRange.minPrice) / 100)
-                )}
+                onInput={handleSliderChange}
+                min={minPrice}
+                max={maxPrice}
+                step={Math.max(1, Math.floor((maxPrice - minPrice) / 100))}
               />
 
               {/* Hiển thị giá trị đang chọn */}
-              <div className="flex py-2">
+              <div className="flex py-2 justify-between items-center">
                 <span className="text-xs text-gray-500">
                   Selected:{" "}
                   <strong className="text-gray-700">
@@ -118,24 +152,20 @@ function Sidebar() {
                   <strong className="text-gray-700">
                     {value[1].toLocaleString()}
                   </strong>{" "}
-                  VND
+                  $
                 </span>
-              </div>
 
-              {/* Hiển thị tỷ lệ phần trăm so với range */}
-              <div className="text-xs text-gray-400 mt-1">
-                {Math.round(
-                  ((value[0] - priceRange.minPrice) /
-                    (priceRange.maxPrice - priceRange.minPrice)) *
-                    100
-                )}
-                % -{" "}
-                {Math.round(
-                  ((value[1] - priceRange.minPrice) /
-                    (priceRange.maxPrice - priceRange.minPrice)) *
-                    100
-                )}
-                % of range
+                {/* Hiển thị tỷ lệ phần trăm so với range */}
+                <div className="text-xs text-gray-400">
+                  {Math.round(
+                    ((value[0] - minPrice) / (maxPrice - minPrice)) * 100
+                  )}
+                  % -{" "}
+                  {Math.round(
+                    ((value[1] - minPrice) / (maxPrice - minPrice)) * 100
+                  )}
+                  %
+                </div>
               </div>
             </>
           )}
@@ -164,118 +194,43 @@ function Sidebar() {
           </div>
         </div>
         <div className="filterBox ">
-          <h6 className="font-bold text-[15px] mb-4"> BRANDS </h6>
+          <h6 className="font-bold text-[15px] mb-4">
+            {" "}
+            BRANDS ({brands.length})
+          </h6>
           <div
-            className="scroll pl-2 max-h-[200px] overflow-y-auto overflow-x-hidden
+            className="scroll cursor-pointer pl-2 max-h-[200px] overflow-y-auto overflow-x-hidden
   [&::-webkit-scrollbar]:w-1
   [&::-webkit-scrollbar-thumb]:rounded-xl
   dark:[&::-webkit-scrollbar-thumb]:bg-neutral-300
+  font-[Space_Grotesk]
   "
           >
             <ul>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="Gucci"
-                />{" "}
-              </li>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="Charle "
-                />{" "}
-              </li>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="Gucci"
-                />{" "}
-              </li>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="Charle "
-                />{" "}
-              </li>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="Gucci"
-                />{" "}
-              </li>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="Charle "
-                />{" "}
-              </li>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="Gucci"
-                />{" "}
-              </li>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="Charle "
-                />{" "}
-              </li>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="Gucci"
-                />{" "}
-              </li>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="Charle "
-                />{" "}
-              </li>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="Gucci"
-                />{" "}
-              </li>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="Charle "
-                />{" "}
-              </li>
+              {brands.map((brand) => (
+                <li key={brand.name} className="list-none w-full mb-1">
+                  <FormControlLabel
+                    className="w-full cursor-pointer"
+                    control={
+                      <Checkbox
+                        checked={selectedBrands.includes(brand.name)}
+                        onChange={() => handleToggleBrand(brand.name)}
+                      />
+                    }
+                    label={`${brand.name} (${brand.count})`}
+                  />
+                </li>
+              ))}
+              {brands.length === 0 && (
+                <li className="text-gray-500 text-sm">No brands found</li>
+              )}
             </ul>
           </div>
         </div>
         <Link to={"#"}>
           <img
             src="https://cdn.create.vista.com/downloads/c7f2b823-e345-4c35-9470-8190110f66bb_360.jpeg"
-            className="w-full"
+            className="w-full pt-6"
           />
         </Link>
       </div>

@@ -910,6 +910,39 @@ router.get("/featured", async (req, res) => {
   }
 });
 
+// Get distinct brands from products
+router.get("/brands", async (req, res) => {
+  try {
+    const brands = await Product.aggregate([
+      {
+        $group: {
+          _id: {
+            $toUpper: { $trim: { input: "$brand" } },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      { $match: { _id: { $ne: null } } },
+      { $sort: { _id: 1 } },
+    ]);
+
+    const data = brands.map((b) => ({ name: b._id, count: b.count }));
+
+    return res.status(200).json({
+      success: true,
+      count: data.length,
+      data,
+    });
+  } catch (error) {
+    console.error("Error fetching brands:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching brands",
+      error: error.message,
+    });
+  }
+});
+
 // Get product by ID
 router.get("/:id", async (req, res) => {
   try {
@@ -938,46 +971,6 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error retrieving product",
-      error: error.message,
-    });
-  }
-});
-
-// Get price range (min and max prices)
-router.get("/price-range", async (req, res) => {
-  try {
-    const priceRange = await Product.aggregate([
-      {
-        $group: {
-          _id: null,
-          minPrice: { $min: "$price" },
-          maxPrice: { $max: "$price" },
-        },
-      },
-    ]);
-
-    if (!priceRange || priceRange.length === 0) {
-      return res.status(200).json({
-        success: true,
-        data: { minPrice: 0, maxPrice: 1000 },
-        message: "No products found, using default range",
-      });
-    }
-
-    const { minPrice, maxPrice } = priceRange[0];
-
-    res.status(200).json({
-      success: true,
-      data: {
-        minPrice: Math.floor(minPrice),
-        maxPrice: Math.ceil(maxPrice),
-      },
-    });
-  } catch (error) {
-    console.error("Error fetching price range:", error.message);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while fetching price range",
       error: error.message,
     });
   }

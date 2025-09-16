@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Col, Container, Navbar, Row } from "react-bootstrap";
+import { Button, Container, Navbar } from "react-bootstrap";
 import { MdKeyboardArrowRight, MdLaptopMac, MdHome } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { IoIosMenu } from "react-icons/io";
@@ -62,7 +62,7 @@ function Navigations() {
   };
 
   return (
-    <Navbar className="relative w-full bg-white overflow-x-hidden overflow-y-hidden">
+    <Navbar className="relative w-full bg-white overflow-visible">
       <Container className="max-w-[1280px] mx-auto lg:px-7 md:px-5 px-7">
         <div className="flex flex-col md:flex-row w-full items-center gap-3 md:gap-5">
           {showCategories && (
@@ -87,64 +87,68 @@ function Navigations() {
                 </span>
               </Button>
               {showCategoryMenu && (
-                <div className="absolute top-[100%] min-w-[220px] bg-white shadow-xl rounded-2xl px-4 py-3 z-50 border border-gray-100">
-                  {loading && (
-                    <p className="text-center text-gray-600">Loading...</p>
-                  )}
-                  {error && <p className="text-center text-red-500">{error}</p>}
-                  {!loading &&
-                    !error &&
-                    categories.map((item) => (
-                      <div
-                        key={item._id["$oid"]}
-                        className="group/item relative"
-                      >
-                        <Link
-                          to="/"
-                          className="block text-[14px] text-gray-800 hover:text-[#2bbef9] hover:bg-[#f0faff] rounded-lg transition-all duration-200 mb-2 last:mb-0 relative after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-[#2bbef9] after:left-0 after:bottom-[-4px] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left"
+                <div className="absolute top-[100%] left-18 min-w-[260px] max-w-[300px] bg-white shadow-2xl rounded-2xl z-50 border border-gray-100 overflow-hidden">
+                  <div className="max-h-[60vh] overflow-y-auto px-2 py-2">
+                    {loading && (
+                      <p className="text-center text-gray-600 py-2">
+                        Loading...
+                      </p>
+                    )}
+                    {error && (
+                      <p className="text-center text-red-500 py-2">{error}</p>
+                    )}
+                    {!loading &&
+                      !error &&
+                      categories.map((item) => (
+                        <div
+                          key={item._id["$oid"]}
+                          className="group/item relative"
                         >
-                          <span className="flex items-center justify-between">
-                            <span className="flex items-center gap-2">
+                          <Link
+                            to="/"
+                            className="flex items-center justify-between gap-2 text-[14px] text-gray-800 hover:text-[#2bbef9] hover:bg-[#f0faff] rounded-xl transition-all duration-200 mb-1 last:mb-0 px-3 py-2"
+                          >
+                            <span className="flex items-center gap-2 min-w-0">
                               {item.images && item.images.length > 0 ? (
                                 <img
                                   src={item.images[0]}
                                   alt={item.name}
-                                  className="w-6 h-6 object-contain"
+                                  className="w-6 h-6 object-contain shrink-0"
                                 />
                               ) : (
-                                <span className="text-lg">📦</span> // Fallback icon
+                                <span className="text-lg shrink-0">📦</span>
                               )}
-                              {item.name}
+                              <span className="truncate">{item.name}</span>
                             </span>
                             <MdKeyboardArrowRight
                               size={16}
-                              className="transition-transform duration-200 group-hover/item:rotate-90"
+                              className="text-gray-400 transition-transform duration-200 group-hover/item:translate-x-0.5"
                             />
-                          </span>
-                        </Link>
+                          </Link>
 
-                        <div className="absolute left-full top-0 min-w-[200px] bg-white shadow-xl rounded-xl p-2 opacity-0 invisible transform translate-x-2 group-hover/item:opacity-100 group-hover/item:visible group-hover/item:translate-x-0 transition-all duration-200 ease-in-out z-50 border border-gray-100 ml-2">
-                          {item.subCategories.map((subCategory) => (
-                            <Link
-                              key={
-                                subCategory._id
-                                  ? subCategory._id["$oid"]
-                                  : subCategory.label
-                              }
-                              to="/"
-                              className="block p-1 text-[14px] text-gray-800 hover:text-[#2bbef9] hover:bg-[#f0faff] rounded-lg transition-all duration-200 mb-2 last:mb-0 relative after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-[#2bbef9] after:left-0 after:bottom-[-4px] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left"
-                            >
-                              <span className="flex items-center gap-2">
-                                <span className="text-[16px]">
-                                  {subCategory.icon}
+                          <div className="absolute left-full top-0 min-w-[220px] bg-white shadow-xl rounded-xl p-2 opacity-0 invisible transform translate-x-2 group-hover/item:opacity-100 group-hover/item:visible group-hover/item:translate-x-0 transition-all duration-200 ease-in-out z-50 border border-gray-100 ml-2">
+                            {item.subCategories.map((subCategory) => (
+                              <Link
+                                key={
+                                  subCategory._id
+                                    ? subCategory._id["$oid"]
+                                    : subCategory.label
+                                }
+                                to="/"
+                                className="block p-2 text-[14px] text-gray-800 hover:text-[#2bbef9] hover:bg-[#f0faff] rounded-lg transition-all duration-200 mb-1 last:mb-0"
+                              >
+                                <span className="flex items-center gap-2">
+                                  <span className="text-[16px]">
+                                    {subCategory.icon}
+                                  </span>
+                                  {subCategory.label}
                                 </span>
-                                {subCategory.label}
-                              </span>
-                            </Link>
-                          ))}
+                              </Link>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                  </div>
                 </div>
               )}
             </div>

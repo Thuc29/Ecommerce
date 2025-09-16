@@ -16,9 +16,15 @@ function Listing() {
   const [productView, setProductView] = useState("four");
   const [productsPerPage, setProductsPerPage] = useState(9);
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const openDropDown = Boolean(anchorEl);
+  const [minPrice, setMinPrice] = useState(null);
+  const [maxPrice, setMaxPrice] = useState(null);
+  const [sortOrder, setSortOrder] = useState("none"); // 'asc' | 'desc' | 'none'
+  const [priceFilter, setPriceFilter] = useState(null);
+  const [brandFilter, setBrandFilter] = useState([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,7 +48,19 @@ function Listing() {
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:8888/api/products");
-        setProducts(response.data.data); // Assuming the API returns { data: [...] }
+        const list = response.data.data || [];
+        setProducts(list);
+        setFilteredProducts(list);
+
+        // Tính min/max giá từ dataset
+        if (list.length > 0) {
+          const prices = list.map((p) => p.price || 0);
+          setMinPrice(Math.min(...prices));
+          setMaxPrice(Math.max(...prices));
+        } else {
+          setMinPrice(0);
+          setMaxPrice(0);
+        }
         setLoading(false);
       } catch (err) {
         console.error("Error fetching products:", err.message);
@@ -53,6 +71,38 @@ function Listing() {
 
     fetchProducts();
   }, []);
+
+  // Cập nhật danh sách theo filter giá + brand
+  useEffect(() => {
+    let list = products;
+    if (priceFilter && list.length > 0) {
+      const [minP, maxP] = priceFilter;
+      list = list.filter(
+        (p) => (p.price || 0) >= minP && (p.price || 0) <= maxP
+      );
+    }
+    if (brandFilter && brandFilter.length > 0) {
+      const setBrands = new Set(
+        brandFilter.map((b) =>
+          String(b || "")
+            .trim()
+            .toUpperCase()
+        )
+      );
+      list = list.filter((p) =>
+        setBrands.has(
+          String(p.brand || "")
+            .trim()
+            .toUpperCase()
+        )
+      );
+    }
+    setFilteredProducts(list);
+  }, [priceFilter, brandFilter, products]);
+
+  const handlePriceFilter = (range) => {
+    setPriceFilter(range);
+  };
 
   const handleDropdownClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -67,7 +117,10 @@ function Listing() {
     <section className="product-listing-page mx-auto w-full md:max-w-[1270px] px-4 py-8 rounded-xl">
       <div className="container">
         <div className="productListing md:gap-6 md:flex">
-          <Sidebar />
+          <Sidebar
+            onPriceFilter={handlePriceFilter}
+            onBrandFilter={setBrandFilter}
+          />
           <div className="content_right w-full md:w-[80%] text-center">
             <img
               src="/assets/bannerList1.jpeg"
@@ -110,7 +163,7 @@ function Listing() {
                   open={openDropDown}
                   onClose={() => handleDropdownClose(null)}
                 >
-                  {[9, 12, 24].map((count) => (
+                  {[8, 12, 24].map((count) => (
                     <MenuItem
                       key={count}
                       onClick={() => handleDropdownClose(count)}
@@ -119,6 +172,18 @@ function Listing() {
                     </MenuItem>
                   ))}
                 </Menu>
+              </div>
+              <div className="ml-4 flex items-center ">
+                <p className="text-gray-500 mr-2">Sort by:</p>
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  className="border !rounded-xl py-1 text-sm "
+                >
+                  <option value="none">Default</option>
+                  <option value="asc">Low to High</option>
+                  <option value="desc">High to Low</option>
+                </select>
               </div>
             </div>
             <div
@@ -144,7 +209,14 @@ function Listing() {
               )}
               {!loading &&
                 !error &&
-                products
+                [...filteredProducts]
+                  .sort((a, b) => {
+                    if (sortOrder === "asc")
+                      return (a.price || 0) - (b.price || 0);
+                    if (sortOrder === "desc")
+                      return (b.price || 0) - (a.price || 0);
+                    return 0;
+                  })
                   .slice(0, productsPerPage)
                   .map((product, index) => (
                     <ProductItem
