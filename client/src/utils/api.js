@@ -1,7 +1,10 @@
 import axios from "axios";
 import { handleApiError } from "./sweetAlert";
 
-const API_BASE_URL = "http://localhost:8888";
+// Sử dụng biến môi trường để chuyển đổi giữa local và production
+// Local: http://localhost:8888
+// Production: https://ecommerce-u7gm.onrender.com
+const API_BASE_URL = import.meta.env.REACT_API_URL || "http://localhost:8888";
 
 // Hàm GET
 export const fetchDataFromApi = async (url, showErrorAlert = true) => {
