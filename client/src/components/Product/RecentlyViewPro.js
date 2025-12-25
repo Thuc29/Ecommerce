@@ -30,7 +30,7 @@ function RecentlyViewPro({ productId }) {
     const fetchRecentlyViewed = async () => {
       try {
         // Simulate fetching recently viewed products; ideally, this would use a user-specific API
-        const response = await axios.get(" https://ecommerce-u7gm.onrender.com/api/products");
+        const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/products");
         const allProducts = response.data.data || [];
         // Filter out the current product and take the first few as "recently viewed"
         const filteredProducts = allProducts.filter(

@@ -32,7 +32,7 @@ function DashboardBoxProduct({ color, icon, grow, type }) {
       try {
         if (type === "products") {
           const response = await axios.get(
-            " https://ecommerce-u7gm.onrender.com/api/products"
+            "https://ecommerce-u7gm.onrender.com/api/products"
           );
           if (response.data.success && Array.isArray(response.data.data)) {
             setData(response.data.data.length); // Total products
@@ -41,7 +41,7 @@ function DashboardBoxProduct({ color, icon, grow, type }) {
           }
         } else if (type === "brands") {
           const response = await axios.get(
-            " https://ecommerce-u7gm.onrender.com/api/products"
+            "https://ecommerce-u7gm.onrender.com/api/products"
           );
           if (response.data.success && Array.isArray(response.data.data)) {
             const uniqueBrands = [

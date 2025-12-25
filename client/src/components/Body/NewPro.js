@@ -22,7 +22,7 @@ function NewPro() {
       try {
         setLoading(true);
         const response = await axios.get(
-          " https://ecommerce-u7gm.onrender.com/api/products/by-time?limit=8&sortBy=createdAt&sortOrder=desc"
+          "https://ecommerce-u7gm.onrender.com/api/products/by-time?limit=8&sortBy=createdAt&sortOrder=desc"
         );
         setProducts(response.data.data);
         setLoading(false);
@@ -46,7 +46,7 @@ function NewPro() {
       try {
         setTrendingLoading(true);
         const response = await axios.get(
-          " https://ecommerce-u7gm.onrender.com/api/products/trending?limit=6"
+          "https://ecommerce-u7gm.onrender.com/api/products/trending?limit=6"
         );
         setTrendingProducts(response.data.data);
         setTrendingLoading(false);

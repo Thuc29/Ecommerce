@@ -31,7 +31,7 @@ function RelatedProduct({ categoryId }) {
       if (!categoryId) return;
       try {
         const response = await axios.get(
-          ` https://ecommerce-u7gm.onrender.com/api/products?category=${categoryId}`
+          `https://ecommerce-u7gm.onrender.com/api/products?category=${categoryId}`
         );
         setProducts(response.data.data || []);
         setLoading(false);

@@ -16,7 +16,7 @@ if (!process.env.CONNECTION) {
 // Cho phép nhiều origin (Vercel client + admin nếu có)
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://ecommerce-6ssp.onrender.com",
+  "https://ecommerce-u7gm.onrender.com",
   "https://ecommerce-rho-taupe.vercel.app",
   process.env.CLIENT_URL,
   process.env.ADMIN_URL,
@@ -55,7 +55,7 @@ mongoose
 
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`🚀 Server is running at: http://localhost:${PORT}`);
-      console.log(`🌐 On Render: https://ecommerce-u7gm.onrender.com`); // in thêm URL Render
+      console.log(`🌐 On Render:https://ecommerce-u7gm.onrender.com`); // in thêm URL Render
     });
   })
   .catch((err) => {

@@ -20,7 +20,7 @@ function Sidebar({ onPriceFilter, onBrandFilter }) {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(" https://ecommerce-u7gm.onrender.com/api/category");
+        const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/category");
         setCategories(response.data.data);
         setLoading(false);
       } catch (error) {
@@ -35,7 +35,7 @@ function Sidebar({ onPriceFilter, onBrandFilter }) {
     const fetchProducts = async () => {
       try {
         setPriceLoading(true);
-        const response = await axios.get(" https://ecommerce-u7gm.onrender.com/api/products");
+        const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/products");
         const list = response.data.data || [];
         setProducts(list);
         setFilteredProducts(list);
@@ -73,7 +73,7 @@ function Sidebar({ onPriceFilter, onBrandFilter }) {
     const fetchBrands = async () => {
       try {
         const res = await axios.get(
-          " https://ecommerce-u7gm.onrender.com/api/products/brands"
+          "https://ecommerce-u7gm.onrender.com/api/products/brands"
         );
         setBrands(res.data.data || []);
       } catch (err) {

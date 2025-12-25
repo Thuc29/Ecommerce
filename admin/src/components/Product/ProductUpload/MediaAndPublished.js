@@ -38,7 +38,7 @@ function MediaAndPublished({ onImagesChange }) {
         const base64 = await fileToBase64(file);
         console.log("Base64 data:", base64.substring(0, 100));
         const response = await axios.post(
-          " https://ecommerce-u7gm.onrender.com/api/products/upload-image",
+          "https://ecommerce-u7gm.onrender.com/api/products/upload-image",
           {
             image: base64,
           }

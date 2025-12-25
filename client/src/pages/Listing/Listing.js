@@ -47,7 +47,7 @@ function Listing() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(" https://ecommerce-u7gm.onrender.com/api/products");
+        const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/products");
         const list = response.data.data || [];
         setProducts(list);
         setFilteredProducts(list);

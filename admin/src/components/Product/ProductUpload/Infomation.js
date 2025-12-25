@@ -25,7 +25,7 @@ function Infomation({ onFormChange }) {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(" https://ecommerce-u7gm.onrender.com/api/category");
+        const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/category");
         if (response.data.success) {
           setCategories(response.data.data);
         }
