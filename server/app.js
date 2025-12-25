@@ -13,9 +13,25 @@ if (!process.env.CONNECTION) {
   process.exit(1);
 }
 
+// Cho phép nhiều origin (Vercel client + admin nếu có)
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://ecommerce-6ssp.onrender.com",
+  "https://ecommerce-rho-taupe.vercel.app",
+  process.env.CLIENT_URL,
+  process.env.ADMIN_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: "https://ecommerce-6ssp.onrender.com",
+    origin: function (origin, callback) {
+      // Cho phép requests không có origin (mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
   })
 );
 app.use(bodyParser.json({ limit: "50mb" }));
