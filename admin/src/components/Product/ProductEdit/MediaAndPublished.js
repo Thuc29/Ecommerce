@@ -31,7 +31,7 @@ function MediaAndPublished({ onImagesChange }) {
     try {
       console.log(`Fetching product data for ID: ${productId}`);
       const response = await axios.get(
-        `http://localhost:8888/api/products/${productId}`
+        `https://ecommerce-6ssp.onrender.com/api/products/${productId}`
       );
       if (response.data?.success && response.data?.data?.images) {
         const fetchedImages = response.data.data.images
@@ -82,7 +82,7 @@ function MediaAndPublished({ onImagesChange }) {
         const base64 = await fileToBase64(file);
         console.log("Base64 data:", base64.substring(0, 100));
         const response = await axios.post(
-          "http://localhost:8888/api/products/upload-image",
+          "https://ecommerce-6ssp.onrender.com/api/products/upload-image",
           {
             image: base64,
           }

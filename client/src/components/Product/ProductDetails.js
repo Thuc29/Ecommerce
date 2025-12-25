@@ -29,7 +29,7 @@ function ProductDetails() {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8888/api/products/${id}`
+          `https://ecommerce-6ssp.onrender.com/api/products/${id}`
         );
         setProduct(response.data.data); // Assumes API returns { data: {...} }
         setLoading(false);
@@ -46,7 +46,7 @@ function ProductDetails() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8888/api/category");
+        const response = await axios.get("https://ecommerce-6ssp.onrender.com/api/category");
         setCategories(response.data.data); // Assumes API returns { data: [...] }
       } catch (err) {
         console.error("Error fetching categories:", err.message);

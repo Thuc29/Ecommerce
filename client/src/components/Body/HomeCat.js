@@ -16,7 +16,7 @@ function HomeCat() {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8888/api/category/with-count"
+          "https://ecommerce-6ssp.onrender.com/api/category/with-count"
         );
         setCategories(response.data.data);
         setLoading(false);

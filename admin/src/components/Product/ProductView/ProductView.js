@@ -32,7 +32,7 @@ function ProductView() {
   useEffect(() => {
     // Lấy dữ liệu sản phẩm từ backend
     axios
-      .get(`http://localhost:8888/api/products/${productId}`)
+      .get(`https://ecommerce-6ssp.onrender.com/api/products/${productId}`)
       .then((response) => {
         setProduct(response.data.data);
         setLoading(false);

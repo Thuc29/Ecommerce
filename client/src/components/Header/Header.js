@@ -23,7 +23,7 @@ function Header() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8888/api/category");
+        const response = await axios.get("https://ecommerce-6ssp.onrender.com/api/category");
         const mappedCategories = response.data.data.map((category) => {
           const subCategories = category.subcategories.map((sub) => ({
             icon: <MdLaptopMac />, // Default icon for all subcategories

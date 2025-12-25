@@ -64,7 +64,7 @@ function ProductUpload() {
         updatedAt: new Date().toISOString(),
       };
       const response = await axios.post(
-        "http://localhost:8888/api/products/create",
+        "https://ecommerce-6ssp.onrender.com/api/products/create",
         productData
       );
       if (response.data.success) {

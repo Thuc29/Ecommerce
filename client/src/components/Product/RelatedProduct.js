@@ -31,7 +31,7 @@ function RelatedProduct({ categoryId }) {
       if (!categoryId) return;
       try {
         const response = await axios.get(
-          `http://localhost:8888/api/products?category=${categoryId}`
+          `https://ecommerce-6ssp.onrender.com/api/products?category=${categoryId}`
         );
         setProducts(response.data.data || []);
         setLoading(false);
