@@ -82,7 +82,7 @@ function Seller() {
       try {
         setLoading(true);
         const response = await axios.get(
-          "https://ecommerce-6ssp.onrender.com/api/products/best-sellers?limit=10"
+          " https://ecommerce-u7gm.onrender.com/api/products/best-sellers?limit=10"
         );
         setProducts(response.data.data); // Assuming the API returns { data: [...] }
         setLoading(false);

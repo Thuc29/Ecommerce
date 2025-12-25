@@ -17,7 +17,7 @@ function Feature() {
       try {
         setLoading(true);
         const res = await axios.get(
-          "https://ecommerce-6ssp.onrender.com/api/products/featured?limit=4&sortBy=createdAt&sortOrder=desc"
+          " https://ecommerce-u7gm.onrender.com/api/products/featured?limit=4&sortBy=createdAt&sortOrder=desc"
         );
         setProducts(res.data.data || []);
       } finally {

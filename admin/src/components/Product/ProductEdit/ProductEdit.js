@@ -21,7 +21,7 @@ function ProductEdit() {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `https://ecommerce-6ssp.onrender.com/api/products/${productId}`
+          ` https://ecommerce-u7gm.onrender.com/api/products/${productId}`
         );
         if (response.data.success) {
           const product = response.data.data;
@@ -97,7 +97,7 @@ function ProductEdit() {
           formData.isFeatured === "true" || formData.isFeatured === true,
       };
       const response = await axios.put(
-        `https://ecommerce-6ssp.onrender.com/api/products/${productId}`,
+        ` https://ecommerce-u7gm.onrender.com/api/products/${productId}`,
         productData
       );
       if (response.data.success) {

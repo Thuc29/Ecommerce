@@ -47,7 +47,7 @@ function Selling() {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.get("https://ecommerce-6ssp.onrender.com/api/products");
+      const response = await axios.get(" https://ecommerce-u7gm.onrender.com/api/products");
       if (response.data.success && Array.isArray(response.data.data)) {
         setProducts(response.data.data);
       } else {
@@ -70,7 +70,7 @@ function Selling() {
   // Fetch categories from the backend
   const getCategories = async () => {
     try {
-      const response = await axios.get("https://ecommerce-6ssp.onrender.com/api/category");
+      const response = await axios.get(" https://ecommerce-u7gm.onrender.com/api/category");
       if (response.data.success && Array.isArray(response.data.data)) {
         setCategories(response.data.data);
       }
@@ -158,7 +158,7 @@ function Selling() {
     }
     try {
       const response = await axios.delete(
-        `https://ecommerce-6ssp.onrender.com/api/products/${productId}`
+        ` https://ecommerce-u7gm.onrender.com/api/products/${productId}`
       );
       if (response.data.success) {
         setProducts(

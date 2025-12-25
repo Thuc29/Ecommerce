@@ -2,9 +2,9 @@ import axios from "axios";
 import { handleApiError } from "./sweetAlert";
 
 // Sử dụng biến môi trường để chuyển đổi giữa local và production
-// Local: https://ecommerce-6ssp.onrender.com
+// Local:  https://ecommerce-u7gm.onrender.com
 // Production: https://ecommerce-u7gm.onrender.com
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://ecommerce-6ssp.onrender.com";
+const API_BASE_URL = process.env.REACT_APP_API_URL || " https://ecommerce-u7gm.onrender.com";
 
 // Hàm GET
 export const fetchDataFromApi = async (url, showErrorAlert = true) => {
