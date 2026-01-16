@@ -33,6 +33,18 @@ export const orderApi = {
     const response = await updateDataToApi(`/api/orders/${orderId}/cancel`, { reason });
     return response;
   },
+  
+  // Get payment URL for existing order
+  getPaymentUrl: async (orderId) => {
+    const response = await fetchDataFromApi(`/api/orders/${orderId}/payment-url`);
+    return response;
+  },
+
+  // Validate coupon
+  validateCoupon: async (couponData) => {
+    const response = await postDataToApi("/api/coupons/validate", couponData);
+    return response;
+  },
 };
 
 // Payment methods configuration

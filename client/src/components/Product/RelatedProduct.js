@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProductItem from "./ProductItem";
 import { fetchDataFromApi } from "../../services/api";
 
-function RelatedProduct({ categoryId }) {
+function RelatedProduct({ categoryId, productId }) {
   const [productView, setProductView] = useState("four");
   const [productsPerPage] = useState(4);
   const [products, setProducts] = useState([]);
@@ -33,7 +33,10 @@ function RelatedProduct({ categoryId }) {
         const response = await fetchDataFromApi(
           `/api/products?category=${categoryId}`
         );
-        setProducts(response.data || response?.data?.data || []);
+        const related = (response.data || response?.data?.data || []).filter(
+          (p) => p._id !== productId
+        );
+        setProducts(related);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching related products:", err.message);

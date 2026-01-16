@@ -1,236 +1,219 @@
-import { Checkbox, FormControlLabel } from "@mui/material";
+import { Checkbox, FormControlLabel, Rating } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import RangeSlider from "react-range-slider-input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { fetchDataFromApi, formatCurrency } from "../../services/api";
 
-function Sidebar({ onPriceFilter, onBrandFilter }) {
-  const [value, setValue] = useState([100, 60000]);
+function Sidebar({ 
+  onPriceFilter, 
+  onBrandFilter, 
+  onRatingFilter,
+  currentMinPrice, 
+  currentMaxPrice, 
+  currentBrands,
+  currentRating 
+}) {
+  const navigate = useNavigate();
+  const { id: categoryId } = useParams();
+  
   const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [minPrice, setMinPrice] = useState(null);
-  const [maxPrice, setMaxPrice] = useState(null);
   const [brands, setBrands] = useState([]);
-  const [selectedBrands, setSelectedBrands] = useState([]);
-  const [error, setError] = useState(null);
-  const [priceLoading, setPriceLoading] = useState(true);
   const [loading, setLoading] = useState(true);
+  
+  // Price range state (local for slider)
+  const [priceRange, setPriceRange] = useState([0, 1000000]);
+  const [sliderValue, setSliderValue] = useState([0, 1000000]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchInitialData = async () => {
       try {
-        const response = await fetchDataFromApi("/api/category");
-        setCategories(response.data || response?.data?.data || []);
+        setLoading(true);
+        const [catRes, brandRes] = await Promise.all([
+          fetchDataFromApi("/api/category"),
+          fetchDataFromApi("/api/products/brands")
+        ]);
+        
+        setCategories(catRes.data || catRes?.data?.data || []);
+        setBrands(brandRes.data || brandRes?.data?.data || []);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching sidebar data:", error);
         setLoading(false);
       }
     };
-    fetchCategories();
+    fetchInitialData();
   }, []);
 
+  // Sync slider with props
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setPriceLoading(true);
-        const response = await fetchDataFromApi("/api/products");
-        const list = response.data || response?.data?.data || [];
-        setProducts(list);
-        setFilteredProducts(list);
-
-        // Tính min/max giá từ dataset
-        if (list.length > 0) {
-          const prices = list.map((p) => p.price || 0);
-          const minP = Math.min(...prices);
-          const maxP = Math.max(...prices);
-          setMinPrice(minP);
-          setMaxPrice(maxP);
-          setValue([minP, maxP]);
-          if (onPriceFilter) onPriceFilter([minP, maxP]);
-        } else {
-          setMinPrice(0);
-          setMaxPrice(0);
-          setValue([0, 0]);
-          if (onPriceFilter) onPriceFilter([0, 0]);
-        }
-        setLoading(false);
-        setPriceLoading(false);
-      } catch (err) {
-        console.error("Error fetching products:", err.message);
-        setError("Failed to load products");
-        setLoading(false);
-        setPriceLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-  // Fetch brands
-  useEffect(() => {
-    const fetchBrands = async () => {
-      try {
-        const res = await fetchDataFromApi("/api/products/brands");
-        setBrands(res.data || res?.data?.data || []);
-      } catch (err) {
-        console.error("Error fetching brands:", err.message);
-      }
-    };
-    fetchBrands();
-  }, []);
-
-  const handleToggleBrand = (brandName) => {
-    setSelectedBrands((prev) => {
-      const exists = prev.includes(brandName);
-      const next = exists
-        ? prev.filter((b) => b !== brandName)
-        : [...prev, brandName];
-      if (onBrandFilter) onBrandFilter(next);
-      return next;
-    });
-  };
+    if (currentMinPrice !== null && currentMaxPrice !== null) {
+      setSliderValue([parseInt(currentMinPrice), parseInt(currentMaxPrice)]);
+    }
+  }, [currentMinPrice, currentMaxPrice]);
 
   const handleSliderChange = (newValue) => {
-    setValue(newValue);
+    setSliderValue(newValue);
+  };
+
+  const handleSliderFinal = (newValue) => {
     if (onPriceFilter) onPriceFilter(newValue);
   };
 
+  const handleToggleBrand = (brandName) => {
+    const next = currentBrands.includes(brandName)
+      ? currentBrands.filter((b) => b !== brandName)
+      : [...currentBrands, brandName];
+    if (onBrandFilter) onBrandFilter(next);
+  };
+
   return (
-    <>
-      <div className="sidebar w-[20%] flex-[0_0_20%] hidden md:block">
-        <div className="filterBox ">
-          <h6 className="font-bold text-[15px] mb-4"> PRODUCT CATEGORIES </h6>
-          <div
-            className="scroll pl-2 max-h-[200px] overflow-y-auto overflow-x-hidden
-  [&::-webkit-scrollbar]:w-1
-  [&::-webkit-scrollbar-thumb]:rounded-xl
-  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-300
-  "
-          >
-            <ul>
-              {categories.map((category) => (
-                <li className="list-none w-full mb-1" key={category.id}>
-                  {" "}
-                  <FormControlLabel
-                    className="w-full !font-[Space_Grotesk]"
-                    control={<Checkbox />}
-                    label={category.name}
-                  />{" "}
-                </li>
-              ))}
-            </ul>
+    <div className="sidebar w-[20%] flex-[0_0_20%] hidden lg:block pr-4">
+      <div className="filterBox mb-8">
+        <h6 className="font-black text-sm text-gray-900 uppercase tracking-wider mb-5 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 bg-[#2bbef9] rounded-full"></span>
+          Product Categories
+        </h6>
+        <div className="space-y-1 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+          {categories.map((category) => (
+            <Link
+              key={category._id}
+              to={`/cat/${category._id}`}
+              className={`flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                categoryId === category._id 
+                  ? "bg-[#2bbef9] text-white shadow-md" 
+                  : "text-gray-600 hover:bg-gray-50 hover:text-[#2bbef9]"
+              }`}
+            >
+              <span>{category.name}</span>
+              {category.subcategories?.length > 0 && (
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-md ${
+                  categoryId === category._id ? "bg-white/20" : "bg-gray-100"
+                }`}>
+                  {category.subcategories.length}
+                </span>
+              )}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <div className="filterBox mb-10 bg-gray-50 p-5 rounded-2xl border border-gray-100">
+        <h6 className="font-black text-sm text-gray-900 uppercase tracking-wider mb-6 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 bg-[#2bbef9] rounded-full"></span>
+          Filter by Price
+        </h6>
+        <div className="px-2">
+          <RangeSlider
+            value={sliderValue}
+            onInput={handleSliderChange}
+            onThumbDragEnd={() => handleSliderFinal(sliderValue)}
+            min={0}
+            max={2000000}
+            step={10000}
+          />
+          <div className="flex flex-col gap-1 mt-6">
+            <div className="flex justify-between text-[11px] text-gray-400 font-bold uppercase">
+              <span>Min Price</span>
+              <span>Max Price</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-black text-[#2bbef9]">
+                {formatCurrency(sliderValue[0])}
+              </span>
+              <span className="text-gray-300">/</span>
+              <span className="text-sm font-black text-[#2bbef9]">
+                {formatCurrency(sliderValue[1])}
+              </span>
+            </div>
           </div>
         </div>
-        <div className="filterBox mb-[35px]">
-          <h6 className="font-bold text-[15px] mb-4"> FILTER BY PRICE </h6>
-          {priceLoading ? (
-            <div className="text-center text-gray-500 py-4">
-              Loading price range...
-            </div>
-          ) : (
-            <>
-              <RangeSlider
-                value={value}
-                onInput={handleSliderChange}
-                min={minPrice}
-                max={maxPrice}
-                step={Math.max(1, Math.floor((maxPrice - minPrice) / 100))}
+      </div>
+
+      <div className="filterBox mb-8">
+        <h6 className="font-black text-sm text-gray-900 uppercase tracking-wider mb-5 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 bg-[#2bbef9] rounded-full"></span>
+          Brands ({brands.length})
+        </h6>
+        <div className="space-y-1 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+          {brands.map((brand) => (
+            <div
+              key={brand.name}
+              onClick={() => handleToggleBrand(brand.name)}
+              className={`flex items-center gap-3 px-3 py-2 rounded-xl cursor-pointer transition-all ${
+                currentBrands.includes(brand.name)
+                  ? "bg-[#2bbef9]/10 border border-[#2bbef9]/20"
+                  : "hover:bg-gray-50 border border-transparent"
+              }`}
+            >
+              <Checkbox
+                checked={currentBrands.includes(brand.name)}
+                size="small"
+                sx={{
+                  padding: 0,
+                  color: "#e2e8f0",
+                  "&.Mui-checked": { color: "#2bbef9" },
+                }}
               />
+              <span className={`text-sm font-medium ${
+                currentBrands.includes(brand.name) ? "text-[#2bbef9]" : "text-gray-600"
+              }`}>
+                {brand.name}
+              </span>
+              <span className="ml-auto text-[10px] font-bold text-gray-400">
+                {brand.count}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
 
-              {/* Hiển thị giá trị đang chọn */}
-              <div className="flex py-2 justify-between items-center">
-                <span className="text-xs text-gray-500">
-                  <strong className="text-gray-700">
-                    {formatCurrency(value[0])}
-                  </strong>{" "}
-                  -{" "}
-                  <strong className="text-gray-700">
-                    {formatCurrency(value[1])}
-                  </strong>
-                </span>
-
-                {/* Hiển thị tỷ lệ phần trăm so với range */}
-                <div className="text-xs text-gray-400">
-                  {Math.round(
-                    ((value[0] - minPrice) / (maxPrice - minPrice)) * 100
-                  )}
-                  % -{" "}
-                  {Math.round(
-                    ((value[1] - minPrice) / (maxPrice - minPrice)) * 100
-                  )}
-                  %
-                </div>
-              </div>
-            </>
+      <div className="filterBox mb-8">
+        <h6 className="font-black text-sm text-gray-900 uppercase tracking-wider mb-5 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 bg-[#2bbef9] rounded-full"></span>
+          Filter by Rating
+        </h6>
+        <div className="space-y-2">
+          {[5, 4, 3, 2, 1].map((rating) => (
+            <div
+              key={rating}
+              onClick={() => onRatingFilter(rating)}
+              className={`flex items-center gap-3 px-3 py-2 rounded-xl cursor-pointer transition-all ${
+                currentRating === rating
+                  ? "bg-[#2bbef9]/10 border border-[#2bbef9]/20"
+                  : "hover:bg-gray-50 border border-transparent"
+              }`}
+            >
+              <Rating
+                value={rating}
+                readOnly
+                size="small"
+                sx={{ color: "#2bbef9" }}
+              />
+              <span className={`text-sm font-medium ${
+                currentRating === rating ? "text-[#2bbef9]" : "text-gray-600"
+              }`}>
+                {rating === 5 ? "5 Stars" : `& Up`}
+              </span>
+            </div>
+          ))}
+          {currentRating && (
+            <button
+              onClick={() => onRatingFilter(null)}
+              className="text-xs text-red-500 font-bold uppercase tracking-wider mt-2 ml-3 hover:underline"
+            >
+              Clear Rating
+            </button>
           )}
         </div>
-        <div className="filterBox ">
-          <h6 className="font-bold text-[15px] mb-4"> PRODUCT STATUS </h6>
-          <div className="scroll pl-2 max-h-[200px]">
-            <ul>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="In Stock"
-                />{" "}
-              </li>
-              <li className="list-none w-full mb-1">
-                {" "}
-                <FormControlLabel
-                  className="w-full"
-                  control={<Checkbox />}
-                  label="On Sale"
-                />{" "}
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="filterBox ">
-          <h6 className="font-bold text-[15px] mb-4">
-            {" "}
-            BRANDS ({brands.length})
-          </h6>
-          <div
-            className="scroll cursor-pointer pl-2 max-h-[200px] overflow-y-auto overflow-x-hidden
-  [&::-webkit-scrollbar]:w-1
-  [&::-webkit-scrollbar-thumb]:rounded-xl
-  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-300
-  font-[Space_Grotesk]
-  "
-          >
-            <ul>
-              {brands.map((brand) => (
-                <li key={brand.name} className="list-none w-full mb-1">
-                  <FormControlLabel
-                    className="w-full cursor-pointer"
-                    control={
-                      <Checkbox
-                        checked={selectedBrands.includes(brand.name)}
-                        onChange={() => handleToggleBrand(brand.name)}
-                      />
-                    }
-                    label={`${brand.name} (${brand.count})`}
-                  />
-                </li>
-              ))}
-              {brands.length === 0 && (
-                <li className="text-gray-500 text-sm">No brands found</li>
-              )}
-            </ul>
-          </div>
-        </div>
-        <Link to={"#"}>
-          <img
-            src="https://cdn.create.vista.com/downloads/c7f2b823-e345-4c35-9470-8190110f66bb_360.jpeg"
-            className="w-full pt-6"
-          />
-        </Link>
       </div>
-    </>
+      <div className="mt-8 rounded-2xl overflow-hidden shadow-lg group">
+        <img
+          src="https://cdn.create.vista.com/downloads/c7f2b823-e345-4c35-9470-8190110f66bb_360.jpeg"
+          className="w-full h-auto group-hover:scale-110 transition-transform duration-500"
+          alt="Ad"
+        />
+      </div>
+    </div>
   );
 }
 

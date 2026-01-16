@@ -32,19 +32,19 @@ function ProductDetails() {
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await fetchDataFromApi(`/api/products/${id}`);
-        setProduct(response.data || response?.data?.data || response); // Tương thích nhiều dạng response
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching product:", err.message);
-        setError("Failed to load product");
-        setLoading(false);
-      }
-    };
+  const fetchProduct = async () => {
+    try {
+      const response = await fetchDataFromApi(`/api/products/${id}`);
+      setProduct(response.data || response?.data?.data || response); // Tương thích nhiều dạng response
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching product:", err.message);
+      setError("Failed to load product");
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProduct();
   }, [id]);
 
@@ -270,9 +270,12 @@ function ProductDetails() {
         </div>
       </section>
 
-      <Tabs product={product} />
-      <RelatedProduct categoryId={product.category?.["$oid"]} />
-      <RecentlyViewPro productId={product._id?.["$oid"]} />
+      <Tabs product={product} onReviewSubmit={fetchProduct} />
+      <RelatedProduct 
+        categoryId={product.category?._id || product.category} 
+        productId={product._id}
+      />
+      <RecentlyViewPro productId={product._id} />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@mui/material";
+import { Button, Pagination } from "@mui/material";
 import { LuMenu } from "react-icons/lu";
 import { HiViewGrid } from "react-icons/hi";
 import { BsGrid3X3GapFill } from "react-icons/bs";
@@ -7,35 +7,42 @@ import { TfiLayoutGrid4Alt } from "react-icons/tfi";
 import { FaAngleDown } from "react-icons/fa6";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { useSearchParams, useParams } from "react-router-dom";
 import ProductItem from "../../components/Product/ProductItem";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import { fetchDataFromApi } from "../../services/api";
+import { ListingSkeleton } from "../../components/common";
 
 function Listing() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { id: categoryId } = useParams();
+  
   const [anchorEl, setAnchorEl] = useState(null);
   const [productView, setProductView] = useState("four");
-  const [productsPerPage, setProductsPerPage] = useState(9);
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const openDropDown = Boolean(anchorEl);
-  const [minPrice, setMinPrice] = useState(null);
-  const [maxPrice, setMaxPrice] = useState(null);
-  const [sortOrder, setSortOrder] = useState("none"); // 'asc' | 'desc' | 'none'
-  const [priceFilter, setPriceFilter] = useState(null);
-  const [brandFilter, setBrandFilter] = useState([]);
+  
+  // Pagination & Sorting states
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
+  
+  // Get values from URL or defaults
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "12");
+  const sortOrder = searchParams.get("sort") || "desc";
+  const searchQuery = searchParams.get("search") || "";
+  const minPrice = searchParams.get("minPrice");
+  const maxPrice = searchParams.get("maxPrice");
+  const brand = searchParams.get("brand");
+  const rating = searchParams.get("rating");
 
   useEffect(() => {
     const handleResize = () => {
       const screenWidth = window.innerWidth;
-      if (screenWidth >= 1024) {
-        setProductView("four");
-      } else if (screenWidth >= 768) {
-        setProductView("three");
-      } else {
-        setProductView("two");
-      }
+      if (screenWidth >= 1024) setProductView("four");
+      else if (screenWidth >= 768) setProductView("three");
+      else setProductView("two");
     };
 
     handleResize();
@@ -43,23 +50,26 @@ function Listing() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Fetch all products
+  // Fetch products from server based on filters
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetchDataFromApi("/api/products");
-        const list = response.data || response?.data?.data || response || [];
-        setProducts(list);
-        setFilteredProducts(list);
+        setLoading(true);
+        let url = `/api/products?page=${page}&limit=${limit}&sortOrder=${sortOrder}`;
+        
+        if (categoryId) url += `&category=${categoryId}`;
+        if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
+        if (minPrice) url += `&minPrice=${minPrice}`;
+        if (maxPrice) url += `&maxPrice=${maxPrice}`;
+        if (brand) url += `&brand=${brand}`;
+        if (rating) url += `&rating=${rating}`;
 
-        // Tính min/max giá từ dataset
-        if (list.length > 0) {
-          const prices = list.map((p) => p.price || 0);
-          setMinPrice(Math.min(...prices));
-          setMaxPrice(Math.max(...prices));
-        } else {
-          setMinPrice(0);
-          setMaxPrice(0);
+        const response = await fetchDataFromApi(url);
+        
+        if (response.success) {
+          setProducts(response.data);
+          setTotalPages(response.pages);
+          setTotalProducts(response.total);
         }
         setLoading(false);
       } catch (err) {
@@ -70,162 +80,209 @@ function Listing() {
     };
 
     fetchProducts();
-  }, []);
+  }, [categoryId, searchQuery, page, limit, sortOrder, minPrice, maxPrice, brand, rating]);
 
-  // Cập nhật danh sách theo filter giá + brand
-  useEffect(() => {
-    let list = products;
-    if (priceFilter && list.length > 0) {
-      const [minP, maxP] = priceFilter;
-      list = list.filter(
-        (p) => (p.price || 0) >= minP && (p.price || 0) <= maxP
-      );
-    }
-    if (brandFilter && brandFilter.length > 0) {
-      const setBrands = new Set(
-        brandFilter.map((b) =>
-          String(b || "")
-            .trim()
-            .toUpperCase()
-        )
-      );
-      list = list.filter((p) =>
-        setBrands.has(
-          String(p.brand || "")
-            .trim()
-            .toUpperCase()
-        )
-      );
-    }
-    setFilteredProducts(list);
-  }, [priceFilter, brandFilter, products]);
-
-  const handlePriceFilter = (range) => {
-    setPriceFilter(range);
+  const handlePageChange = (event, value) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("page", value);
+    setSearchParams(newParams);
+    window.scrollTo(0, 0);
   };
 
-  const handleDropdownClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleSortChange = (e) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("sort", e.target.value);
+    newParams.set("page", "1"); // Reset to page 1 on sort change
+    setSearchParams(newParams);
   };
 
-  const handleDropdownClose = (value) => {
-    if (value) setProductsPerPage(value);
+  const handleLimitChange = (value) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("limit", value);
+    newParams.set("page", "1");
+    setSearchParams(newParams);
     setAnchorEl(null);
   };
 
+  const handlePriceFilter = (range) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("minPrice", range[0]);
+    newParams.set("maxPrice", range[1]);
+    newParams.set("page", "1");
+    setSearchParams(newParams);
+  };
+
+  const handleBrandFilter = (selectedBrands) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (selectedBrands.length > 0) {
+      newParams.set("brand", selectedBrands.join(","));
+    } else {
+      newParams.delete("brand");
+    }
+    newParams.set("page", "1");
+    setSearchParams(newParams);
+  };
+
+  const handleRatingFilter = (value) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (value) {
+      newParams.set("rating", value);
+    } else {
+      newParams.delete("rating");
+    }
+    newParams.set("page", "1");
+    setSearchParams(newParams);
+  };
+
+  // Show full page skeleton when loading
+  if (loading && products.length === 0) {
+    return <ListingSkeleton />;
+  }
+
   return (
-    <section className="product-listing-page mx-auto w-full md:max-w-[1270px] px-4 py-8 rounded-xl">
+    <section className="product-listing-page mx-auto w-full md:max-w-[1270px] px-4 py-8">
       <div className="container">
         <div className="productListing md:gap-6 md:flex">
           <Sidebar
             onPriceFilter={handlePriceFilter}
-            onBrandFilter={setBrandFilter}
+            onBrandFilter={handleBrandFilter}
+            onRatingFilter={handleRatingFilter}
+            currentMinPrice={minPrice}
+            currentMaxPrice={maxPrice}
+            currentBrands={brand ? brand.split(",") : []}
+            currentRating={rating ? parseInt(rating) : null}
           />
-          <div className="content_right w-full md:w-[80%] text-center">
-            <img
-              src="/assets/bannerList1.jpeg"
-              className="w-full h-auto rounded-xl"
-              alt="Listing Banner"
-            />
-            <div className="w-full bg-gray-100 py-2 px-6 rounded-lg my-6 flex items-center">
-              <div className="flex items-center">
+          
+          <div className="content_right w-full md:w-[80%]">
+            <div className="relative mb-8 rounded-2xl overflow-hidden h-[200px] md:h-[250px]">
+              <img
+                src="/assets/bannerList1.jpeg"
+                className="w-full h-full object-cover"
+                alt="Listing Banner"
+              />
+              <div className="absolute inset-0 bg-black/30 flex flex-col justify-center px-8">
+                <h2 className="text-white text-3xl font-black mb-2">
+                  {searchQuery ? `Search results for "${searchQuery}"` : "Our Collection"}
+                </h2>
+                <p className="text-white/80 font-medium">
+                  Showing {products.length} of {totalProducts} products
+                </p>
+              </div>
+            </div>
+
+            <div className="w-full bg-white border border-gray-100 shadow-sm py-3 px-6 rounded-2xl mb-8 flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-1">
                 {[
                   ["one", LuMenu],
                   ["two", HiViewGrid],
                   ["three", BsGrid3X3GapFill],
                   ["four", TfiLayoutGrid4Alt],
-                ].map(([view, Icon], index) => (
+                ].map(([view, Icon]) => (
                   <Button
-                    key={index}
-                    className="!min-w-[30px] !h-[30px] !rounded-full"
+                    key={view}
+                    className={`!min-w-[36px] !h-[36px] !rounded-xl ${
+                      productView === view ? "!bg-[#2bbef9] !text-white" : "!text-gray-400 hover:!bg-gray-50"
+                    }`}
                     onClick={() => setProductView(view)}
                   >
-                    <Icon
-                      className={`text-gray-500 hover:text-black ${
-                        productView === view ? "text-blue-400" : ""
-                      }`}
-                      size={15}
-                    />
+                    <Icon size={18} />
                   </Button>
                 ))}
               </div>
-              <div className="ml-auto flex items-center">
-                <p className="text-gray-500 mr-2">Show:</p>
-                <Button
-                  onClick={handleDropdownClick}
-                  className="flex items-center"
-                >
-                  <span className="text-black ">{productsPerPage}</span>
-                  <FaAngleDown className="text-black ml-1" />
-                </Button>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={openDropDown}
-                  onClose={() => handleDropdownClose(null)}
-                >
-                  {[8, 12, 24].map((count) => (
-                    <MenuItem
-                      key={count}
-                      onClick={() => handleDropdownClose(count)}
-                    >
-                      {count}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </div>
-              <div className="ml-3 flex items-center ">
-                <p className="text-gray-500 mr-2">Sort by:</p>
-                <select
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value)}
-                  className="border !rounded-xl py-1 px-2 text-sm w-fit"
-                >
-                  <option value="none">Default</option>
-                  <option value="asc">Low to High</option>
-                  <option value="desc">High to Low</option>
-                </select>
+
+              <div className="ml-auto flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500 font-medium">Show:</span>
+                  <Button
+                    onClick={(e) => setAnchorEl(e.currentTarget)}
+                    className="!bg-gray-50 !text-gray-700 !rounded-xl !px-4 !py-1.5 !text-sm !font-bold !normal-case border border-gray-100"
+                  >
+                    {limit} <FaAngleDown className="ml-2" />
+                  </Button>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={() => setAnchorEl(null)}
+                    PaperProps={{ className: "!rounded-xl !shadow-xl !border !border-gray-50" }}
+                  >
+                    {[12, 24, 48].map((count) => (
+                      <MenuItem key={count} onClick={() => handleLimitChange(count)} className="!text-sm !font-medium">
+                        {count} Products
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500 font-medium">Sort by:</span>
+                  <select
+                    value={sortOrder}
+                    onChange={handleSortChange}
+                    className="bg-gray-50 border border-gray-100 text-gray-700 text-sm font-bold rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-[#2bbef9]/20 transition-all"
+                  >
+                    <option value="desc">Newest First</option>
+                    <option value="asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                  </select>
+                </div>
               </div>
             </div>
-            <div
-              className={`product-grid grid gap-2 ${
-                productView === "four"
-                  ? "grid-cols-4"
-                  : productView === "three"
-                  ? "grid-cols-3"
-                  : productView === "two"
-                  ? "grid-cols-2"
-                  : "grid-cols-1"
-              }`}
-            >
-              {loading && (
-                <div className="col-span-full text-center text-gray-600">
-                  Loading...
-                </div>
-              )}
-              {error && (
-                <div className="col-span-full text-center text-red-500">
-                  {error}
-                </div>
-              )}
-              {!loading &&
-                !error &&
-                [...filteredProducts]
-                  .sort((a, b) => {
-                    if (sortOrder === "asc")
-                      return (a.price || 0) - (b.price || 0);
-                    if (sortOrder === "desc")
-                      return (b.price || 0) - (a.price || 0);
-                    return 0;
-                  })
-                  .slice(0, productsPerPage)
-                  .map((product, index) => (
+
+            {error ? (
+              <div className="bg-red-50 text-red-600 p-12 rounded-2xl text-center font-bold">
+                {error}
+              </div>
+            ) : products.length === 0 ? (
+              <div className="col-span-full py-20 text-center">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-bold text-gray-800">No products found</h3>
+                <p className="text-gray-500">Try adjusting your filters or search query</p>
+              </div>
+            ) : (
+              <>
+                <div
+                  className={`product-grid grid gap-6 ${
+                    productView === "four"
+                      ? "grid-cols-2 lg:grid-cols-4"
+                      : productView === "three"
+                      ? "grid-cols-2 lg:grid-cols-3"
+                      : productView === "two"
+                      ? "grid-cols-2"
+                      : "grid-cols-1"
+                  }`}
+                >
+                  {products.map((product) => (
                     <ProductItem
-                      key={index}
+                      key={product._id}
                       layout={productView}
                       product={product}
                     />
                   ))}
-            </div>
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="mt-12 flex justify-center">
+                    <Pagination
+                      count={totalPages}
+                      page={page}
+                      onChange={handlePageChange}
+                      color="primary"
+                      size="large"
+                      className="premium-pagination"
+                      sx={{
+                        "& .MuiPaginationItem-root": {
+                          borderRadius: "12px",
+                          fontWeight: "bold",
+                        },
+                        "& .Mui-selected": {
+                          backgroundColor: "#2bbef9 !important",
+                        },
+                      }}
+                    />
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>

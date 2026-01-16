@@ -3,19 +3,9 @@ import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { MyContext } from "../../App";
 import { updateDataToApi, formatCurrency } from "../../services/api";
 import Swal from "sweetalert2";
-import {
-  FaUserCircle,
-  FaShoppingBag,
-  FaHeart,
-  FaCheckCircle,
-  FaSpinner,
-  FaTrash,
-  FaShoppingCart,
-} from "react-icons/fa";
+import { FaUserCircle, FaShoppingBag, FaHeart, FaCheckCircle, FaSpinner } from "react-icons/fa";
 import { MdEmail, MdPhone, MdLocationOn } from "react-icons/md";
 import { FaEdit, FaSave, FaTimes } from "react-icons/fa";
-import { useWishlist } from "../../context/WishlistContext";
-import { useCart } from "../../context/CartContext";
 
 // Import Profile components
 import {
@@ -26,6 +16,8 @@ import {
   MapModal,
   PasswordForm,
   EmptyState,
+  ProfileOrders,
+  ProfileWishlist,
 } from "../../components/Profile";
 
 // Import custom hooks
@@ -38,14 +30,6 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Wishlist and Cart hooks
-  const {
-    items: wishlistItems,
-    removeFromWishlist,
-    clearWishlist,
-  } = useWishlist();
-  const { addToCart, isInCart } = useCart();
 
   // Set active tab from URL query parameter
   useEffect(() => {
@@ -477,171 +461,10 @@ const Profile = () => {
               )}
 
               {/* Orders Tab */}
-              {activeTab === "orders" && (
-                <EmptyState
-                  icon={FaShoppingBag}
-                  title="My Orders"
-                  message="You haven't placed any orders yet"
-                  buttonText="Start Shopping"
-                />
-              )}
+              {activeTab === "orders" && <ProfileOrders />}
 
               {/* Wishlist Tab */}
-              {activeTab === "wishlist" && (
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      My Wishlist ({wishlistItems.length} items)
-                    </h2>
-                    {wishlistItems.length > 0 && (
-                      <button
-                        onClick={() => {
-                          Swal.fire({
-                            title: "Clear Wishlist?",
-                            text: "Are you sure you want to remove all items from your wishlist?",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#ef4444",
-                            cancelButtonColor: "#6b7280",
-                            confirmButtonText: "Yes, clear all",
-                          }).then((result) => {
-                            if (result.isConfirmed) {
-                              clearWishlist();
-                            }
-                          });
-                        }}
-                        className="text-sm border py-1 px-3 rounded-xl flex items-center gap-2 text-red-500 hover:text-red-50 border-red-500 hover:bg-red-600 transition-colors"
-                      > <FaTrash className="mr-2"/>
-                        Clear All
-                      </button>
-                    )}
-                  </div>
-
-                  {wishlistItems.length === 0 ? (
-                    <EmptyState
-                      icon={FaHeart}
-                      message="Your wishlist is empty"
-                      buttonText="Browse Products"
-                    />
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {wishlistItems.map((item) => (
-                        <div
-                          key={item._id}
-                          className="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-[#2bbef9] transition-all duration-300"
-                        >
-                          {/* Product Image */}
-                          <Link to={`/product/${item._id}`}>
-                            <div className="relative aspect-square rounded-lg overflow-hidden mb-3">
-                              <img
-                                src={
-                                  item.images?.[0]?.url ||
-                                  "https://via.placeholder.com/300x300.png?text=No+Image"
-                                }
-                                alt={item.name}
-                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                              />
-                              {item.oldPrice && item.price < item.oldPrice && (
-                                <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                  -
-                                  {Math.round(
-                                    ((item.oldPrice - item.price) /
-                                      item.oldPrice) *
-                                      100
-                                  )}
-                                  %
-                                </span>
-                              )}
-                            </div>
-                          </Link>
-
-                          {/* Product Info */}
-                          <Link to={`/product/${item._id}`}>
-                            <h3 className="font-semibold text-gray-800 hover:text-[#2bbef9] transition-colors line-clamp-2 mb-2">
-                              {item.name}
-                            </h3>
-                          </Link>
-
-                          {/* Rating */}
-                          {item.rating && (
-                            <div className="flex items-center gap-1 mb-2">
-                              {[...Array(5)].map((_, i) => (
-                                <span
-                                  key={i}
-                                  className={`text-sm ${
-                                    i < Math.round(item.rating)
-                                      ? "text-yellow-400"
-                                      : "text-gray-300"
-                                  }`}
-                                >
-                                  ★
-                                </span>
-                              ))}
-                              <span className="text-xs text-gray-500">
-                                ({item.rating})
-                              </span>
-                            </div>
-                          )}
-
-                          {/* Price */}
-                          <div className="flex items-center gap-2 mb-3">
-                            <span className="text-base font-bold text-red-500">
-                              {formatCurrency(item.price)}
-                            </span>
-                            {item.oldPrice > 0 && (
-                              <span className="text-xs text-gray-400 line-through">
-                                {formatCurrency(item.oldPrice)}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Stock Status */}
-                          <p
-                            className={`text-xs font-medium mb-3 ${
-                              item.countInStock > 0
-                                ? "text-green-500"
-                                : "text-red-500"
-                            }`}
-                          >
-                            {item.countInStock > 0
-                              ? "In Stock"
-                              : "Out of Stock"}
-                          </p>
-
-                          {/* Action Buttons */}
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => {
-                                if (item.countInStock > 0) {
-                                  addToCart(item, 1);
-                                }
-                              }}
-                              disabled={item.countInStock <= 0}
-                              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                item.countInStock <= 0
-                                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                                  : isInCart(item._id)
-                                  ? "bg-emerald-500 text-white"
-                                  : "bg-[#2bbef9] text-white hover:bg-[#1da8e0]"
-                              }`}
-                            >
-                              <FaShoppingCart size={14} />
-                              {isInCart(item._id) ? "In Cart" : "Add to Cart"}
-                            </button>
-                            <button
-                              onClick={() => removeFromWishlist(item._id)}
-                              className="p-2 bg-red-100 text-red-500 rounded-lg hover:bg-red-200 transition-colors"
-                              title="Remove from wishlist"
-                            >
-                              <FaTrash size={14} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+              {activeTab === "wishlist" && <ProfileWishlist />}
 
               {/* Change Password Tab */}
               {activeTab === "password" && (

@@ -7,6 +7,7 @@ import { FiShoppingCart } from "react-icons/fi";
 import CouponCode from "./CouponCode";
 import CartTotal from "./CartTotal";
 import { useCart } from "../../context/CartContext";
+import { CartSkeleton } from "../../components/common";
 
 function Cart() {
   const {
@@ -52,13 +53,7 @@ function Cart() {
 
   // Loading state
   if (isLoading) {
-    return (
-      <section className="py-6 px-4 sm:px-6 lg:px-8 bg-white rounded-md mx-auto max-w-screen-xl">
-        <div className="flex justify-center items-center min-h-[400px]">
-          <CircularProgress />
-        </div>
-      </section>
-    );
+    return <CartSkeleton />;
   }
 
   // Empty cart state

@@ -87,6 +87,49 @@ function Checkout() {
   const [note, setNote] = useState("");
   const [formErrors, setFormErrors] = useState({});
 
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [couponData, setCouponData] = useState(null);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+
+    setIsApplyingCoupon(true);
+    try {
+      const response = await orderApi.validateCoupon({
+        code: couponCode,
+        orderAmount: totalPrice,
+      });
+
+      if (response.success) {
+        setCouponData(response.data);
+        Swal.fire({
+          icon: "success",
+          title: "Coupon Applied!",
+          text: `You saved ${formatCurrency(response.data.discountAmount)}`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    } catch (err) {
+      console.error("Coupon error:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Coupon Error",
+        text: err.message || "Invalid coupon code",
+      });
+      setCouponData(null);
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setCouponData(null);
+    setCouponCode("");
+  };
+
   // Load user info from localStorage
   useEffect(() => {
     const userStr = localStorage.getItem("user");
@@ -155,7 +198,8 @@ function Checkout() {
   };
 
   const shippingCost = getShippingCost();
-  const orderTotal = totalPrice + shippingCost;
+  const discountAmount = couponData ? couponData.discountAmount : 0;
+  const orderTotal = totalPrice + shippingCost - discountAmount;
 
   // Validate shipping form
   const validateShippingForm = () => {
@@ -225,7 +269,7 @@ function Checkout() {
         shippingAddress,
         paymentMethod: selectedPayment,
         shippingPrice: shippingCost,
-        discountAmount: 0,
+        couponCode: couponData ? couponData.code : "",
         note,
       };
 
@@ -797,6 +841,53 @@ function Checkout() {
 
               <hr className="my-4" />
 
+              {/* Coupon Code */}
+              <div className="mb-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">
+                  Have a coupon?
+                </p>
+                {couponData ? (
+                  <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-2">
+                    <div className="flex items-center">
+                      <FiCheck className="text-green-600 mr-2" />
+                      <div>
+                        <p className="text-xs font-bold text-green-800">
+                          {couponData.code}
+                        </p>
+                        <p className="text-[10px] text-green-600">
+                          {couponData.description || "Coupon applied"}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={removeCoupon}
+                      className="text-xs text-red-500 hover:text-red-700 font-medium"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      placeholder="Enter code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2bbef9]"
+                    />
+                    <button
+                      onClick={handleApplyCoupon}
+                      disabled={isApplyingCoupon || !couponCode.trim()}
+                      className="bg-[#2bbef9] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#1da8e0] disabled:opacity-50"
+                    >
+                      {isApplyingCoupon ? "..." : "Apply"}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <hr className="my-4" />
+
               {/* Pricing */}
               <div className="space-y-2">
                 <div className="flex justify-between text-gray-600">
@@ -813,6 +904,12 @@ function Checkout() {
                     )}
                   </span>
                 </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount</span>
+                    <span>-{formatCurrency(discountAmount)}</span>
+                  </div>
+                )}
               </div>
 
               <hr className="my-4" />

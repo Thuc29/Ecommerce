@@ -76,6 +76,24 @@ function OrderDetail() {
     }
   };
 
+  const handlePayNow = async () => {
+    setIsLoading(true);
+    try {
+      const response = await orderApi.getPaymentUrl(order.orderCode);
+      if (response.success && response.data.paymentUrl) {
+        window.location.href = response.data.paymentUrl;
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Payment Error",
+        text: err.message || "Could not generate payment URL. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Get status step index
   const getStatusStep = (status) => {
     const statusOrder = ["pending", "confirmed", "processing", "shipped", "delivered"];
@@ -395,6 +413,17 @@ function OrderDetail() {
               >
                 <FiXCircle className="mr-2" />
                 Cancel Order
+              </button>
+            )}
+
+            {order.orderStatus === "pending" && order.paymentMethod === "VNPAY" && !order.isPaid && (
+              <button
+                onClick={handlePayNow}
+                disabled={isLoading}
+                className="w-full py-3 bg-[#2bbef9] text-white rounded-lg font-semibold hover:bg-[#1da8e0] transition-colors flex items-center justify-center shadow-md"
+              >
+                <FiCreditCard className="mr-2" />
+                {isLoading ? "Processing..." : "Pay Now with VNPay"}
               </button>
             )}
           </div>

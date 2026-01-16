@@ -3,7 +3,9 @@ const router = express.Router();
 const Order = require("../models/order");
 const Cart = require("../models/cart");
 const Product = require("../models/product");
+const Coupon = require("../models/coupon");
 const vnpayService = require("../services/vnpayService");
+const emailService = require("../services/emailService");
 const { verifyToken, isAdmin } = require("../middleware/auth");
 
 // Helper function to get client IP
@@ -23,7 +25,7 @@ router.post("/", verifyToken, async (req, res) => {
       shippingAddress,
       paymentMethod,
       shippingPrice = 0,
-      discountAmount = 0,
+      couponCode = "",
       note = "",
     } = req.body;
 
@@ -56,13 +58,50 @@ router.post("/", verifyToken, async (req, res) => {
       });
     }
 
+    // Calculate items price
+    let itemsPrice = 0;
+    for (const item of cart.items) {
+      itemsPrice += item.price * item.quantity;
+    }
+
+    // Handle Coupon
+    let discountAmount = 0;
+    let appliedCoupon = null;
+
+    if (couponCode) {
+      appliedCoupon = await Coupon.findOne({
+        code: couponCode.toUpperCase(),
+        isActive: true,
+      });
+
+      if (appliedCoupon) {
+        const validation = appliedCoupon.isValid(itemsPrice);
+        if (validation.valid) {
+          discountAmount = appliedCoupon.calculateDiscount(itemsPrice);
+        } else {
+          // If coupon is invalid, we can either fail or just ignore it.
+          // For now, let's fail to be safe.
+          return res.status(400).json({
+            success: false,
+            message: `Coupon error: ${validation.message}`,
+          });
+        }
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid coupon code",
+        });
+      }
+    }
+
+    // Calculate total
+    const totalPrice = itemsPrice + shippingPrice - discountAmount;
+
     // Verify stock and prepare order items
     const orderItems = [];
-    let itemsPrice = 0;
-
     for (const item of cart.items) {
       const product = await Product.findById(item.product._id);
-
+      
       if (!product) {
         return res.status(400).json({
           success: false,
@@ -84,12 +123,7 @@ router.post("/", verifyToken, async (req, res) => {
         price: item.price,
         quantity: item.quantity,
       });
-
-      itemsPrice += item.price * item.quantity;
     }
-
-    // Calculate total
-    const totalPrice = itemsPrice + shippingPrice - discountAmount;
 
     // Generate order code
     const orderCode = await Order.generateOrderCode();
@@ -104,11 +138,17 @@ router.post("/", verifyToken, async (req, res) => {
       itemsPrice,
       shippingPrice,
       discountAmount,
+      couponCode,
       totalPrice,
       note,
       isPaid: false,
       orderStatus: "pending",
     });
+    
+    if (appliedCoupon) {
+      appliedCoupon.usedCount += 1;
+      await appliedCoupon.save();
+    }
 
     await order.save();
 
@@ -143,6 +183,11 @@ router.post("/", verifyToken, async (req, res) => {
     }
 
     // For COD orders
+    if (paymentMethod === "COD") {
+      // Send order confirmation email (async, don't wait)
+      emailService.sendOrderConfirmationEmail(req.user.email, order, req.user.name);
+    }
+
     res.status(201).json({
       success: true,
       message: "Order has been created successfully",
@@ -204,6 +249,16 @@ router.get("/vnpay-return", async (req, res) => {
       });
 
       await order.save();
+
+      // Send order confirmation email (async, don't wait)
+      const populatedOrder = await Order.findById(order._id).populate("user");
+      if (populatedOrder && populatedOrder.user) {
+        emailService.sendOrderConfirmationEmail(
+          populatedOrder.user.email,
+          populatedOrder,
+          populatedOrder.user.name
+        );
+      }
 
       return res.redirect(
         `${clientUrl}/payment/result?success=true&orderId=${order.orderCode}`
@@ -275,8 +330,17 @@ router.post("/vnpay-ipn", async (req, res) => {
         note: "VNPay payment successful (IPN)",
         updatedAt: new Date(),
       });
-
       await order.save();
+
+      // Send order confirmation email (async, don't wait)
+      const populatedOrder = await Order.findById(order._id).populate("user");
+      if (populatedOrder && populatedOrder.user) {
+        emailService.sendOrderConfirmationEmail(
+          populatedOrder.user.email,
+          populatedOrder,
+          populatedOrder.user.name
+        );
+      }
 
       return res.status(200).json({ RspCode: "00", Message: "Confirm success" });
     } else {
@@ -358,6 +422,66 @@ router.get("/:id", verifyToken, async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error fetching order details",
+      error: error.message,
+    });
+  }
+});
+
+// GET /api/orders/:id/payment-url - Get payment URL for existing order
+router.get("/:id/payment-url", verifyToken, async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      $or: [{ _id: req.params.id }, { orderCode: req.params.id }],
+      user: req.user._id,
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    if (order.isPaid) {
+      return res.status(400).json({
+        success: false,
+        message: "Order has already been paid",
+      });
+    }
+
+    if (order.orderStatus === "cancelled") {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot pay for a cancelled order",
+      });
+    }
+
+    if (order.paymentMethod !== "VNPAY") {
+      return res.status(400).json({
+        success: false,
+        message: "This order does not use VNPay payment method",
+      });
+    }
+
+    // Create payment URL
+    const paymentUrl = vnpayService.createPaymentUrl({
+      orderId: order.orderCode,
+      amount: Math.round(order.totalPrice),
+      orderInfo: `Payment for order ${order.orderCode}`,
+      ipAddr: getClientIp(req),
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        paymentUrl,
+      },
+    });
+  } catch (error) {
+    console.error("Get payment URL error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error generating payment URL",
       error: error.message,
     });
   }

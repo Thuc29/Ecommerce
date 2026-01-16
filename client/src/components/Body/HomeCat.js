@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import Slider from "react-slick";
 import { fetchDataFromApi } from "../../services/api"; // Dùng helper API
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { Link } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -101,31 +102,33 @@ function HomeCat() {
                 key={category._id}
                 className="px-2" // Added padding for spacing between cards
               >
-                <div className="bg-white bg-opacity-80 shadow-lg h-[200px] rounded-xl overflow-hidden relative flex flex-col items-center justify-between cursor-pointer hover:scale-95">
-                  <img
-                    className="w-full h-30 object-contain p-5"
-                    src={
-                      category.images && category.images.length > 0
-                        ? category.images[0]
-                        : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUGHzjfE-wskiGXZMMtxuOFQ_0mLxGLiFz6Q&s"
-                    }
-                    alt={category.name}
-                  />
-                  <div className="flex-1 flex flex-col items-center justify-center pb-4 relative">
-                    <h4 className="text-lg font-semibold text-gray-800 text-center relative">
-                      {category.name}
-                      {/* Add badge for "Coffee" category */}
-                      {category.name.toLowerCase() === "coffee" && (
-                        <span className="absolute -top-2 -right-8 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
-                          0
-                        </span>
-                      )}
-                    </h4>
-                    <p className="text-center text-gray-600 text-sm mt-1">
-                      {category?.productCount ?? 0} Items
-                    </p>
+                <Link to={`/cat/${category._id}`} className="block no-underline">
+                  <div className="bg-white bg-opacity-80 shadow-lg h-[200px] rounded-xl overflow-hidden relative flex flex-col items-center justify-between cursor-pointer hover:scale-95 transition-transform duration-300">
+                    <img
+                      className="w-full h-30 object-contain p-5"
+                      src={
+                        category.images && category.images.length > 0
+                          ? category.images[0]
+                          : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUGHzjfE-wskiGXZMMtxuOFQ_0mLxGLiFz6Q&s"
+                      }
+                      alt={category.name}
+                    />
+                    <div className="flex-1 flex flex-col items-center justify-center pb-4 relative">
+                      <h4 className="text-lg font-semibold text-gray-800 text-center relative">
+                        {category.name}
+                        {/* Add badge for "Coffee" category */}
+                        {category.name.toLowerCase() === "coffee" && (
+                          <span className="absolute -top-2 -right-8 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
+                            0
+                          </span>
+                        )}
+                      </h4>
+                      <p className="text-center text-gray-600 text-sm mt-1">
+                        {category?.productCount ?? 0} Items
+                      </p>
+                    </div>
                   </div>
-                </div>
+                </Link>
               </div>
             ))}
           </Slider>

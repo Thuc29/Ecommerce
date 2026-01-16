@@ -9,6 +9,7 @@ import {
   FiTruck,
   FiCheckCircle,
   FiAlertCircle,
+  FiCreditCard,
 } from "react-icons/fi";
 import { orderApi, formatCurrency, getStatusConfig, orderStatuses } from "../../services/api";
 import Swal from "sweetalert2";
@@ -126,6 +127,21 @@ function Orders() {
           "error"
         );
       }
+    }
+  };
+
+  const handlePayNow = async (orderCode) => {
+    try {
+      const response = await orderApi.getPaymentUrl(orderCode);
+      if (response.success && response.data.paymentUrl) {
+        window.location.href = response.data.paymentUrl;
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Payment Error",
+        text: err.message || "Could not generate payment URL. Please try again.",
+      });
     }
   };
 
@@ -297,6 +313,15 @@ function Orders() {
                         >
                           <FiXCircle className="mr-1" />
                           Cancel
+                        </button>
+                      )}
+                      {order.orderStatus === "pending" && order.paymentMethod === "VNPAY" && !order.isPaid && (
+                        <button
+                          onClick={() => handlePayNow(order.orderCode)}
+                          className="px-4 py-2 bg-[#2bbef9] text-white rounded-lg hover:bg-[#1da8e0] transition-colors flex items-center text-sm font-semibold"
+                        >
+                          <FiCreditCard className="mr-1" />
+                          Pay Now
                         </button>
                       )}
                       <Link

@@ -50,6 +50,7 @@ const userRoutes = require("./routes/users");
 const uploadRoutes = require("./routes/upload");
 const cartRoutes = require("./routes/cart");
 const orderRoutes = require("./routes/orders");
+const couponRoutes = require("./routes/coupons");
 
 app.use("/api/category", categoryRoutes);
 app.use("/api/products", productRoutes);
@@ -57,6 +58,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/coupons", couponRoutes);
 
 // Kết nối MongoDB
 mongoose

@@ -6,23 +6,100 @@ const Category = require("../models/category");
 const Product = require("../models/product");
 const multer = require("multer");
 const { memoryStorage } = require("multer");
+const { verifyToken } = require("../middleware/auth");
 const router = express.Router();
 const limit = pLimit(4);
 const storage = memoryStorage();
 const upload = multer({ storage });
 
-// Get all products
+// Get all products with search, filter and pagination
 router.get("/", async (req, res) => {
   try {
-    const productList = await Product.find().populate("category");
-    if (!productList || productList.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "No products found" });
+    const {
+      search,
+      category,
+      subcategory,
+      minPrice,
+      maxPrice,
+      brand,
+      rating,
+      isFeatured,
+      page = 1,
+      limit = 12,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = req.query;
+
+    const query = {};
+
+    // Search by name or description
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
     }
-    res
-      .status(200)
-      .json({ success: true, count: productList.length, data: productList });
+
+    // Filter by category
+    if (category) {
+      if (mongoose.Types.ObjectId.isValid(category)) {
+        query.category = category;
+      }
+    }
+
+    // Filter by subcategory
+    if (subcategory) {
+      if (mongoose.Types.ObjectId.isValid(subcategory)) {
+        query.subcategory = subcategory;
+      }
+    }
+
+    // Filter by price range
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = parseFloat(minPrice);
+      if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+    }
+
+    // Filter by brand
+    if (brand) {
+      const brands = Array.isArray(brand) ? brand : brand.split(",");
+      query.brand = { $in: brands.map((b) => new RegExp(`^${b.trim()}$`, "i")) };
+    }
+
+    // Filter by rating
+    if (rating) {
+      query.rating = { $gte: parseFloat(rating) };
+    }
+
+    // Filter by featured
+    if (isFeatured !== undefined) {
+      query.isFeatured = isFeatured === "true";
+    }
+
+    // Build sort object
+    const sort = {};
+    sort[sortBy] = sortOrder === "desc" ? -1 : 1;
+
+    // Execute query with pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    const productList = await Product.find(query)
+      .populate("category")
+      .sort(sort)
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const totalProducts = await Product.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      count: productList.length,
+      total: totalProducts,
+      pages: Math.ceil(totalProducts / parseInt(limit)),
+      currentPage: parseInt(page),
+      data: productList,
+    });
   } catch (error) {
     console.error("Error fetching products:", error.message);
     res.status(500).json({
@@ -944,6 +1021,57 @@ router.get("/brands", async (req, res) => {
 });
 
 // Get product by ID
+// Create a product review
+router.post("/:id/reviews", verifyToken, async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+    const productId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ success: false, message: "Invalid product ID" });
+    }
+
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    // Check if user already reviewed
+    const alreadyReviewed = product.reviews.find(
+      (r) => r.user.toString() === req.user._id.toString()
+    );
+
+    if (alreadyReviewed) {
+      return res.status(400).json({ success: false, message: "Product already reviewed" });
+    }
+
+    const review = {
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+      user: req.user._id,
+    };
+
+    product.reviews.push(review);
+    product.numReviews = product.reviews.length;
+    product.rating =
+      product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+      product.reviews.length;
+
+    await product.save();
+    res.status(201).json({ success: true, message: "Review added" });
+  } catch (error) {
+    console.error("Error adding review:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while adding the review",
+      error: error.message,
+    });
+  }
+});
+
+// Get product by ID
 router.get("/:id", async (req, res) => {
   try {
     const productId = req.params.id;
@@ -954,7 +1082,10 @@ router.get("/:id", async (req, res) => {
         .json({ success: false, message: "Invalid product ID format" });
     }
 
-    const product = await Product.findById(productId).populate("category");
+    const product = await Product.findById(productId)
+      .populate("category")
+      .populate("reviews.user", "name avatar");
+      
     if (!product) {
       return res
         .status(404)

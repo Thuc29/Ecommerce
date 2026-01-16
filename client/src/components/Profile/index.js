@@ -6,3 +6,5 @@ export { default as AddressForm } from "./AddressForm";
 export { default as MapModal } from "./MapModal";
 export { default as PasswordForm } from "./PasswordForm";
 export { default as EmptyState } from "./EmptyState";
+export { default as ProfileOrders } from "./ProfileOrders";
+export { default as ProfileWishlist } from "./ProfileWishlist";
