@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { fetchDataFromApi, formatCurrency } from "../../services/api";
 import Slider from "react-slick";
 import ProductModal from "../Product/ProductModal";
 
@@ -16,10 +16,13 @@ function Feature() {
     const fetchFeatured = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(
-          "https://ecommerce-u7gm.onrender.com/api/products/featured?limit=4&sortBy=createdAt&sortOrder=desc"
+        const res = await fetchDataFromApi(
+          "/api/products/featured?limit=4&sortBy=createdAt&sortOrder=desc"
         );
-        setProducts(res.data.data || []);
+        setProducts(res.data || res?.data?.data || res || []);
+      } catch (err) {
+        console.error("Error fetching featured products:", err.message);
+        setError("Failed to load featured products");
       } finally {
         setLoading(false);
       }
@@ -238,12 +241,12 @@ function Feature() {
                             </div>
                             <div className="flex items-center gap-2 mb-2">
                               {product.oldPrice > 0 && (
-                                <span className="text-gray-400 line-through text-sm">
-                                  ${product.oldPrice.toFixed(0)}
+                                <span className="text-gray-400 line-through text-xs">
+                                  {formatCurrency(product.oldPrice)}
                                 </span>
                               )}
-                              <p className="text-sm text-red-400 font-semibold">
-                                ${product.price.toFixed(0)}
+                              <p className="text-xs text-red-400 font-semibold">
+                                {formatCurrency(product.price)}
                               </p>
                             </div>
                             <div className="h-0 group-hover:h-[40px] transition-all duration-300 overflow-hidden">

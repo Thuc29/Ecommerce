@@ -19,6 +19,7 @@ function ProductUpload() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:9000";
 
   const handleFormChange = (data) => {
     setFormData(data);
@@ -64,7 +65,7 @@ function ProductUpload() {
         updatedAt: new Date().toISOString(),
       };
       const response = await axios.post(
-        "https://ecommerce-u7gm.onrender.com/api/products/create",
+        `${API_URL}/api/products/create`,
         productData
       );
       if (response.data.success) {

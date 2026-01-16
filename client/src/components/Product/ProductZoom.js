@@ -75,13 +75,14 @@ function ProductZoom({ images = [], discount = 0 }) {
 
   return (
     <div className="w-full mt-3 h-auto rounded-xl">
-      {discount > 0 && (
-        <span className="bg-blue text-white text-xs font-semibold ml-2 px-2 py-1 rounded shadow-md">
-          {discount}% OFF
-        </span>
-      )}
       {/* Big Image Slider */}
       <div className="w-full h-[400px] md:h-[500px] overflow-hidden rounded-xl shadow-lg relative">
+        {/* Discount Badge - positioned inside the image */}
+        {discount > 0 && (
+          <span className="absolute top-3 left-3 z-10 bg-[#2bbef9] text-white text-sm font-bold px-2 py-1 rounded-md shadow-lg">
+            -{discount}%
+          </span>
+        )}
         {displayImages.length === 0 ? (
           <div className="w-full h-full flex items-center justify-center text-gray-500">
             No images available

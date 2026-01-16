@@ -1,20 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Button } from "@mui/material";
-import {
-  MdAddShoppingCart,
-  MdDashboard,
-  MdLogin,
-  MdLogout,
-  MdMessage,
-  MdNotifications,
-  MdSettings,
-} from "react-icons/md";
-import {
-  FaAngleRight,
-  FaFileInvoice,
-  FaProductHunt,
-  FaUsers,
-} from "react-icons/fa";
+import { MdDashboard, MdLogout } from "react-icons/md";
+import { FaAngleRight, FaProductHunt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useTheme } from "../Theme/ThemeContext";
 import { MyContext } from "../../App";

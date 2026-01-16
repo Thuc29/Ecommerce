@@ -13,9 +13,15 @@ if (!process.env.CONNECTION) {
   process.exit(1);
 }
 
+if (!process.env.JWT_SECRET) {
+  console.error("❌ Missing JWT_SECRET in environment variables");
+  process.exit(1);
+}
+
 // Cho phép nhiều origin (Vercel client + admin nếu có)
 const allowedOrigins = [
   "http://localhost:3000",
+  "http://localhost:3001",
   "https://ecommerce-u7gm.onrender.com",
   "https://ecommerce-rho-taupe.vercel.app",
   process.env.CLIENT_URL,
@@ -40,9 +46,17 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 // Routes
 const categoryRoutes = require("./routes/categories");
 const productRoutes = require("./routes/products");
+const userRoutes = require("./routes/users");
+const uploadRoutes = require("./routes/upload");
+const cartRoutes = require("./routes/cart");
+const orderRoutes = require("./routes/orders");
 
 app.use("/api/category", categoryRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
 
 // Kết nối MongoDB
 mongoose

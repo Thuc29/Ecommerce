@@ -22,6 +22,8 @@ function MediaAndPublished({ onImagesChange }) {
   const [loading, setLoading] = useState(Array(4).fill(false));
   const [hasFetched, setHasFetched] = useState(false);
 
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:9000";
+
   const fetchProductImages = useCallback(async () => {
     if (!productId) {
       setError("No product ID provided in the URL");
@@ -30,9 +32,7 @@ function MediaAndPublished({ onImagesChange }) {
 
     try {
       console.log(`Fetching product data for ID: ${productId}`);
-      const response = await axios.get(
-        `https://ecommerce-u7gm.onrender.com/api/products/${productId}`
-      );
+      const response = await axios.get(`${API_URL}/api/products/${productId}`);
       if (response.data?.success && response.data?.data?.images) {
         const fetchedImages = response.data.data.images
           .slice(0, 4)
@@ -82,7 +82,7 @@ function MediaAndPublished({ onImagesChange }) {
         const base64 = await fileToBase64(file);
         console.log("Base64 data:", base64.substring(0, 100));
         const response = await axios.post(
-          "https://ecommerce-u7gm.onrender.com/api/products/upload-image",
+          `${API_URL}/api/products/upload-image`,
           {
             image: base64,
           }

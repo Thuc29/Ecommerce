@@ -11,17 +11,18 @@ function ProductEdit() {
   const [formData, setFormData] = useState({});
   const [images, setImages] = useState([]);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { productId } = useParams(); // Lấy productId từ URL
+
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:9000";
 
   // Lấy thông tin sản phẩm cũ
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `https://ecommerce-u7gm.onrender.com/api/products/${productId}`
+          `${API_URL}/api/products/${productId}`
         );
         if (response.data.success) {
           const product = response.data.data;
@@ -97,7 +98,7 @@ function ProductEdit() {
           formData.isFeatured === "true" || formData.isFeatured === true,
       };
       const response = await axios.put(
-        `https://ecommerce-u7gm.onrender.com/api/products/${productId}`,
+        `${API_URL}/api/products/${productId}`,
         productData
       );
       if (response.data.success) {

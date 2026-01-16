@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ProductItem from "./ProductItem";
-import axios from "axios";
+import { fetchDataFromApi } from "../../services/api";
 
 function RecentlyViewPro({ productId }) {
   const [productView, setProductView] = useState("four");
@@ -30,8 +30,8 @@ function RecentlyViewPro({ productId }) {
     const fetchRecentlyViewed = async () => {
       try {
         // Simulate fetching recently viewed products; ideally, this would use a user-specific API
-        const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/products");
-        const allProducts = response.data.data || [];
+        const response = await fetchDataFromApi("/api/products");
+        const allProducts = response.data || response?.data?.data || [];
         // Filter out the current product and take the first few as "recently viewed"
         const filteredProducts = allProducts.filter(
           (p) => p._id["$oid"] !== productId

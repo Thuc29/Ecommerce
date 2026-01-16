@@ -1,52 +1,85 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, Radio } from "@mui/material";
+import { Radio, RadioGroup, FormControlLabel } from "@mui/material";
 import { IoCartSharp } from "react-icons/io5";
+import { useCart } from "../../context/CartContext";
 
-function CartTotal() {
+function CartTotal({ subtotal = 0 }) {
+  const { totalItems } = useCart();
+  const [shippingMethod, setShippingMethod] = useState("flat");
+
+  // Shipping rates in VND
+  const shippingRates = {
+    flat: 30000, // 30,000 VND
+    local: 0,
+  };
+
+  const shippingCost = shippingRates[shippingMethod];
+  const total = subtotal + shippingCost;
+
+  // Format price to VND
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+  };
+
   return (
-    <div className="border my-4 rounded-lg shadow-lg">
+    <div className="border my-4 rounded-lg shadow-lg sticky top-4">
       {/* Header */}
       <p className="uppercase font-bold text-lg p-4 border-b">Cart Totals</p>
 
       {/* Subtotal */}
       <div className="p-4 flex justify-between">
         <p className="font-semibold">Subtotal</p>
-        <p>$30.04</p>
+        <p>{formatPrice(subtotal)}</p>
       </div>
       <hr className="w-[90%] mx-auto" />
 
       {/* Shipping Options */}
-      <div className="p-4 flex justify-between items-start">
-        <p className="font-semibold my-auto items-center">Shipping</p>
-        <div className="space-y-[-5px]">
-          <div className="flex items-center justify-end">
-            <p className="inline">
-              Flat rate:{" "}
-              <span className="font-semibold text-red-500">$5.00</span>
-            </p>
-            <Radio size="small" color="primary" />
-          </div>
+      <div className="p-4">
+        <p className="font-semibold mb-2">Shipping</p>
+        <RadioGroup
+          value={shippingMethod}
+          onChange={(e) => setShippingMethod(e.target.value)}
+        >
+          <FormControlLabel
+            value="flat"
+            control={<Radio size="small" color="primary" />}
+            label={
+              <span className="text-sm">
+                Standard Shipping:{" "}
+                <span className="font-semibold text-red-500">
+                  {formatPrice(shippingRates.flat)}
+                </span>
+              </span>
+            }
+          />
+          <FormControlLabel
+            value="local"
+            control={<Radio size="small" color="primary" />}
+            label={
+              <span className="text-sm">
+                Local pickup:{" "}
+                <span className="font-semibold text-green-500">Free</span>
+              </span>
+            }
+          />
+        </RadioGroup>
 
-          {/* Local pickup option */}
-          <div className="flex items-center justify-end">
-            <p className="inline">Local pickup</p>
-            <Radio size="small" color="primary" />
-          </div>
-
-          {/* Shipping details */}
-          <div className="items-center justify-end">
-            <p>
-              Shipping to <b className="text-gray-800">AL.</b>
-            </p>
-            <div className="mt-5">
-              <Link
-                to="/change-address"
-                className="text-blue-500 hover:text-blue-800 font-medium underline"
-              >
-                Change address
-              </Link>
-            </div>
+        {/* Shipping details */}
+        <div className="mt-3 text-sm text-gray-600">
+          <p>
+            Shipping to <b className="text-gray-800">Your Location</b>
+          </p>
+          <div className="mt-2">
+            <Link
+              to="/profile"
+              className="text-blue-500 hover:text-blue-800 font-medium underline"
+            >
+              Change address
+            </Link>
           </div>
         </div>
       </div>
@@ -55,17 +88,28 @@ function CartTotal() {
       {/* Total */}
       <div className="p-4 flex justify-between">
         <p className="font-semibold text-lg">Total</p>
-        <p className="text-lg font-bold">$35.04</p>
+        <p className="text-lg font-bold text-red-600">{formatPrice(total)}</p>
       </div>
       <hr className="w-[90%] mx-auto" />
 
       {/* Proceed to Checkout */}
-      <div className="p-4 lg:pb-[30%]">
+      <div className="p-4 lg:pb-6">
         <Link to="/checkout">
-          <button className="w-full bg-red-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 hover:bg-red-700 flex items-center justify-center">
+          <button
+            disabled={totalItems === 0}
+            className="w-full bg-red-600 text-white font-semibold py-3 px-4 rounded transition-colors duration-200 hover:bg-red-700 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <IoCartSharp className="mr-2" />
             Proceed to Checkout
           </button>
+        </Link>
+
+        {/* Continue Shopping */}
+        <Link
+          to="/"
+          className="block text-center mt-3 text-blue-600 hover:text-blue-800 font-medium"
+        >
+          Continue Shopping
         </Link>
       </div>
     </div>

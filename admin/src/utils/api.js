@@ -4,7 +4,7 @@ import { handleApiError } from "./sweetAlert";
 // Sử dụng biến môi trường để chuyển đổi giữa local và production
 // Local: https://ecommerce-u7gm.onrender.com
 // Production:https://ecommerce-u7gm.onrender.com
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://ecommerce-u7gm.onrender.com";
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:9000";
 
 // Hàm GET
 export const fetchDataFromApi = async (url, showErrorAlert = true) => {

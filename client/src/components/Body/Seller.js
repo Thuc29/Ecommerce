@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import Slider from "react-slick";
 import ProductModal from "../Product/ProductModal";
-import axios from "axios";
 import { showError } from "../../utils/sweetAlert";
+import { fetchDataFromApi, formatCurrency } from "../../services/api";
 
 function Seller() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -81,10 +81,10 @@ function Seller() {
     const fetchBestSellers = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          "https://ecommerce-u7gm.onrender.com/api/products/best-sellers?limit=10"
+        const response = await fetchDataFromApi(
+          "/api/products/best-sellers?limit=10"
         );
-        setProducts(response.data.data); // Assuming the API returns { data: [...] }
+        setProducts(response.data || response?.data?.data || []); // Tương thích nhiều dạng response
         setLoading(false);
       } catch (err) {
         console.error("Error fetching best sellers:", err.message);
@@ -152,7 +152,7 @@ function Seller() {
                             className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-110"
                           />
                           <div className="absolute top-2 left-2 flex flex-col gap-1">
-                            <span className="bg-[#2bbff9c4] max-w-[50%] text-white text-center text-xs font-bold py-1 px-0 rounded">
+                            <span className="bg-[#2bbff9c4] w-fit text-white px-2 py-1 text-center text-xs font-bold rounded">
                               {product.oldPrice && product.price
                                 ? `${Math.round(
                                     ((product.oldPrice - product.price) /
@@ -161,8 +161,8 @@ function Seller() {
                                   )}%`
                                 : "19%"}
                             </span>
-                            <span className="bg-[#15a138cb] text-white text-xs font-bold px-2 py-1 rounded">
-                              ORGANIC
+                            <span className="bg-[#de0a0acb] text-white text-xs font-bold px-2 py-1 rounded">
+                              HOT
                             </span>
                           </div>
                           <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
@@ -230,11 +230,13 @@ function Seller() {
                             </span>
                           </div>
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-gray-300 line-through text-sm">
-                              ${product.oldPrice.toFixed(2)}
-                            </span>
-                            <p className="text-sm text-red-400 font-semibold">
-                              ${product.price.toFixed(2)}
+                            {product.oldPrice > 0 && (
+                              <span className="text-gray-300 line-through text-xs">
+                                {formatCurrency(product.oldPrice)}
+                              </span>
+                            )}
+                            <p className="text-xs text-red-400 font-semibold">
+                              {formatCurrency(product.price)}
                             </p>
                           </div>
                           <div className="h-8 ">

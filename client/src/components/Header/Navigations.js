@@ -3,7 +3,7 @@ import { Button, Container, Navbar } from "react-bootstrap";
 import { MdKeyboardArrowRight, MdLaptopMac, MdHome } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { IoIosMenu } from "react-icons/io";
-import axios from "axios";
+import { fetchDataFromApi } from "../../services/api";
 
 function Navigations() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,8 +17,9 @@ function Navigations() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/category");
-        const mappedCategories = response.data.data.map((category) => {
+        const response = await fetchDataFromApi("/api/category");
+        const data = response.data || response?.data?.data || [];
+        const mappedCategories = data.map((category) => {
           const subCategories = category.subcategories.map((sub) => ({
             icon: <MdLaptopMac />, // Default icon for all subcategories
             label: sub.name || "No subcategories",

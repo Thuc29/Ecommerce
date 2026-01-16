@@ -9,7 +9,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ProductItem from "../../components/Product/ProductItem";
 import Sidebar from "../../components/Sidebar/Sidebar";
-import axios from "axios";
+import { fetchDataFromApi } from "../../services/api";
 
 function Listing() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -47,8 +47,8 @@ function Listing() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/products");
-        const list = response.data.data || [];
+        const response = await fetchDataFromApi("/api/products");
+        const list = response.data || response?.data?.data || response || [];
         setProducts(list);
         setFilteredProducts(list);
 
@@ -173,12 +173,12 @@ function Listing() {
                   ))}
                 </Menu>
               </div>
-              <div className="ml-4 flex items-center ">
+              <div className="ml-3 flex items-center ">
                 <p className="text-gray-500 mr-2">Sort by:</p>
                 <select
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value)}
-                  className="border !rounded-xl py-1 text-sm "
+                  className="border !rounded-xl py-1 px-2 text-sm w-fit"
                 >
                   <option value="none">Default</option>
                   <option value="asc">Low to High</option>

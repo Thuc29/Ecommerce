@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
 import ProductModal from "../Product/ProductModal"; // Import the modal component
-import axios from "axios";
 import { showError } from "../../utils/sweetAlert";
 import { FaStar } from "react-icons/fa6";
 import Feature from "./Feature";
+import { fetchDataFromApi, formatCurrency } from "../../services/api";
 
 function NewPro() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,10 +21,10 @@ function NewPro() {
     const fetchNewProducts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          "https://ecommerce-u7gm.onrender.com/api/products/by-time?limit=8&sortBy=createdAt&sortOrder=desc"
+        const response = await fetchDataFromApi(
+          "/api/products/by-time?limit=8&sortBy=createdAt&sortOrder=desc"
         );
-        setProducts(response.data.data);
+        setProducts(response.data || response?.data?.data || []);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching new products:", err.message);
@@ -45,10 +45,10 @@ function NewPro() {
     const fetchTrendingProducts = async () => {
       try {
         setTrendingLoading(true);
-        const response = await axios.get(
-          "https://ecommerce-u7gm.onrender.com/api/products/trending?limit=6"
+        const response = await fetchDataFromApi(
+          "/api/products/trending?limit=6"
         );
-        setTrendingProducts(response.data.data);
+        setTrendingProducts(response.data || response?.data?.data || []);
         setTrendingLoading(false);
       } catch (err) {
         console.error("Error fetching trending products:", err.message);
@@ -143,12 +143,12 @@ function NewPro() {
                         </div>
                       </div>
                       <div className="flex flex-col items-end ml-2">
-                        <span className="text-red-500 font-semibold text-sm">
-                          ${product.price.toFixed(0)}
+                        <span className="text-red-500 font-semibold text-xs">
+                          {formatCurrency(product.price)}
                         </span>
                         {product.oldPrice > 0 && (
-                          <span className="line-through text-gray-400 text-xs">
-                            ${product.oldPrice.toFixed(0)}
+                          <span className="line-through text-gray-400 text-[10px]">
+                            {formatCurrency(product.oldPrice)}
                           </span>
                         )}
                         {product.salesCount > 0 && (
@@ -313,14 +313,14 @@ function NewPro() {
                               {product.rating || 0}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 mb-2">
+                            <div className="flex items-center gap-2 mb-2">
                             {product.oldPrice > 0 && (
-                              <span className="text-gray-400 line-through text-sm">
-                                ${product.oldPrice.toFixed(0)}
+                              <span className="text-gray-400 line-through text-xs">
+                                {formatCurrency(product.oldPrice)}
                               </span>
                             )}
-                            <p className="text-sm text-red-400 font-semibold">
-                              ${product.price.toFixed(0)}
+                            <p className="text-xs text-red-400 font-semibold">
+                              {formatCurrency(product.price)}
                             </p>
                           </div>
                           <div className="h-0 group-hover:h-[40px] transition-all duration-300 overflow-hidden">

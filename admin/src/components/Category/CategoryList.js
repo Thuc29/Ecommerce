@@ -11,7 +11,6 @@ import ModalEditCategory from "./ModalEditCategory";
 import { IconButton, Pagination } from "@mui/material";
 import { MdDelete, MdEdit } from "react-icons/md";
 import {
-  showSuccess,
   showError,
   showDeleteConfirm,
   showSuccessMessages,

@@ -5,6 +5,7 @@ import {
   showConfirm,
   showDeleteConfirm,
 } from "../../utils/sweetAlert";
+import { FiTrash2 } from "react-icons/fi";
 
 const CouponCode = () => {
   const [couponCode, setCouponCode] = useState("");
@@ -87,10 +88,10 @@ const CouponCode = () => {
       {/* Remove All Button */}
       <button
         type="button"
-        className="button bg-blue-700 text-white rounded-md px-4 py-2 hover:bg-red-600 transition-all w-full md:w-auto"
+        className="button bg-red-700 flex items-center justify-center text-white rounded-md px-4 py-2 hover:bg-red-600 transition-all w-full md:w-auto"
         onClick={removeAllItems}
       >
-        Remove All
+        <FiTrash2 className="mr-2 text-white" /> Remove All
       </button>
     </div>
   );

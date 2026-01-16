@@ -11,12 +11,15 @@ import PinterestIcon from "@mui/icons-material/Pinterest";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import RedditIcon from "@mui/icons-material/Reddit";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import { FaRegHeart } from "react-icons/fa6";
+import { FaRegHeart, FaHeart } from "react-icons/fa6";
+import { FaShoppingCart } from "react-icons/fa";
 import Tabs from "./Tabs";
 import RelatedProduct from "./RelatedProduct";
 import RecentlyViewPro from "./RecentlyViewPro";
-import axios from "axios";
 import { useParams } from "react-router-dom";
+import { fetchDataFromApi, formatCurrency } from "../../services/api";
+import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 
 function ProductDetails() {
   const { id } = useParams(); // Assumes product ID is passed via URL params
@@ -24,14 +27,16 @@ function ProductDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [quantity, setQuantity] = useState(1);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const { addToCart, isInCart, getItemQuantity } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(
-          `https://ecommerce-u7gm.onrender.com/api/products/${id}`
-        );
-        setProduct(response.data.data); // Assumes API returns { data: {...} }
+        const response = await fetchDataFromApi(`/api/products/${id}`);
+        setProduct(response.data || response?.data?.data || response); // Tương thích nhiều dạng response
         setLoading(false);
       } catch (err) {
         console.error("Error fetching product:", err.message);
@@ -46,8 +51,8 @@ function ProductDetails() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/category");
-        setCategories(response.data.data); // Assumes API returns { data: [...] }
+        const response = await fetchDataFromApi("/api/category");
+        setCategories(response.data || response?.data?.data || []); // Assumes API returns { data: [...] }
       } catch (err) {
         console.error("Error fetching categories:", err.message);
         setError("Failed to load categories");
@@ -106,11 +111,13 @@ function ProductDetails() {
             {/* Cột 2: Product Details */}
             <div className="w-full lg:w-4/12 md:w-7/12 mt-4 md:mt-0 flex flex-col px-4 md:justify-start pt-4">
               <div className="flex items-center mb-2">
-                <span className="text-gray-500 text-xl line-through">
-                  ${product.oldPrice?.toFixed(2) || ""}
-                </span>
-                <span className="text-red-600 text-[26px] font-bold mx-3">
-                  ${product.price?.toFixed(2) || "0.00"}
+                {product.oldPrice > 0 && (
+                  <span className="text-gray-500 text-base line-through">
+                    {formatCurrency(product.oldPrice)}
+                  </span>
+                )}
+                <span className="text-red-600 text-[22px] font-bold mx-3">
+                  {formatCurrency(product.price)}
                 </span>
                 {discount > 0 && (
                   <span className="bg-blue flex gap-1 text-white text-xs font-semibold px-2 py-0.5 rounded">
@@ -125,16 +132,67 @@ function ProductDetails() {
                 {product.description || "No description available"}
               </p>
 
-              <div className="flex items-center  mb-4">
-                <QuantityBox />
+              <div className="flex items-center gap-4 mb-4">
+                <QuantityBox
+                  quantity={quantity}
+                  onQuantityChange={setQuantity}
+                  min={1}
+                  max={product.countInStock || 99}
+                  disabled={product.countInStock <= 0}
+                />
+                <button
+                  onClick={async () => {
+                    if (product.countInStock <= 0) return;
+                    setIsAddingToCart(true);
+                    try {
+                      await addToCart(product, quantity);
+                      setQuantity(1);
+                    } finally {
+                      setIsAddingToCart(false);
+                    }
+                  }}
+                  disabled={isAddingToCart || product.countInStock <= 0}
+                  className={`flex items-center justify-center font-semibold py-2 px-6 rounded-full transition-colors ${
+                    product.countInStock <= 0
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : isInCart(product._id)
+                      ? "bg-green-500 text-white hover:bg-green-600"
+                      : "bg-[#2bbef9] text-white hover:bg-[#1ea8e0]"
+                  } disabled:opacity-50`}
+                >
+                  <FaShoppingCart className="mr-2" />
+                  {isAddingToCart
+                    ? "Adding..."
+                    : product.countInStock <= 0
+                    ? "Out of Stock"
+                    : isInCart(product._id)
+                    ? `In Cart (${getItemQuantity(product._id)})`
+                    : "Add to Cart"}
+                </button>
               </div>
 
               <div className="flex space-x-4 mb-4">
-                <button className="text-gray-500 border rounded-full px-5 py-1 flex text-xs items-center uppercase">
-                  <FaRegHeart className="mr-1" />
-                  Add to Wishlist
+                <button
+                  onClick={() => toggleWishlist(product)}
+                  className={`border rounded-full px-5 py-2 flex text-xs items-center uppercase transition-all duration-300 ${
+                    isInWishlist(product._id)
+                      ? "bg-red-500 text-white border-red-500 hover:bg-red-600"
+                      : "text-gray-500 border-gray-300 hover:border-red-400 hover:text-red-500"
+                  }`}
+                >
+                  {isInWishlist(product._id) ? (
+                    <>
+                      <FaHeart className="mr-1" />
+                      In Wishlist
+                    </>
+                  ) : (
+                    <>
+                      <FaRegHeart className="mr-1" />
+                      Add to Wishlist
+                    </>
+                  )}
                 </button>
-                <button className="text-gray-500 border rounded-full px-5 py-1 flex text-xs items-center uppercase">
+                <button className="text-gray-500 border rounded-full px-5 py-1 flex text-xs items-center uppercase hover:border-[#2bbef9] hover:text-[#2bbef9] transition-all duration-300">
                   Compare
                 </button>
               </div>

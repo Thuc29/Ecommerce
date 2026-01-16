@@ -1,8 +1,8 @@
 import { Checkbox, FormControlLabel } from "@mui/material";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import RangeSlider from "react-range-slider-input";
 import { Link } from "react-router-dom";
+import { fetchDataFromApi, formatCurrency } from "../../services/api";
 
 function Sidebar({ onPriceFilter, onBrandFilter }) {
   const [value, setValue] = useState([100, 60000]);
@@ -20,8 +20,8 @@ function Sidebar({ onPriceFilter, onBrandFilter }) {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/category");
-        setCategories(response.data.data);
+        const response = await fetchDataFromApi("/api/category");
+        setCategories(response.data || response?.data?.data || []);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -35,8 +35,8 @@ function Sidebar({ onPriceFilter, onBrandFilter }) {
     const fetchProducts = async () => {
       try {
         setPriceLoading(true);
-        const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/products");
-        const list = response.data.data || [];
+        const response = await fetchDataFromApi("/api/products");
+        const list = response.data || response?.data?.data || [];
         setProducts(list);
         setFilteredProducts(list);
 
@@ -72,10 +72,8 @@ function Sidebar({ onPriceFilter, onBrandFilter }) {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const res = await axios.get(
-          "https://ecommerce-u7gm.onrender.com/api/products/brands"
-        );
-        setBrands(res.data.data || []);
+        const res = await fetchDataFromApi("/api/products/brands");
+        setBrands(res.data || res?.data?.data || []);
       } catch (err) {
         console.error("Error fetching brands:", err.message);
       }
@@ -144,15 +142,13 @@ function Sidebar({ onPriceFilter, onBrandFilter }) {
               {/* Hiển thị giá trị đang chọn */}
               <div className="flex py-2 justify-between items-center">
                 <span className="text-xs text-gray-500">
-                  Selected:{" "}
                   <strong className="text-gray-700">
-                    {value[0].toLocaleString()}
+                    {formatCurrency(value[0])}
                   </strong>{" "}
                   -{" "}
                   <strong className="text-gray-700">
-                    {value[1].toLocaleString()}
-                  </strong>{" "}
-                  $
+                    {formatCurrency(value[1])}
+                  </strong>
                 </span>
 
                 {/* Hiển thị tỷ lệ phần trăm so với range */}

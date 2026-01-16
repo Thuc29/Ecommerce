@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
   MdHotelClass,
-  MdPalette,
   MdPix,
   MdSell,
-  MdSettings,
   MdShoppingCart,
   MdStore,
-  MdSummarize,
   MdVerified,
 } from "react-icons/md";
-import { format } from "date-fns";
 import ProductDescription from "./ProductDescription";
 import RatingAnalytics from "./RatingAnalytics";
 import CustomerReviews from "./CustomerReviews";
@@ -20,6 +16,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Button } from "react-bootstrap";
 import { FaHome, FaIcons, FaPlus } from "react-icons/fa";
+import { formatPriceVND } from "../../../utils/formatPrice";
 
 function ProductView() {
   const { theme } = useTheme();
@@ -27,12 +24,12 @@ function ProductView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { productId } = useParams();
-  const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:9000";
 
   useEffect(() => {
     // Lấy dữ liệu sản phẩm từ backend
     axios
-      .get(`https://ecommerce-u7gm.onrender.com/api/products/${productId}`)
+      .get(`${API_URL}/api/products/${productId}`)
       .then((response) => {
         setProduct(response.data.data);
         setLoading(false);
@@ -160,11 +157,13 @@ function ProductView() {
                       Price
                     </span>
                     <span className="mr-2 leading-4 opacity-70">:</span>
-                    <p className="text-[15px] leading-[18px] capitalize opacity-70">
-                      ${product.price}
+                    <p className="text-[15px] leading-[18px] capitalize">
+                      <span className="text-red-500 font-semibold">
+                        {formatPriceVND(product.price)}
+                      </span>
                       {product.oldPrice && (
-                        <span className="line-through text-red-500 ml-1">
-                          ${product.oldPrice}
+                        <span className="line-through text-gray-500 ml-2 text-sm">
+                          {formatPriceVND(product.oldPrice)}
                         </span>
                       )}
                     </p>

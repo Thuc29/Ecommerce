@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import Slider from "react-slick";
-import axios from "axios"; // Import Axios
+import { fetchDataFromApi } from "../../services/api"; // Dùng helper API
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -15,10 +15,8 @@ function HomeCat() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(
-          "https://ecommerce-u7gm.onrender.com/api/category/with-count"
-        );
-        setCategories(response.data.data);
+        const response = await fetchDataFromApi("/api/category/with-count");
+        setCategories(response.data || response?.data?.data || []);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching categories:", err.message);

@@ -14,13 +14,14 @@ import {
 } from "react-icons/md";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { formatPriceVND } from "../../utils/formatPrice";
 
 function Selling() {
   // State for menu
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const ITEM_HEIGHT = 48;
-
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:9000";
   // State for products, filters, and pagination
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,7 +48,7 @@ function Selling() {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/products");
+      const response = await axios.get(`${API_URL}/api/products`);
       if (response.data.success && Array.isArray(response.data.data)) {
         setProducts(response.data.data);
       } else {
@@ -70,7 +71,7 @@ function Selling() {
   // Fetch categories from the backend
   const getCategories = async () => {
     try {
-      const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/category");
+      const response = await axios.get(`${API_URL}/api/category`);
       if (response.data.success && Array.isArray(response.data.data)) {
         setCategories(response.data.data);
       }
@@ -158,7 +159,7 @@ function Selling() {
     }
     try {
       const response = await axios.delete(
-        `https://ecommerce-u7gm.onrender.com/api/products/${productId}`
+        `${API_URL}/api/products/${productId}`
       );
       if (response.data.success) {
         setProducts(
@@ -236,7 +237,7 @@ function Selling() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="bg-gray-200 text-gray-800 p-3 w-[93%] border border-gray-300 rounded-lg"
+                className="bg-gray-200 !text-gray-800 p-3 w-[93%] border border-gray-300 rounded-lg"
               >
                 <option value="">All Categories</option>
                 {categories.map((category) => (
@@ -254,7 +255,7 @@ function Selling() {
               <select
                 value={selectedBrand}
                 onChange={(e) => setSelectedBrand(e.target.value)}
-                className="bg-gray-200 text-gray-800 p-3 w-[93%] border border-gray-300 rounded-lg"
+                className="bg-gray-200 !text-gray-800 p-3 w-[93%] border border-gray-300 rounded-lg"
               >
                 <option value="">All Brands</option>
                 {brands.map((brand) => (
@@ -270,7 +271,7 @@ function Selling() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-gray-200 text-gray-800 p-3 w-[93%] border border-gray-300 rounded-lg"
+                className="bg-gray-200 !text-gray-800 p-3 w-[93%] border border-gray-300 rounded-lg"
                 placeholder="id / name / category / brand"
               />
             </div>
@@ -340,17 +341,19 @@ function Selling() {
                           : item.category?.$oid || "N/A"}
                       </td>
                       <td className="p-2 text-center">
-                        <p className="bg-gray-300 w-fit px-2 rounded-lg">
+                        <p className="bg-gray-300 !text-gray-800 w-fit px-2 rounded-lg">
                           {item.brand || "N/A"}
                         </p>
                       </td>
                       <td className="p-2 text-center">
                         <div>
-                          <div className="line-through text-gray-500 mr-1">
-                            ${item.oldPrice}
-                          </div>
-                          <div className="text-red-500">
-                            ${item.price || "N/A"}
+                          {item.oldPrice > 0 && (
+                            <div className="line-through text-gray-500 mr-1 text-xs">
+                              {formatPriceVND(item.oldPrice)}
+                            </div>
+                          )}
+                          <div className="text-red-500 font-semibold">
+                            {item.price ? formatPriceVND(item.price) : "N/A"}
                           </div>
                         </div>
                       </td>

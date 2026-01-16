@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ProductItem from "./ProductItem";
-import axios from "axios";
+import { fetchDataFromApi } from "../../services/api";
 
 function RelatedProduct({ categoryId }) {
   const [productView, setProductView] = useState("four");
@@ -30,10 +30,10 @@ function RelatedProduct({ categoryId }) {
     const fetchRelatedProducts = async () => {
       if (!categoryId) return;
       try {
-        const response = await axios.get(
-          `https://ecommerce-u7gm.onrender.com/api/products?category=${categoryId}`
+        const response = await fetchDataFromApi(
+          `/api/products?category=${categoryId}`
         );
-        setProducts(response.data.data || []);
+        setProducts(response.data || response?.data?.data || []);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching related products:", err.message);

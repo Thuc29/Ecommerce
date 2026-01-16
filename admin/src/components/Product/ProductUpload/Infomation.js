@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Rating } from "@mui/material";
 import { useTheme } from "../../Theme/ThemeContext";
 import axios from "axios";
+import { formatPriceNumber, convertToVND } from "../../../utils/formatPrice";
 
 function Infomation({ onFormChange }) {
   const { theme } = useTheme();
@@ -21,11 +22,13 @@ function Infomation({ onFormChange }) {
   const [subcategories, setSubcategories] = useState([]);
   const [error, setError] = useState("");
 
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:9000";
+
   // Fetch categories from backend
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("https://ecommerce-u7gm.onrender.com/api/category");
+        const response = await axios.get(`${API_URL}/api/category`);
         if (response.data.success) {
           setCategories(response.data.data);
         }
@@ -58,7 +61,20 @@ function Infomation({ onFormChange }) {
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const updatedFormData = { ...formData, [name]: value };
+    let processedValue = value;
+
+    // Convert price fields to VND (multiply by 1000)
+    if (name === "price" || name === "oldPrice") {
+      // If empty, set to empty string (optional field)
+      if (value === "" || value === null || value === undefined) {
+        processedValue = "";
+      } else {
+        const converted = convertToVND(value);
+        processedValue = converted !== null ? converted : "";
+      }
+    }
+
+    const updatedFormData = { ...formData, [name]: processedValue };
     setFormData(updatedFormData);
     onFormChange(updatedFormData);
   };
@@ -206,20 +222,26 @@ function Infomation({ onFormChange }) {
                     theme === "light" ? "text-gray-900" : "text-gray-200"
                   }`}
                 >
-                  Old Price
+                  Old Price (x1000 VND)
                 </label>
-                <input
-                  type="number"
-                  name="oldPrice"
-                  value={formData.oldPrice}
-                  onChange={handleChange}
-                  className={`w-full h-[45px] mb-4 p-3 rounded-lg ${
-                    theme === "light"
-                      ? "bg-gray-100 text-gray-900"
-                      : "bg-gray-700 text-gray-200"
-                  }`}
-                  placeholder="Type here"
-                />
+                <div className="relative">
+                  <input
+                    type="number"
+                    name="oldPrice"
+                    onChange={handleChange}
+                    className={`w-full h-[45px] mb-1 p-3 rounded-lg ${
+                      theme === "light"
+                        ? "bg-gray-100 text-gray-900"
+                        : "bg-gray-700 text-gray-200"
+                    }`}
+                    placeholder="VD: 12 = 12.000đ"
+                  />
+                  {formData.oldPrice > 0 && (
+                    <p className="text-xs text-green-600 mb-3">
+                      = {formatPriceNumber(formData.oldPrice)}đ
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="mb-4">
                 <label
@@ -227,20 +249,26 @@ function Infomation({ onFormChange }) {
                     theme === "light" ? "text-gray-900" : "text-gray-200"
                   }`}
                 >
-                  Price
+                  Price (x1000 VND)
                 </label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleChange}
-                  className={`w-full h-[45px] mb-4 p-3 rounded-lg ${
-                    theme === "light"
-                      ? "bg-gray-100 text-gray-900"
-                      : "bg-gray-700 text-gray-200"
-                  }`}
-                  placeholder="Type here"
-                />
+                <div className="relative">
+                  <input
+                    type="number"
+                    name="price"
+                    onChange={handleChange}
+                    className={`w-full h-[45px] mb-1 p-3 rounded-lg ${
+                      theme === "light"
+                        ? "bg-gray-100 text-gray-900"
+                        : "bg-gray-700 text-gray-200"
+                    }`}
+                    placeholder="VD: 12 = 12.000đ"
+                  />
+                  {formData.price > 0 && (
+                    <p className="text-xs text-green-600 mb-3">
+                      = {formatPriceNumber(formData.price)}đ
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="mb-4">
                 <label

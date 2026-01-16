@@ -3,12 +3,7 @@ import { Button } from "react-bootstrap";
 import { useTheme } from "../Theme/ThemeContext";
 import { postDataToApi } from "../../utils/api";
 import { FaCloudUploadAlt, FaHome, FaIcons, FaPlus } from "react-icons/fa";
-import {
-  showSuccess,
-  showError,
-  showSuccessMessages,
-  showErrorMessages,
-} from "../../utils/sweetAlert";
+import { showSuccessMessages, showErrorMessages } from "../../utils/sweetAlert";
 import { useNavigate } from "react-router-dom";
 function CategoryAdd() {
   const { theme } = useTheme();

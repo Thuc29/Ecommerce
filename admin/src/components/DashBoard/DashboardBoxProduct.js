@@ -15,7 +15,7 @@ function DashboardBoxProduct({ color, icon, grow, type }) {
   const [error, setError] = useState("");
   const open = Boolean(anchorEl);
   const ITEM_HEIGHT = 48;
-
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:9000";
   // Menu handlers
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -31,18 +31,14 @@ function DashboardBoxProduct({ color, icon, grow, type }) {
       setError("");
       try {
         if (type === "products") {
-          const response = await axios.get(
-            "https://ecommerce-u7gm.onrender.com/api/products"
-          );
+          const response = await axios.get(`${API_URL}/api/products`);
           if (response.data.success && Array.isArray(response.data.data)) {
             setData(response.data.data.length); // Total products
           } else {
             throw new Error("Invalid data format from API");
           }
         } else if (type === "brands") {
-          const response = await axios.get(
-            "https://ecommerce-u7gm.onrender.com/api/products"
-          );
+          const response = await axios.get(`${API_URL}/api/products`);
           if (response.data.success && Array.isArray(response.data.data)) {
             const uniqueBrands = [
               ...new Set(
