@@ -1,9 +1,9 @@
 import React, { useState, useContext, useEffect, useCallback } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { MyContext } from "../../App";
-import { updateDataToApi, formatCurrency } from "../../services/api";
+import { updateDataToApi } from "../../services/api";
 import Swal from "sweetalert2";
-import { FaUserCircle, FaShoppingBag, FaHeart, FaCheckCircle, FaSpinner } from "react-icons/fa";
+import { FaUserCircle, FaCheckCircle, FaSpinner } from "react-icons/fa";
 import { MdEmail, MdPhone, MdLocationOn } from "react-icons/md";
 import { FaEdit, FaSave, FaTimes } from "react-icons/fa";
 
@@ -15,7 +15,6 @@ import {
   AddressForm,
   MapModal,
   PasswordForm,
-  EmptyState,
   ProfileOrders,
   ProfileWishlist,
 } from "../../components/Profile";

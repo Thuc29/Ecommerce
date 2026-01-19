@@ -271,8 +271,8 @@ function ProductDetails() {
       </section>
 
       <Tabs product={product} onReviewSubmit={fetchProduct} />
-      <RelatedProduct 
-        categoryId={product.category?._id || product.category} 
+      <RelatedProduct
+        categoryId={product.category?._id || product.category}
         productId={product._id}
       />
       <RecentlyViewPro productId={product._id} />

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   showSuccess,
   showError,
-  showConfirm,
   showDeleteConfirm,
 } from "../../utils/sweetAlert";
 import { FiTrash2 } from "react-icons/fi";

@@ -1,6 +1,11 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import Slider from "react-slick";
-import { IoSearch, IoClose, IoChevronBack, IoChevronForward } from "react-icons/io5";
+import {
+  IoSearch,
+  IoClose,
+  IoChevronBack,
+  IoChevronForward,
+} from "react-icons/io5";
 import { MdZoomIn, MdZoomOut } from "react-icons/md";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -54,14 +59,14 @@ function ProductZoom({ images = [], discount = 0 }) {
   // Handle mouse move for zoom effect
   const handleMouseMove = useCallback((e) => {
     if (!imageContainerRef.current) return;
-    
+
     const container = imageContainerRef.current;
     const rect = container.getBoundingClientRect();
-    
+
     // Calculate position as percentage
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-    
+
     setZoomPosition({ x, y });
   }, []);
 
@@ -91,19 +96,20 @@ function ProductZoom({ images = [], discount = 0 }) {
   };
 
   const prevImage = () => {
-    const prev = (activeSlide - 1 + displayImages.length) % displayImages.length;
+    const prev =
+      (activeSlide - 1 + displayImages.length) % displayImages.length;
     goto(prev);
   };
 
   // Zoom controls in lightbox
-  const zoomIn = () => setZoomLevel(prev => Math.min(prev + 0.5, 4));
-  const zoomOut = () => setZoomLevel(prev => Math.max(prev - 0.5, 1));
+  const zoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.5, 4));
+  const zoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.5, 1));
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!isLightboxOpen) return;
-      
+
       switch (e.key) {
         case "Escape":
           closeLightbox();
@@ -128,7 +134,7 @@ function ProductZoom({ images = [], discount = 0 }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isLightboxOpen, activeSlide]);
+  }, [isLightboxOpen, activeSlide, nextImage, prevImage]);
 
   const sliderSettings = {
     dots: false,
@@ -176,9 +182,10 @@ function ProductZoom({ images = [], discount = 0 }) {
                 <div
                   className="w-full h-full flex items-center justify-center p-4 overflow-hidden"
                   style={{
-                    backgroundImage: isZooming && activeSlide === index
-                      ? `url(${image.url})`
-                      : "none",
+                    backgroundImage:
+                      isZooming && activeSlide === index
+                        ? `url(${image.url})`
+                        : "none",
                     backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
                     backgroundSize: "200%",
                     backgroundRepeat: "no-repeat",
@@ -188,10 +195,13 @@ function ProductZoom({ images = [], discount = 0 }) {
                     src={image.url}
                     alt={`Product ${index + 1}`}
                     className={`max-w-full max-h-full object-contain transition-opacity duration-300 ${
-                      isZooming && activeSlide === index ? "opacity-0" : "opacity-100"
+                      isZooming && activeSlide === index
+                        ? "opacity-0"
+                        : "opacity-100"
                     }`}
                     onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/600x600.png?text=Image+Error";
+                      e.target.src =
+                        "https://via.placeholder.com/600x600.png?text=Image+Error";
                     }}
                   />
                 </div>
@@ -219,7 +229,8 @@ function ProductZoom({ images = [], discount = 0 }) {
                 alt={`Thumbnail ${index + 1}`}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/100x100.png?text=Error";
+                  e.target.src =
+                    "https://via.placeholder.com/100x100.png?text=Error";
                 }}
               />
               {activeSlide === index && (

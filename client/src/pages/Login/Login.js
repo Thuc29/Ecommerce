@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { postDataToApi } from "../../services/api";
 import Swal from "sweetalert2";
 import { MyContext } from "../../App";
@@ -362,7 +362,7 @@ const AuthForm = () => {
   };
 
   return (
-    <div className="items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% to-pink-500 text-center py-10">
+    <div className="items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% text-center py-10">
       <p className="font-extrabold text-[26px] text-white mb-6">
         How are you today?
       </p>
@@ -398,12 +398,12 @@ const AuthForm = () => {
               disabled={isLoading}
             />
             <div className="text-end">
-              <a
+              <Link
                 href="#"
                 className="text-sm text-[#2bbef9] hover:underline mt-0"
               >
                 Forgot your password?
-              </a>
+              </Link>
             </div>
             <button
               type="submit"

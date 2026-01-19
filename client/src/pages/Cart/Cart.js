@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Rating, CircularProgress } from "@mui/material";
+import { Rating } from "@mui/material";
 import QuantityBox from "../../components/Product/QuantityBox";
 import { IoMdClose } from "react-icons/io";
 import { FiShoppingCart } from "react-icons/fi";

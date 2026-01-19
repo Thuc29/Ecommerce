@@ -67,7 +67,7 @@ const PaymentIcon = ({ method }) => {
 
 function Checkout() {
   const navigate = useNavigate();
-  const { items, totalItems, totalPrice, clearCart } = useCart();
+  const { items, totalItems, totalPrice } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeStep, setActiveStep] = useState(0);
@@ -872,7 +872,9 @@ function Checkout() {
                       type="text"
                       placeholder="Enter code"
                       value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      onChange={(e) =>
+                        setCouponCode(e.target.value.toUpperCase())
+                      }
                       className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2bbef9]"
                     />
                     <button

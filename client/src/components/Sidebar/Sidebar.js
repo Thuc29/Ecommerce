@@ -1,27 +1,25 @@
-import { Checkbox, FormControlLabel, Rating } from "@mui/material";
+import { Checkbox, Rating } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import RangeSlider from "react-range-slider-input";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { fetchDataFromApi, formatCurrency } from "../../services/api";
 
-function Sidebar({ 
-  onPriceFilter, 
-  onBrandFilter, 
+function Sidebar({
+  onPriceFilter,
+  onBrandFilter,
   onRatingFilter,
-  currentMinPrice, 
-  currentMaxPrice, 
+  currentMinPrice,
+  currentMaxPrice,
   currentBrands,
-  currentRating 
+  currentRating,
 }) {
-  const navigate = useNavigate();
   const { id: categoryId } = useParams();
-  
+
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Price range state (local for slider)
-  const [priceRange, setPriceRange] = useState([0, 1000000]);
   const [sliderValue, setSliderValue] = useState([0, 1000000]);
 
   useEffect(() => {
@@ -30,9 +28,9 @@ function Sidebar({
         setLoading(true);
         const [catRes, brandRes] = await Promise.all([
           fetchDataFromApi("/api/category"),
-          fetchDataFromApi("/api/products/brands")
+          fetchDataFromApi("/api/products/brands"),
         ]);
-        
+
         setCategories(catRes.data || catRes?.data?.data || []);
         setBrands(brandRes.data || brandRes?.data?.data || []);
         setLoading(false);
@@ -42,7 +40,7 @@ function Sidebar({
       }
     };
     fetchInitialData();
-  }, []);
+  }, [loading]);
 
   // Sync slider with props
   useEffect(() => {
@@ -79,16 +77,18 @@ function Sidebar({
               key={category._id}
               to={`/cat/${category._id}`}
               className={`flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                categoryId === category._id 
-                  ? "bg-[#2bbef9] text-white shadow-md" 
+                categoryId === category._id
+                  ? "bg-[#2bbef9] text-white shadow-md"
                   : "text-gray-600 hover:bg-gray-50 hover:text-[#2bbef9]"
               }`}
             >
               <span>{category.name}</span>
               {category.subcategories?.length > 0 && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-md ${
-                  categoryId === category._id ? "bg-white/20" : "bg-gray-100"
-                }`}>
+                <span
+                  className={`text-[10px] px-1.5 py-0.5 rounded-md ${
+                    categoryId === category._id ? "bg-white/20" : "bg-gray-100"
+                  }`}
+                >
                   {category.subcategories.length}
                 </span>
               )}
@@ -154,9 +154,13 @@ function Sidebar({
                   "&.Mui-checked": { color: "#2bbef9" },
                 }}
               />
-              <span className={`text-sm font-medium ${
-                currentBrands.includes(brand.name) ? "text-[#2bbef9]" : "text-gray-600"
-              }`}>
+              <span
+                className={`text-sm font-medium ${
+                  currentBrands.includes(brand.name)
+                    ? "text-[#2bbef9]"
+                    : "text-gray-600"
+                }`}
+              >
                 {brand.name}
               </span>
               <span className="ml-auto text-[10px] font-bold text-gray-400">
@@ -189,9 +193,11 @@ function Sidebar({
                 size="small"
                 sx={{ color: "#2bbef9" }}
               />
-              <span className={`text-sm font-medium ${
-                currentRating === rating ? "text-[#2bbef9]" : "text-gray-600"
-              }`}>
+              <span
+                className={`text-sm font-medium ${
+                  currentRating === rating ? "text-[#2bbef9]" : "text-gray-600"
+                }`}
+              >
                 {rating === 5 ? "5 Stars" : `& Up`}
               </span>
             </div>

@@ -46,7 +46,7 @@ function RelatedProduct({ categoryId, productId }) {
     };
 
     fetchRelatedProducts();
-  }, [categoryId]);
+  }, [categoryId, productId]);
 
   return (
     <div className="mb-[60px] rounded-md px-0 lg:max-w-[1270px] md:max-w-[800px] sm:max-w-[500px] mx-auto w-full bg-white">

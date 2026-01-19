@@ -7,6 +7,7 @@ import {
   faBlog,
   faEnvelope,
 } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 const FooterBottom = () => {
   const currentYear = new Date().getFullYear();
@@ -16,13 +17,13 @@ const FooterBottom = () => {
         <div className="lg:pl-[15%]">
           <ul className="flex lg:space-x-[20px] space-x-4">
             <li>
-              <a
+              <Link
                 href="#"
                 className="text-sm text-gray-300 hover:text-[#2bbef9] flex items-center space-x-2"
               >
                 <FontAwesomeIcon icon={faHome} />
                 <span>Home</span>
-              </a>
+              </Link>
             </li>
             <li>
               <a
