@@ -12,7 +12,7 @@ export const API_BASE_URL =
 export const CLIENT_URL =
   typeof window !== "undefined" && window.location.hostname === "localhost"
     ? "http://localhost:3000"
-    : "https://ecommerce-rho-taupe.vercel.app";
+    : "https://ecommerce-five-lime-99.vercel.app/";
 
 // Helper function to get auth headers
 export const getAuthHeaders = () => {

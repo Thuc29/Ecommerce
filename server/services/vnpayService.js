@@ -21,7 +21,7 @@ class VNPayService {
 
     // Auto detect client URL for redirect after payment
     const defaultClientUrl = isProduction
-      ? "https://ecommerce-rho-taupe.vercel.app"
+      ? "https://ecommerce-five-lime-99.vercel.app/"
       : "http://localhost:3000";
 
     this.clientUrl = process.env.CLIENT_URL || defaultClientUrl;

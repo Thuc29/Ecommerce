@@ -23,7 +23,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
   "https://ecommerce-u7gm.onrender.com",
-  "https://ecommerce-rho-taupe.vercel.app",
+  "https://ecommerce-five-lime-99.vercel.app/",
   process.env.CLIENT_URL,
   process.env.ADMIN_URL,
 ].filter(Boolean);
