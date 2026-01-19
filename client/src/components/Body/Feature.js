@@ -266,10 +266,12 @@ function Feature() {
             <div className="mt-5 grid grid-cols-2 gap-4">
               <img
                 src="/assets/banner8.png"
+                alt="Promotional banner"
                 className="w-full cursor-pointer rounded-xl"
               />
               <img
                 src="/assets/banner7.png"
+                alt="Promotional banner"
                 className="w-full cursor-pointer rounded-xl"
               />
             </div>

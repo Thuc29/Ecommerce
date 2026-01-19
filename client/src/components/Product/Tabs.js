@@ -11,7 +11,7 @@ function Tabs({ product, onReviewSubmit }) {
   const [submitting, setSubmitting] = useState(false);
   
   const context = useContext(MyContext);
-  const { isLogin, user } = context;
+  const { isLogin } = context;
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();

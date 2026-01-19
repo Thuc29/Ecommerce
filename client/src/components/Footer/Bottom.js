@@ -18,7 +18,7 @@ const FooterBottom = () => {
           <ul className="flex lg:space-x-[20px] space-x-4">
             <li>
               <Link
-                href="#"
+                to="/"
                 className="text-sm text-gray-300 hover:text-[#2bbef9] flex items-center space-x-2"
               >
                 <FontAwesomeIcon icon={faHome} />
@@ -26,40 +26,40 @@ const FooterBottom = () => {
               </Link>
             </li>
             <li>
-              <a
-                href="#"
-                className="text-sm text-gray-300 hover:text-[#2bbef9] flex items-center space-x-2"
+              <button
+                type="button"
+                className="text-sm text-gray-300 hover:text-[#2bbef9] flex items-center space-x-2 bg-transparent border-none cursor-pointer p-0"
               >
                 <FontAwesomeIcon icon={faInfoCircle} />
                 <span>About</span>
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="#"
+              <Link
+                to="/listing"
                 className="text-sm text-gray-300 hover:text-[#2bbef9] flex items-center space-x-2"
               >
                 <FontAwesomeIcon icon={faShoppingBag} />
                 <span>Shop</span>
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
-                className="text-sm text-gray-300 hover:text-[#2bbef9] flex items-center space-x-2"
+              <button
+                type="button"
+                className="text-sm text-gray-300 hover:text-[#2bbef9] flex items-center space-x-2 bg-transparent border-none cursor-pointer p-0"
               >
                 <FontAwesomeIcon icon={faBlog} />
                 <span>Blog</span>
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="#"
-                className="text-sm text-gray-300 hover:text-[#2bbef9] flex items-center space-x-2"
+              <button
+                type="button"
+                className="text-sm text-gray-300 hover:text-[#2bbef9] flex items-center space-x-2 bg-transparent border-none cursor-pointer p-0"
               >
                 <FontAwesomeIcon icon={faEnvelope} />
                 <span>Contact</span>
-              </a>
+              </button>
             </li>
           </ul>
         </div>

@@ -25,7 +25,7 @@ function CountryDropDown() {
 
   React.useEffect(() => {
     setCountryList(context.countryList);
-  }, []);
+  }, [context.countryList]);
 
   const filterList = (e) => {
     if (!context.countryList) return;

@@ -1,5 +1,5 @@
 import { Rating } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import ProductZoom from "./ProductZoom";
 import QuantityBox from "./QuantityBox";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
@@ -32,7 +32,7 @@ function ProductDetails() {
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       const response = await fetchDataFromApi(`/api/products/${id}`);
       setProduct(response.data || response?.data?.data || response); // Tương thích nhiều dạng response
@@ -42,11 +42,11 @@ function ProductDetails() {
       setError("Failed to load product");
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchProduct();
-  }, [id]);
+  }, [fetchProduct]);
 
   useEffect(() => {
     const fetchCategories = async () => {

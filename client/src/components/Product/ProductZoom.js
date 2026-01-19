@@ -49,12 +49,12 @@ function ProductZoom({ images = [], discount = 0 }) {
   const hasMultipleImages = displayImages.length > 1;
 
   // Go to specific slide
-  const goto = (index) => {
+  const goto = useCallback((index) => {
     setActiveSlide(index);
     if (zoomSliderBig.current) {
       zoomSliderBig.current.slickGoTo(index);
     }
-  };
+  }, []);
 
   // Handle mouse move for zoom effect
   const handleMouseMove = useCallback((e) => {
@@ -90,16 +90,16 @@ function ProductZoom({ images = [], discount = 0 }) {
   };
 
   // Navigate in lightbox
-  const nextImage = () => {
+  const nextImage = useCallback(() => {
     const next = (activeSlide + 1) % displayImages.length;
     goto(next);
-  };
+  }, [activeSlide, displayImages.length, goto]);
 
-  const prevImage = () => {
+  const prevImage = useCallback(() => {
     const prev =
       (activeSlide - 1 + displayImages.length) % displayImages.length;
     goto(prev);
-  };
+  }, [activeSlide, displayImages.length, goto]);
 
   // Zoom controls in lightbox
   const zoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.5, 4));
