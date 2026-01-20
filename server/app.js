@@ -22,7 +22,6 @@ if (!process.env.JWT_SECRET) {
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
-  "https://ecommerce-u7gm.onrender.com",
   "https://ecommerce-five-lime-99.vercel.app/",
   process.env.CLIENT_URL,
   process.env.ADMIN_URL,
@@ -36,10 +35,15 @@ app.use(
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(new Error("Not allowed by CORS"));
+      return callback(new Error("Not allowed by CORS" + origin));
     },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+app.options("*", cors());
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
