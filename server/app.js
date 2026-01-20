@@ -19,23 +19,30 @@ if (!process.env.JWT_SECRET) {
 }
 
 // Cho phép nhiều origin (Vercel client + admin nếu có)
+// Normalize origins to avoid trailing slash mismatches between browser origin and env config
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
-  "https://ecommerce-five-lime-99.vercel.app/",
+  "https://ecommerce-five-lime-99.vercel.app",
   process.env.CLIENT_URL,
   process.env.ADMIN_URL,
-].filter(Boolean);
+]
+  .filter(Boolean)
+  .map((origin) => origin.replace(/\/$/, ""));
 
 app.use(
   cors({
     origin: function (origin, callback) {
       // Cho phép requests không có origin (mobile apps, Postman, etc.)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
+
+      const normalizedOrigin = origin.replace(/\/$/, "");
+
+      if (allowedOrigins.includes(normalizedOrigin)) {
         return callback(null, true);
       }
-      return callback(new Error("Not allowed by CORS" + origin));
+
+      return callback(new Error("Not allowed by CORS: " + origin));
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
